@@ -1,0 +1,50 @@
+name: Build Gravity Well VST3
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure CMake
+      # Build in a specific subdirectory 'build'
+      run: cmake -S vst3/GravityWell -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: GravityWell-Windows-VST3
+        path: build/GravityWell_artefacts/Release/VST3/Gravity Well.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Configure CMake
+      # -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" for Universal Binary
+      run: cmake -S vst3/GravityWell -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: GravityWell-macOS-VST3
+        path: build/GravityWell_artefacts/Release/VST3/Gravity Well.vst3
+        if-no-files-found: error

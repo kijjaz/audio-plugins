@@ -1,0 +1,8 @@
+{
+    "name": "cable-lift-enhancer",
+    "version": "1.0.0",
+    "description": "Digital Resonance Dampener",
+    "main": "index.js",
+    "type": "module",
+    "license": "ISC"
+}
