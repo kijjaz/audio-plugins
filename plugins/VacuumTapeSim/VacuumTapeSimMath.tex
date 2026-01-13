@@ -1,0 +1,68 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Mathematics of the Vacuum Tape Simulator}
+\author{Kijjasak Triyanond (kijjaz@gmail.com) \\ Gemini 3 Flash}
+\date{January 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+The Vacuum Tape Simulator is a digital signal processing (DSP) plugin designed to emulate the non-linear characteristics of vacuum tube amplification and magnetic tape recording. This document details the mathematical models used for compression, hysteresis, frequency response, and mechanical transport imperfections.
+
+\section{Vacuum Tube Compression (Voltage Drain Model)}
+The vacuum tube stage is modeled using a "Voltage Drain" approach. The system maintains an internal state variable $V[n]$, representing the available headroom (voltage).
+
+The input signal $x[n]$ is used to calculate the energy $E[n]$:
+\begin{equation}
+E[n] = |x[n]|
+\end{equation}
+
+The voltage $V[n]$ decays based on the energy exceeding a threshold $T$:
+\begin{equation}
+V[n] = V[n-1] + \alpha \cdot \text{drain} \cdot \max(0, E[n] - T) + \beta \cdot \text{recovery} \cdot (1 - V[n-1])
+\end{equation}
+where $\alpha$ and $\beta$ are time constants derived from the sample rate. The output signal $y[n]$ is then:
+\begin{equation}
+y[n] = x[n] \cdot V[n]
+\end{equation}
+
+\section{Magnetic Tape Hysteresis}
+Tape saturation is modeled using a stateful hysteresis function that accounts for the magnetic "memory" of the tape particles. We use a modified tanh model:
+\begin{equation}
+y[n] = \tanh(x[n] \cdot G - h \cdot \tanh((x[n] - x[n-1]) \cdot \beta))
+\end{equation}
+where:
+\begin{itemize}
+    \item $G$ is the Tape Drive (gain).
+    \item $h$ is the Hysteresis coercivity (lag amount).
+    \item $\beta$ is the smoothing factor for the derivative.
+\end{itemize}
+
+\section{Frequency-Dependent Losses (Tape Speed)}
+Tape speed affects the high-frequency response (Wallace Losses). This is modeled using a first-order IIR low-pass filter:
+\begin{equation}
+H(z) = \frac{b_0 + b_1 z^{-1}}{1 + a_1 z^{-1}}
+\end{equation}
+The cutoff frequency $f_c$ is mapped from the tape speed $S$ (in ips):
+\begin{equation}
+f_c = 5000 + \frac{S}{30} \cdot 13000
+\end{equation}
+
+\section{Mechanical Transport (Wow and Flutter)}
+Wow (low-frequency) and Flutter (high-frequency) are modeled as time-varying delay modulations $\Delta t[n]$.
+
+The delay time is modulated by a combination of a slow "drunk walk" LFO ($L_{wow}$) and random noise ($N_{flutter}$):
+\begin{equation}
+\Delta t[n] = \text{Wow} \cdot L_{wow}[n] + \text{Flutter} \cdot N_{flutter}[n]
+\end{equation}
+The signal is then retrieved using cubic interpolation from a fractional delay line.
+
+\end{document}

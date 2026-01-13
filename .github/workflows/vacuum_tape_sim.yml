@@ -1,0 +1,57 @@
+name: Build Vacuum Tape Sim
+
+on:
+  push:
+    paths:
+      - 'plugins/VacuumTapeSim/**'
+  pull_request:
+    paths:
+      - 'plugins/VacuumTapeSim/**'
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/VacuumTapeSim -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VacuumTapeSim-Windows-VST3
+        path: build/VacuumTapeSim_artefacts/Release/VST3/Vacuum Tape Sim.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3/AU
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/VacuumTapeSim -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VacuumTapeSim-macOS-VST3
+        path: build/VacuumTapeSim_artefacts/Release/VST3/Vacuum Tape Sim.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VacuumTapeSim-macOS-AU
+        path: build/VacuumTapeSim_artefacts/Release/AU/Vacuum Tape Sim.component
+        if-no-files-found: error
