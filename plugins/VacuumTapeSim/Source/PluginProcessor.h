@@ -52,6 +52,7 @@ private:
       oversampler1x; // Dummy or bypass
   std::unique_ptr<juce::dsp::Oversampling<float>> oversampler2x;
   std::unique_ptr<juce::dsp::Oversampling<float>> oversampler4x;
+  std::unique_ptr<juce::dsp::Oversampling<float>> oversampler8x;
 
   void processUpsampledBlock(juce::dsp::AudioBlock<float> &block);
 

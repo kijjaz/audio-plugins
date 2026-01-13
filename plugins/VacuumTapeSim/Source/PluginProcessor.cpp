@@ -21,9 +21,13 @@ void VacuumTapeAudioProcessor::prepareToPlay(double sampleRate,
   oversampler4x = std::make_unique<juce::dsp::Oversampling<float>>(
       2, 2, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true,
       true);
+  oversampler8x = std::make_unique<juce::dsp::Oversampling<float>>(
+      2, 3, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true,
+      true);
 
   oversampler2x->initProcessing(samplesPerBlock);
   oversampler4x->initProcessing(samplesPerBlock);
+  oversampler8x->initProcessing(samplesPerBlock);
 
   // Prepare DSP at highest possible rate initially, processBlock will handle
   // rate changes if needed But actually we should prepare with current state
@@ -66,8 +70,13 @@ void VacuumTapeAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   auto oversamplingChoice = (int)apvts.getRawParameterValue("OVERSAMPLING")
                                 ->load(); // 0: 1x, 1: 2x, 2: 4x
 
-  int newUpsampling =
-      (oversamplingChoice == 0) ? 1 : (oversamplingChoice == 1 ? 2 : 4);
+  int newUpsampling = 1;
+  if (oversamplingChoice == 1)
+    newUpsampling = 2;
+  else if (oversamplingChoice == 2)
+    newUpsampling = 4;
+  else if (oversamplingChoice == 3)
+    newUpsampling = 8;
 
   if (newUpsampling != currentOversampling) {
     currentOversampling = newUpsampling;
@@ -97,10 +106,14 @@ void VacuumTapeAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     auto upsampledBlock = oversampler2x->processSamplesUp(block);
     processUpsampledBlock(upsampledBlock);
     oversampler2x->processSamplesDown(block);
-  } else {
+  } else if (currentOversampling == 4) {
     auto upsampledBlock = oversampler4x->processSamplesUp(block);
     processUpsampledBlock(upsampledBlock);
     oversampler4x->processSamplesDown(block);
+  } else {
+    auto upsampledBlock = oversampler8x->processSamplesUp(block);
+    processUpsampledBlock(upsampledBlock);
+    oversampler8x->processSamplesDown(block);
   }
 
   // Apply output volume
@@ -113,10 +126,11 @@ void VacuumTapeAudioProcessor::processUpsampledBlock(
   float maxGR = 0.0f;
   float maxSat = 0.0f;
 
-  for (int channel = 0; channel < (int)block.getNumChannels(); ++channel) {
-    auto *channelData = block.getChannelPointer(channel);
+  for (int sample = 0; sample < (int)block.getNumSamples(); ++sample) {
+    transport.updateModulation();
 
-    for (int sample = 0; sample < (int)block.getNumSamples(); ++sample) {
+    for (int channel = 0; channel < (int)block.getNumChannels(); ++channel) {
+      auto *channelData = block.getChannelPointer(channel);
       float s = channelData[sample];
 
       // 1. Vacuum Compression
@@ -187,7 +201,8 @@ VacuumTapeAudioProcessor::createParameterLayout() {
       stringToFloat));
   params.push_back(std::make_unique<juce::AudioParameterChoice>(
       juce::ParameterID("TAPE_SPEED", 1), "Tape Speed",
-      juce::StringArray{"9.5 ips", "15 ips", "30 ips"}, 2));
+      juce::StringArray{"9.5", "15", "30"},
+      2)); // Simplified for easy unit appending
   params.push_back(std::make_unique<juce::AudioParameterFloat>(
       juce::ParameterID("TAPE_WOW", 1), "Wow",
       juce::NormalisableRange<float>(0.0f, 1.0f), 0.1f, "",

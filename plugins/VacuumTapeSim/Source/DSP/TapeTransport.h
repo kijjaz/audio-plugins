@@ -20,14 +20,12 @@ public:
     this->flutterAmount = flutter;
   }
 
-  float processSample(int channel, float input) {
-    // Wow: Low frequency cyclical drift with "drunk" characteristics
-    // We add a tiny amount of random drift to the frequency each sample
+  void updateModulation() {
+    // Wow: Low frequency cyclical drift
     std::uniform_real_distribution<float> freqDriftDist(-0.0001f, 0.0001f);
     targetFreq += freqDriftDist(gen);
     targetFreq = std::clamp(targetFreq, 0.5f, 2.0f);
 
-    // Smooth the frequency change
     currentFreq = currentFreq * 0.999f + targetFreq * 0.001f;
 
     phaseWow += (2.0f * juce::MathConstants<float>::pi * currentFreq) /
@@ -35,20 +33,23 @@ public:
     if (phaseWow > 2.0f * juce::MathConstants<float>::pi)
       phaseWow -= 2.0f * juce::MathConstants<float>::pi;
 
-    // Drunk walk offset for extra organic drifting
     std::uniform_real_distribution<float> wanderDist(-0.001f, 0.001f);
     drunkWander += wanderDist(gen);
     drunkWander = std::clamp(drunkWander, -1.0f, 1.0f);
 
-    float wowMod =
-        (std::sin(phaseWow) + drunkWander * 0.5f) * wowAmount * 50.0f;
+    float wowMod = (std::sin(phaseWow) + drunkWander * 0.5f) * wowAmount *
+                   120.0f; // Increased depth
 
     // Flutter: High frequency stochastic jitter
     std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
-    float flutterMod = dist(gen) * flutterAmount * 10.0f;
+    float flutterMod = dist(gen) * flutterAmount * 25.0f; // Increased depth
 
-    float totalDelayMs = 10.0f + wowMod + flutterMod; // Base 10ms delay
-    float totalDelaySamples = totalDelayMs * (float)sampleRate / 1000.0f;
+    currentTotalModulationMs = 10.0f + wowMod + flutterMod;
+  }
+
+  float processSample(int channel, float input) {
+    float totalDelaySamples =
+        currentTotalModulationMs * (float)sampleRate / 1000.0f;
 
     delayLine.pushSample(channel, input);
     return delayLine.popSample(channel, totalDelaySamples);
@@ -63,6 +64,7 @@ private:
   float drunkWander = 0.0f;
   float wowAmount = 0.01f;
   float flutterAmount = 0.01f;
+  float currentTotalModulationMs = 10.0f;
 
   std::mt19937 gen{std::random_device{}()};
 };
