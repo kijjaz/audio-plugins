@@ -2,9 +2,16 @@ name: Build Gravity Well VST3
 
 on:
   push:
+    paths:
+      - 'vst3/GravityWell/**'
+      - '.github/workflows/build.yml'
     branches: [ "main", "master" ]
   pull_request:
+    paths:
+      - 'vst3/GravityWell/**'
+      - '.github/workflows/build.yml'
     branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -30,7 +37,7 @@ jobs:
 
   build-macos:
     name: Build macOS VST3
-    runs-on: macos-latest
+    runs-on: macos-14
     
     steps:
     - uses: actions/checkout@v4
