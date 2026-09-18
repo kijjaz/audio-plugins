@@ -35,11 +35,34 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ## 💻 Supported Formats & Platforms
 
-| Platform | Formats | Architectures |
-| :--- | :--- | :--- |
-| **macOS** | VST3, AU (Component), Standalone | Universal 2 (`arm64` Apple Silicon + `x86_64` Intel) |
-| **Windows** | VST3, Standalone (.exe) | 64-bit (`x64`) |
-| **Linux** | VST3, Standalone | 64-bit (`x86_64`) |
+| Platform | Formats | Architectures | Installation & Security Notes |
+| :--- | :--- | :--- | :--- |
+| **Windows** | VST3, Standalone (.exe) | 64-bit (`x64`) | Copy to `C:\Program Files\Common Files\VST3\`. Works out-of-the-box. |
+| **macOS** | VST3, AU (Component), Standalone | Universal 2 (`arm64` + `x86_64`) | Native Apple Silicon + Intel. See [macOS Gatekeeper Guide](#-macos-installation--gatekeeper-quarantine-bypass) below. |
+| **Linux** | VST3, Standalone | 64-bit (`x86_64`) | Copy to `~/.vst3/`. Works out-of-the-box. |
+
+---
+
+## 🍏 macOS Installation & Gatekeeper / Quarantine Bypass
+
+Because these open-source plugins are compiled and signed automatically via GitHub Actions CI without a commercial Apple Developer ID ($99/yr), macOS Gatekeeper will place newly downloaded binaries into quarantine upon download.
+
+### How to load on any Mac (Intel or Apple Silicon):
+
+#### Method 1: Terminal (Fastest for Audio Producers)
+After copying `AetherBeam Reverb.vst3` to `~/Library/Audio/Plug-Ins/VST3/` (or AU to `~/Library/Audio/Plug-Ins/Components/`), open **Terminal** and remove the quarantine attribute:
+```bash
+xattr -cr ~/Library/Audio/Plug-Ins/VST3/"AetherBeam Reverb.vst3"
+xattr -cr ~/Library/Audio/Plug-Ins/Components/"AetherBeam Reverb.component"
+```
+*(Or for all downloaded plugins in your folder: `xattr -cr ~/Library/Audio/Plug-Ins/VST3/*.vst3`)*
+
+#### Method 2: System Settings GUI
+1. Open your DAW (Ableton Live, Logic Pro, Reaper, FL Studio, Bitwig).
+2. When macOS displays: *"AetherBeam Reverb cannot be opened because Apple cannot check it for malicious software"*, click **Cancel**.
+3. Open **System Settings  → Privacy & Security**, scroll down to the **Security** section.
+4. You will see: *"AetherBeam Reverb was blocked from use because it is not from an identified developer"*. Click **Open Anyway**.
+5. Restart your DAW or rescan plugins. Click **Open** on the final confirmation.
 
 ---
 

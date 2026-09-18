@@ -17,14 +17,20 @@ Pre-compiled Release binaries for all platforms are built automatically via GitH
 
 ### Available Formats:
 * 🍏 **macOS (Universal 2: Apple Silicon `arm64` + Intel `x86_64`)**:
-  * **VST3**: `AetherBeam Reverb.vst3` (installed to `~/Library/Audio/Plug-Ins/VST3/`)
-  * **AU (Audio Unit)**: `AetherBeam Reverb.component` (installed to `~/Library/Audio/Plug-Ins/Components/`)
+  * **VST3**: `AetherBeam Reverb.vst3` (copy to `~/Library/Audio/Plug-Ins/VST3/`)
+  * **AU (Audio Unit)**: `AetherBeam Reverb.component` (copy to `~/Library/Audio/Plug-Ins/Components/`)
   * **Standalone App**: `AetherBeam Reverb.app`
+  * *Note*: If macOS displays an unidentified developer prompt, run:
+    ```bash
+    xattr -cr ~/Library/Audio/Plug-Ins/VST3/"AetherBeam Reverb.vst3"
+    xattr -cr ~/Library/Audio/Plug-Ins/Components/"AetherBeam Reverb.component"
+    ```
+    or click **"Open Anyway"** in **System Settings  → Privacy & Security**.
 * 🪟 **Windows (64-bit x64)**:
-  * **VST3**: `AetherBeam Reverb.vst3` (for Ableton, FL Studio, Cubase, Studio One, Reaper)
+  * **VST3**: `AetherBeam Reverb.vst3` (copy to `C:\Program Files\Common Files\VST3\`)
   * **Standalone Executable**: `AetherBeam Reverb.exe`
 * 🐧 **Linux (64-bit x86_64)**:
-  * **VST3**: `AetherBeam Reverb.vst3` (compiled with ALSA, JACK, and X11 graphics)
+  * **VST3**: `AetherBeam Reverb.vst3` (copy to `~/.vst3/`)
 
 ---
 
