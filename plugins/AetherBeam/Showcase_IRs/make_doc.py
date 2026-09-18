@@ -3,7 +3,7 @@ import subprocess, os
 html_path = '/Users/kijjaz/Desktop/Antigravity/2026/20260909 Audio Plugin Development/AetherBeam/Showcase_IRs/doc.html'
 pdf_path = '/Users/kijjaz/Desktop/Antigravity/2026/20260909 Audio Plugin Development/AetherBeam/Showcase_IRs/AetherBeam_Mathematical_Acoustic_Engine.pdf'
 
-html_code = """<!DOCTYPE html>
+html_code = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
