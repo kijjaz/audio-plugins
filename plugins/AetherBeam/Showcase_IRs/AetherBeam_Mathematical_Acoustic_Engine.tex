@@ -1,0 +1,214 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{microtype}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black
+}
+
+\title{\textbf{AetherBeam: High-Fidelity Nonlinear Waveguide Acoustic Ray-Tracing Engine}\\
+\large Mathematical Formulation and Physical Principles of Orders 0--4 Sound Beam Synthesis}
+\author{\textbf{Kijjaz} \\ AetherBeam Reverb DSP Architecture}
+\date{September 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document presents the complete mathematical architecture of the \textbf{AetherBeam} physical acoustic engine. The system synthesizes spatial impulse responses by combining higher-order 3D geometric image-source ray tracing (Orders $0 \le n \le 4$, generating up to 96 physical acoustic reflection paths per enclosure), analytic boundary collision validation, and finite-amplitude weakly nonlinear acoustic wave propagation (Fubini-Bessel shock steepening under extreme sound pressure levels up to $122\,\text{dB SPL}$, representative of a full symphony orchestra playing at \textit{fff}).
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+\hrule
+\vspace{1.5em}
+
+\section{3D Architectural Image-Source Geometry (Orders 0--4)}
+
+Let the bounding coordinates of an acoustic enclosure $\Omega \subset \mathbb{R}^3$ be denoted by:
+\begin{equation}
+\Omega = [x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}] \times [z_{\min}, z_{\max}]
+\end{equation}
+with enclosure dimensions $L_x = x_{\max} - x_{\min}$, $L_y = y_{\max} - y_{\min}$, and $L_z = z_{\max} - z_{\min}$.
+
+Let $\mathbf{s} = (s_x, s_y, s_z)^\top \in \Omega$ denote the physical acoustic source position, and $\mathbf{r} = (r_x, r_y, r_z)^\top \in \Omega$ denote the listener (receiver) position.
+
+\subsection{Lattice Coordinate Transformation}
+Relative to the enclosure minimum origin $\mathbf{b}_{\min}$, coordinates are mapped to $\mathbf{s}_{\text{rel}} = \mathbf{s} - \mathbf{b}_{\min}$ and $\mathbf{r}_{\text{rel}} = \mathbf{r} - \mathbf{b}_{\min}$.
+
+For reflection index vector $\mathbf{n} = (n_x, n_y, n_z) \in \mathbb{Z}^3$, the virtual image-source coordinate along coordinate axis $i \in \{x, y, z\}$ is defined by:
+\begin{equation}
+s_{i}'(n_i) = \begin{cases}
+n_i L_i + s_{\text{rel}, i}, & \text{if } n_i \equiv 0 \pmod 2 \\
+(n_i + 1) L_i - s_{\text{rel}, i}, & \text{if } n_i \equiv 1 \pmod 2
+\end{cases}
+\end{equation}
+The total reflection order $N(\mathbf{n})$ is the $\ell_1$ norm of the lattice index vector:
+\begin{equation}
+N(\mathbf{n}) = |n_x| + |n_y| + |n_z|, \quad 0 \le N(\mathbf{n}) \le 4
+\end{equation}
+
+\subsection{Ray Trajectory and Propagation Metric}
+The Euclidean vector from the virtual image-source $\mathbf{s}'(\mathbf{n})$ to the receiver $\mathbf{r}_{\text{rel}}$ is:
+\begin{equation}
+\mathbf{d}(\mathbf{n}) = \mathbf{r}_{\text{rel}} - \mathbf{s}'(\mathbf{n})
+\end{equation}
+with total propagation distance:
+\begin{equation}
+d(\mathbf{n}) = \|\mathbf{d}(\mathbf{n})\|_2 = \sqrt{(r_{\text{rel}, x} - s_x')^2 + (r_{\text{rel}, y} - s_y')^2 + (r_{\text{rel}, z} - s_z')^2}
+\end{equation}
+The corresponding acoustic propagation delay $\tau(\mathbf{n})$ in dry air at $20^\circ\text{C}$ ($c_0 = 343.2\,\text{m/s}$) is:
+\begin{equation}
+\tau(\mathbf{n}) = \frac{d(\mathbf{n})}{c_0}
+\end{equation}
+
+\subsection{Trajectory Folding and Boundary Intersection}
+The folded spatial position $\mathbf{p}(t)$ of a ray along normalized path parameter $t \in [0, 1]$ is obtained via periodic coordinate folding:
+\begin{equation}
+p_i(t) = \text{fold}\Big(s_i' + t \cdot d_i(\mathbf{n}),\, L_i\Big) + b_{\min, i}
+\end{equation}
+where:
+\begin{equation}
+\text{fold}(u, L) = \begin{cases}
+u \pmod{2L}, & \text{if } (u \pmod{2L}) \le L \\
+2L - (u \pmod{2L}), & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\section{Strict Architectural Boundary Containment}
+
+To ensure sound rays never escape non-rectangular or open-air architectures, every reflection point $\mathbf{p} \in \mathbb{R}^3$ must satisfy the space-specific manifold constraint:
+\begin{equation}
+\mathcal{C}_{\text{space}}(\mathbf{p}) \le 0
+\end{equation}
+
+\subsection{Sydney Opera House (Pitched Vault)}
+\begin{equation}
+\mathcal{C}_{\text{Sydney}}(\mathbf{p}) = p_z - \left(25.0 - |p_x|\right) \le 0
+\end{equation}
+Any virtual ray whose folded reflection apex exceeds $Z = 25 - |x|$ is immediately pruned.
+
+\subsection{Rome Pantheon (Cylinder + Hemisphere Dome)}
+\begin{equation}
+\mathcal{C}_{\text{Pantheon}}(\mathbf{p}) = \begin{cases}
+\sqrt{p_x^2 + p_y^2} - 21.65 \le 0, & \text{if } p_z \le 21.65\,\text{m} \\
+p_x^2 + p_y^2 + (p_z - 21.65)^2 - (21.65)^2 \le 0, & \text{if } p_z > 21.65\,\text{m}
+\end{cases}
+\end{equation}
+
+\subsection{Hagia Sophia (Central Dome + Exedrae)}
+For the central nave within radius $r = \sqrt{p_x^2 + p_y^2} \le 15.5\,\text{m}$:
+\begin{equation}
+p_z \le 25.0 + 30.0 \sqrt{1 - \left(\frac{r}{15.5}\right)^2}
+\end{equation}
+Semi-domes and side galleries are capped at $Z \le 36.0\,\text{m}$ and $Z \le 18.0\,\text{m}$, respectively.
+
+\section{Finite-Amplitude Nonlinear Wave Steepening ($fff$ Dynamics)}
+
+When a full symphony orchestra plays fortississimo ($fff$), acoustic sound pressure levels near the proscenium reach $L_p \approx 122\,\text{dB SPL}$, corresponding to peak acoustic pressure:
+\begin{equation}
+p_{\text{peak}} = p_{\text{ref}} \cdot 10^{\frac{L_p}{20}} = (20\,\mu\text{Pa}) \cdot 10^{\frac{122}{20}} \approx 25.18\,\text{Pa}
+\end{equation}
+
+\subsection{Burgers' Equation and Acoustic Nonlinearity Parameter}
+One-dimensional finite-amplitude plane acoustic wave propagation is governed by Burgers' equation:
+\begin{equation}
+\frac{\partial p}{\partial x} - \frac{\beta p}{\rho_0 c_0^3} \frac{\partial p}{\partial t'} = \frac{\delta}{2 c_0^3} \frac{\partial^2 p}{\partial {t'}^2}
+\end{equation}
+where:
+\begin{itemize}
+    \item $t' = t - x/c_0$ is the retarded time coordinate,
+    \item $\rho_0 = 1.204\,\text{kg/m}^3$ is the quiescent air density,
+    \item $c_0 = 343.2\,\text{m/s}$ is the small-signal speed of sound,
+    \item $\beta = 1 + \frac{B}{2A} \approx 1.201$ is the acoustic nonlinearity parameter for air,
+    \item $\delta$ is the acoustic diffusivity coefficient.
+\end{itemize}
+
+\subsection{Shock Formation Distance and Distortion Parameter}
+For an acoustic wave of characteristic frequency $\omega$, the shock formation distance $\bar{x}$ is defined as:
+\begin{equation}
+\bar{x} = \frac{\rho_0 c_0^3}{\beta \omega p_{\text{peak}}}
+\end{equation}
+The dimensionless Goldberg distortion parameter $\sigma$ along path length $d$ is:
+\begin{equation}
+\sigma(d) = \frac{d}{\bar{x}} = \frac{\beta \omega p_{\text{peak}} d}{\rho_0 c_0^3}
+\end{equation}
+For $fff$ symphonic orchestral dynamics ($\sigma \in [0.05, 0.45]$), the acoustic pressure field obeys the \textbf{Fubini-Bessel series}:
+\begin{equation}
+p(d, t') = p_{\text{peak}} \sum_{n=1}^{\infty} \frac{2}{n \sigma(d)} J_n(n \sigma(d)) \sin(n \omega t')
+\end{equation}
+where $J_n(\cdot)$ is the Bessel function of the first kind of order $n$.
+
+\subsection{Discrete Nonlinear Waveguide Implementation}
+In the discrete DSP domain (at sampling rate $f_s = 96\,\text{kHz}$), the cumulative wave steepening along ray path $k$ of distance $d_k$ is evaluated per sample $x[n]$ via memoryless polynomial wave-shaping with dynamic coefficient $\gamma_k$:
+\begin{equation}
+\gamma_k = \frac{\beta \cdot p_{\text{peak}} \cdot d_k}{2 \rho_0 c_0^3}
+\end{equation}
+\begin{equation}
+y_k[n] = x[n] + \gamma_k \cdot x^2[n] - \frac{1}{3} \gamma_k^2 \cdot x^3[n]
+\end{equation}
+This induces subtle quadratic and cubic overtone generation in early reflections, matching the physical sensation of brass and percussion impact in concert halls.
+
+\section{Frequency-Dependent Air Absorption and Wall Impedance}
+
+\subsection{ISO 9613-1 Atmospheric Attenuation}
+Atmospheric attenuation coefficient $\alpha_{\text{air}}(f)$ in $\text{dB/m}$ is:
+\begin{equation}
+\alpha_{\text{air}}(f) = 8.686 f^2 \left( 1.84 \times 10^{-11} \left(\frac{T}{T_0}\right)^{\frac{1}{2}} + \left(\frac{T}{T_0}\right)^{-\frac{5}{2}} \left[ \frac{a_1 f_{r,\text{N}}}{f_{r,\text{N}}^2 + f^2} + \frac{a_2 f_{r,\text{O}}}{f_{r,\text{O}}^2 + f^2} \right] \right)
+\end{equation}
+In the discrete waveguide, this is synthesized via a calibrated 1st-order IIR lowpass filter:
+\begin{equation}
+H_{\text{air}}(z, d) = \frac{g_0 + g_1 z^{-1}}{1 - a_1 z^{-1}}, \quad a_1 = e^{-2\pi f_c(d) / f_s}
+\end{equation}
+
+\subsection{Wall Reflection Loss}
+For a ray of order $N(\mathbf{n})$, the net surface reflection gain $R(\mathbf{n})$ is:
+\begin{equation}
+R(\mathbf{n}) = \prod_{j=1}^{N(\mathbf{n})} \sqrt{1 - \bar{\alpha}_{\text{mat}, j}}
+\end{equation}
+where $\bar{\alpha}_{\text{mat}, j}$ is the absorption coefficient of the boundary intercepted at bounce $j$.
+
+\section{Total Impulse Response Synthesis}
+
+The complete binaural impulse response $h_{L,R}(t)$ is synthesized as the superposition of the deterministic early physical beams (Orders $0 \le n \le 4$) and the stochastic diffuse late reverberant tail:
+\begin{equation}
+h_{L,R}(t) = \sum_{k=1}^{K} A_k \cdot \mathcal{N}_k\Big( \delta(t - \tau_k) * h_{\text{air}}(t, d_k) \Big) \cdot \text{HRTF}_{L,R}(\theta_k, \phi_k) + h_{\text{late}}(t)
+\end{equation}
+where:
+\begin{itemize}
+    \item $K \le 96$ is the total count of valid physical rays,
+    \item $A_k = \frac{R_k}{d_k}$ is the spherical geometric spreading factor and reflection loss,
+    \item $\mathcal{N}_k(\cdot)$ is the nonlinear Burgers wave-steepening operator,
+    \item $\text{HRTF}_{L,R}(\theta_k, \phi_k)$ is the head-related transfer function for incident beam elevation $\phi_k$ and azimuth $\theta_k$,
+    \item $h_{\text{late}}(t) = e^{-3 \ln(10) t / RT_{60}} \cdot \xi(t)$ is the late diffuse field matching Sabine-Eyring reverberation decay time.
+\end{itemize}
+
+\section{Showcase Enclosure Parameters}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Enclosure} & \textbf{Dimensions (m)} & \textbf{Volume ($m^3$)} & $RT_{60}$ \textbf{(s)} & \textbf{Max Order} & \textbf{Valid Rays} & $L_p$ \textbf{(dB SPL)} \\
+\midrule
+Musikverein Golden Hall & $48.8 \times 19.1 \times 17.7$ & 15,000 & 2.05 & 4 & 76 & 122 ($fff$) \\
+Sydney Opera House & $52.0 \times 26.0 \times 25.0$ & 16,500 & 2.00 & 4 & 68 & 122 ($fff$) \\
+Hagia Sophia Byzantine & $65.0 \times 60.0 \times 55.0$ & 180,000 & 11.00 & 4 & 84 & 122 ($fff$) \\
+\bottomrule
+\end{tabular}
+\caption{Physical acoustic parameters of synthesized showcase spaces.}
+\end{table}
+
+\end{document}
