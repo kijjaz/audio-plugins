@@ -1,3 +1,6 @@
+#include <fstream>
+#include <sstream>
+#include <set>
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -99,6 +102,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout AetherBeamAudioProcessor::cr
         juce::ParameterID{"stereoWidth", 1}, "Stereo Width",
         juce::NormalisableRange<float>(0.0f, 2.0f, 0.01f), 1.0f));
 
+    // ISO 9613-1 Microclimate & Surface Roughness
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{"airTemp", 1}, "Air Temp (C)",
+        juce::NormalisableRange<float>(0.0f, 40.0f, 0.5f), 20.0f));
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{"airHumidity", 1}, "Humidity (%)",
+        juce::NormalisableRange<float>(10.0f, 95.0f, 1.0f), 50.0f));
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{"surfaceScattering", 1}, "Surface Roughness",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.25f));
+
     // Dry / Wet Mix
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{"mix", 1}, "Dry / Wet Mix",
@@ -128,12 +144,20 @@ std::vector<AetherAcoustics::RaySegment> AetherBeamAudioProcessor::getCurrentRay
 void AetherBeamAudioProcessor::switchSpaceAndPosition(int spaceIdx, int posIdx)
 {
     const auto& spaces = AetherAcoustics::AcousticDatabase::getSpaces();
-    if (spaceIdx < 0 || spaceIdx >= static_cast<int>(spaces.size())) return;
+    const AetherAcoustics::SpaceData* spacePtr = nullptr;
+    if (spaceIdx == 999 && hasCustomSpace)
+    {
+        spacePtr = &customSpace;
+    }
+    else
+    {
+        if (spaceIdx < 0 || spaceIdx >= static_cast<int>(spaces.size())) return;
+        spacePtr = &spaces[static_cast<size_t>(spaceIdx)];
+    }
+    const auto& space = *spacePtr;
 
     currentSpaceIndex.store(spaceIdx);
     currentPositionIndex.store(posIdx);
-
-    const auto& space = spaces[static_cast<size_t>(spaceIdx)];
     currentRt60 = space.rt60;
     currentVolume = space.volume;
     currentArea = space.area;
@@ -146,7 +170,7 @@ void AetherBeamAudioProcessor::switchSpaceAndPosition(int spaceIdx, int posIdx)
         const auto& pos = space.positions[static_cast<size_t>(posIdx)];
         newSrc = pos.source;
         newLis = pos.listener;
-        newRays = AetherAcoustics::computeRealtimeRays(newSrc, newLis, space.minBound, space.maxBound, space.id, 4, 96);
+        newRays = AetherAcoustics::computeRealtimeRays(newSrc, newLis, space.minBound, space.maxBound, space.id.c_str(), 4, 96);
     }
     else
     {
@@ -165,7 +189,7 @@ void AetherBeamAudioProcessor::switchSpaceAndPosition(int spaceIdx, int posIdx)
 
         newSrc = { sX, sY, sZ };
         newLis = { lX, lY, lZ };
-        newRays = AetherAcoustics::computeRealtimeRays(newSrc, newLis, space.minBound, space.maxBound, space.id, 4, 96);
+        newRays = AetherAcoustics::computeRealtimeRays(newSrc, newLis, space.minBound, space.maxBound, space.id.c_str(), 4, 96);
     }
 
     {
@@ -232,6 +256,9 @@ void AetherBeamAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBl
     float hfMult = apvts.getRawParameterValue("hfDecayMult")->load();
     float bassMult = apvts.getRawParameterValue("bassDecayMult")->load();
     float occupancy = apvts.getRawParameterValue("occupancy")->load();
+    float airTemp = apvts.getRawParameterValue("airTemp")->load();
+    float airHumidity = apvts.getRawParameterValue("airHumidity")->load();
+    float surfaceScat = apvts.getRawParameterValue("surfaceScattering")->load();
     int micPatIdx = static_cast<int>(apvts.getRawParameterValue("micPattern")->load());
     float stereoWidth = apvts.getRawParameterValue("stereoWidth")->load();
 
@@ -239,9 +266,12 @@ void AetherBeamAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBl
     currentMicPattern.store(micPattern, std::memory_order_relaxed);
     currentStereoWidth.store(stereoWidth, std::memory_order_relaxed);
     currentOccupancy.store(occupancy, std::memory_order_relaxed);
+    currentAirTemp.store(airTemp, std::memory_order_relaxed);
+    currentAirHumidity.store(airHumidity, std::memory_order_relaxed);
+    currentSurfaceScattering.store(surfaceScat, std::memory_order_relaxed);
 
     fdn.prepare(sampleRate, currentRt60 * decayScale, currentVolume, currentArea);
-    fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy);
+    fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy, airTemp, airHumidity);
 
     tailDetector.prepare(sampleRate, -96.0f, 1.5f, 500.0f);
     updateAcousticPaths(currentRays);
@@ -277,6 +307,9 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     float hfMult = apvts.getRawParameterValue("hfDecayMult")->load();
     float bassMult = apvts.getRawParameterValue("bassDecayMult")->load();
     float occupancy = apvts.getRawParameterValue("occupancy")->load();
+    float airTemp = apvts.getRawParameterValue("airTemp")->load();
+    float airHumidity = apvts.getRawParameterValue("airHumidity")->load();
+    float surfaceScat = apvts.getRawParameterValue("surfaceScattering")->load();
     int micPatIdx = static_cast<int>(apvts.getRawParameterValue("micPattern")->load());
     float stereoWidth = apvts.getRawParameterValue("stereoWidth")->load();
 
@@ -295,12 +328,12 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         switchSpaceAndPosition(spaceIndex, positionIndex);
         fdn.prepare(getSampleRate(), currentRt60 * decayScale, currentVolume, currentArea);
-        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy);
+        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy, airTemp, airHumidity);
     }
     else
     {
         // Continuously update FDN RT60, 3-Band Material Damping, and Occupancy absorption per block
-        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy);
+        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy, airTemp, airHumidity);
     }
 
     if (coordinatesDirty.load(std::memory_order_relaxed))
@@ -330,7 +363,7 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
                 float lZ = space.minBound.z + 1.7f;
 
                 // During active movement, compute 2nd order (24 rays) for effortless real-time glide
-                auto newRays = AetherAcoustics::computeRealtimeRays({ sX, sY, sZ }, { lX, lY, lZ }, space.minBound, space.maxBound, space.id, 2, 24);
+                auto newRays = AetherAcoustics::computeRealtimeRays({ sX, sY, sZ }, { lX, lY, lZ }, space.minBound, space.maxBound, space.id.c_str(), 2, 24);
                 {
                     std::unique_lock<std::mutex> lock(rayMutex, std::try_to_lock);
                     if (lock.owns_lock())
@@ -352,7 +385,7 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         float inMono = (inL + inR) * 0.5f;
 
         float earlyL = 0.0f, earlyR = 0.0f, lateInject = 0.0f;
-        waveguideArray.processSample(inMono, driveSPL, beta, micPattern, stereoWidth, earlyL, earlyR, lateInject);
+        waveguideArray.processSample(inMono, driveSPL, beta, micPattern, stereoWidth, airTemp, airHumidity, surfaceScat, earlyL, earlyR, lateInject);
 
         float lateL = 0.0f, lateR = 0.0f;
         fdn.processSample(lateInject, 1.0f, lateL, lateR);
@@ -394,3 +427,138 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new AetherBeamAudioProcessor();
 }
+
+bool AetherBeamAudioProcessor::loadCustomObjMesh(const juce::File& objFile)
+{
+    if (!objFile.existsAsFile()) return false;
+
+    std::ifstream file(objFile.getFullPathName().toStdString());
+    if (!file.is_open()) return false;
+
+    std::vector<AetherAcoustics::Vec3> vertices;
+    std::set<std::pair<int, int>> uniqueEdges;
+
+    std::string line;
+    float minX = 1e9f, minY = 1e9f, minZ = 1e9f;
+    float maxX = -1e9f, maxY = -1e9f, maxZ = -1e9f;
+
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream iss(line);
+        std::string token;
+        iss >> token;
+
+        if (token == "v")
+        {
+            float x, y, z;
+            iss >> x >> y >> z;
+            vertices.push_back({ x, y, z });
+            minX = std::min(minX, x); maxX = std::max(maxX, x);
+            minY = std::min(minY, y); maxY = std::max(maxY, y);
+            minZ = std::min(minZ, z); maxZ = std::max(maxZ, z);
+        }
+        else if (token == "f")
+        {
+            std::vector<int> faceIndices;
+            std::string vertRef;
+            while (iss >> vertRef)
+            {
+                size_t slashPos = vertRef.find('/');
+                std::string idxStr = (slashPos == std::string::npos) ? vertRef : vertRef.substr(0, slashPos);
+                try {
+                    int vIdx = std::stoi(idxStr) - 1;
+                    faceIndices.push_back(vIdx);
+                } catch (...) {}
+            }
+
+            size_t n = faceIndices.size();
+            for (size_t i = 0; i < n; ++i)
+            {
+                int v0 = faceIndices[i];
+                int v1 = faceIndices[(i + 1) % n];
+                if (v0 >= 0 && v0 < static_cast<int>(vertices.size()) &&
+                    v1 >= 0 && v1 < static_cast<int>(vertices.size()))
+                {
+                    uniqueEdges.insert({ std::min(v0, v1), std::max(v0, v1) });
+                }
+            }
+        }
+    }
+
+    if (vertices.empty()) return false;
+
+    customSpace.id = "custom_imported_mesh";
+    customSpace.title = objFile.getFileNameWithoutExtension().toStdString() + " (User 3D Mesh)";
+    customSpace.category = "User 3D Meshes";
+    customSpace.minBound = { minX, minY, minZ };
+    customSpace.maxBound = { maxX, maxY, maxZ };
+
+    float dx = maxX - minX;
+    float dy = maxY - minY;
+    float dz = maxZ - minZ;
+
+    customSpace.volume = std::max(50.0f, dx * dy * dz * 0.70f);
+    customSpace.area = 2.0f * (dx * dy + dy * dz + dx * dz);
+    customSpace.rt60 = std::clamp(0.161f * (customSpace.volume / (0.12f * customSpace.area)), 0.5f, 15.0f);
+
+    std::vector<std::pair<int, int>> allEdges(uniqueEdges.begin(), uniqueEdges.end());
+    customSpace.wireframe.clear();
+
+    constexpr int maxWireEdges = 300;
+    if (allEdges.size() <= static_cast<size_t>(maxWireEdges))
+    {
+        for (const auto& e : allEdges)
+            customSpace.wireframe.push_back({ vertices[e.first], vertices[e.second] });
+    }
+    else
+    {
+        float step = static_cast<float>(allEdges.size()) / static_cast<float>(maxWireEdges);
+        for (int i = 0; i < maxWireEdges; ++i)
+        {
+            size_t idx = static_cast<size_t>(static_cast<float>(i) * step);
+            if (idx < allEdges.size())
+                customSpace.wireframe.push_back({ vertices[allEdges[idx].first], vertices[allEdges[idx].second] });
+        }
+    }
+
+    // Generate 4 standard acoustic positions inside custom bounds
+    customSpace.positions.clear();
+    {
+        AetherAcoustics::PositionData p1;
+        p1.id = 0;
+        p1.name = "Front Stage to Center Room";
+        p1.source = { minX + dx * 0.5f, minY + dy * 0.2f, minZ + dz * 0.2f };
+        p1.listener = { minX + dx * 0.5f, minY + dy * 0.6f, minZ + dz * 0.25f };
+        customSpace.positions.push_back(p1);
+    }
+    {
+        AetherAcoustics::PositionData p2;
+        p2.id = 1;
+        p2.name = "Diagonal Cross Reflection";
+        p2.source = { minX + dx * 0.2f, minY + dy * 0.15f, minZ + dz * 0.2f };
+        p2.listener = { minX + dx * 0.8f, minY + dy * 0.75f, minZ + dz * 0.25f };
+        customSpace.positions.push_back(p2);
+    }
+    {
+        AetherAcoustics::PositionData p3;
+        p3.id = 2;
+        p3.name = "Elevated Gallery / Balcony Perspective";
+        p3.source = { minX + dx * 0.5f, minY + dy * 0.25f, minZ + dz * 0.2f };
+        p3.listener = { minX + dx * 0.5f, minY + dy * 0.85f, minZ + dz * 0.7f };
+        customSpace.positions.push_back(p3);
+    }
+    {
+        AetherAcoustics::PositionData p4;
+        p4.id = 3;
+        p4.name = "Wall Bounce Focus";
+        p4.source = { minX + dx * 0.85f, minY + dy * 0.3f, minZ + dz * 0.2f };
+        p4.listener = { minX + dx * 0.15f, minY + dy * 0.5f, minZ + dz * 0.2f };
+        customSpace.positions.push_back(p4);
+    }
+
+    hasCustomSpace = true;
+    switchSpaceAndPosition(999, 0); // 999 triggers customSpace
+    return true;
+}
+

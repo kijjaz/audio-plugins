@@ -60,6 +60,19 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bassMultAttachment;
     juce::Label bassMultLabel;
 
+    // Section 2B: ISO 9613-1 Microclimate & Surface Roughness
+    juce::Slider tempSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tempAttachment;
+    juce::Label tempLabel;
+
+    juce::Slider humiditySlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> humidityAttachment;
+    juce::Label humidityLabel;
+
+    juce::Slider scatteringSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> scatteringAttachment;
+    juce::Label scatteringLabel;
+
     // Section 3: Spatial Mic & Master Output
     juce::ComboBox micPatternSelector;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> micPatternAttachment;

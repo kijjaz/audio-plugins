@@ -53,6 +53,7 @@ public:
 
     inline void processSample(float inSample, float peakSPL, float nonlinearityScale, 
                               MicPolarPattern micPattern, float stereoWidth,
+                              float airTempC, float airHumidityPct, float surfaceScattering,
                               float& outL, float& outR, float& lateInjection)
     {
         outL = 0.0f;
@@ -66,6 +67,10 @@ public:
         float pPeak = AetherAcoustics::P0_REF * std::pow(10.0f, peakSPL / 20.0f);
         float stiffness = AetherAcoustics::ACOUSTIC_STIFFNESS;
 
+        AetherAcoustics::AtmosphericProperties atmo;
+        atmo.temperatureC = airTempC;
+        atmo.relativeHumidityPct = airHumidityPct;
+
         for (int k = 0; k < count; ++k)
         {
             const auto& desc = beams[k];
@@ -73,11 +78,13 @@ public:
             // 1. Write audio sample to path delay line
             delayLines[k].write(inSample);
 
-            // 2. Physical wave-steepening parameters
+            // 2. Physical wave-steepening parameters & ISO 9613-1 Atmospheric Air Damping
             float d = desc.distanceMeters;
             float gamma = std::clamp(nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * 5e3f, 0.0f, 0.6f);
             float steepeningDepth = nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * fs * 0.1f;
-            float alphaDamp = std::clamp(0.10f + 0.012f * d, 0.05f, 0.85f);
+            
+            // ISO 9613-1 physical molecular relaxation coefficient for this ray length
+            float alphaDamp = atmo.computePathAirDampingCoeff(d, fs);
 
             // 3. Microphone Directionality & ITD/ILD
             float azimuthRad = std::atan2(desc.dirX, desc.dirY);
@@ -89,9 +96,9 @@ public:
             float delayL = desc.delaySec + itdSecL;
             float delayR = desc.delaySec + itdSecR;
 
-            // 4. Pressure-modulated read
-            float pathL = delayLines[k].readNonlinear(delayL, steepeningDepth, gamma, alphaDamp);
-            float pathR = delayLines[k].readNonlinear(delayR, steepeningDepth, gamma, alphaDamp);
+            // 4. Pressure-modulated read with surface scattering dispersion
+            float pathL = delayLines[k].readNonlinear(delayL, steepeningDepth, gamma, alphaDamp, surfaceScattering);
+            float pathR = delayLines[k].readNonlinear(delayR, steepeningDepth, gamma, alphaDamp, surfaceScattering);
 
             float gain = desc.gain * desc.absorptionFactor;
             float phaseSign = (desc.order == 0) ? 1.0f : ((k % 2 == 1) ? -1.0f : 1.0f);

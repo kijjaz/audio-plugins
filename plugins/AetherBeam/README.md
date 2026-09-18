@@ -124,3 +124,13 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --parallel 4
 ```
 *(If JUCE is not installed locally, CMake automatically downloads official JUCE 8 from GitHub via `FetchContent`)*.
+
+### 5. ISO 9613-1 Atmospheric Microclimate & Custom 3D Wavefront Drag-and-Drop (v3.0 Update)
+- **ISO 9613-1 Physical Acoustics**: Full thermodynamic implementation of atmospheric absorption across air temperature (0°C to 40°C) and relative humidity (10% to 95%). Relaxes relaxation frequencies for $ and $ vibration states to calculate precise frequency-dependent air attenuation along ray trajectories.
+- **Surface Scattering & Phase Dispersion**: Allpass-based boundary dispersion filters simulate surface roughness ($\delta_{	ext{scat}} = 0 - 100\%$), diffusing specular wave reflections into natural diffuse tail reverberation.
+- **Interactive Drag-and-Drop 3D OBJ Loader**: Drop any architectural 3D wavefront model () directly into the Carbon & Gold 3D viewport. Automatically derives:
+  1. Room bounding box, volumetric capacity, and surface area.
+  2. Baseline Sabine {60}$ estimation.
+  3. Optimized 300-edge wireframe skeleton for real-time 60 FPS rendering.
+  4. 4 acoustic listening positions (Stage, Recess, Dome/Center, Gallery).
+  5. Dynamic ray tracing with interactive Draggable Source and Microphone nodes.

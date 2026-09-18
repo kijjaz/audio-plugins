@@ -48,8 +48,9 @@ public:
         }
     }
 
-    // Dynamic parameter update including audience & furnishing absorption ('occupancy' 0.0 to 1.0)
-    void updateAcousticParameters(float targetRt60, float dampCutoffHz, float hfMult, float bassMult, float occupancy = 0.0f)
+    // Dynamic parameter update including ISO 9613-1 microclimate and audience absorption
+    void updateAcousticParameters(float targetRt60, float dampCutoffHz, float hfMult, float bassMult, float occupancy = 0.0f,
+                                  float airTempC = 20.0f, float airHumidityPct = 50.0f)
     {
         baseRt60 = std::max(0.08f, targetRt60);
         currentOccupancy = std::clamp(occupancy, 0.0f, 1.0f);
@@ -68,8 +69,17 @@ public:
         currentHfMult = std::clamp(effectiveHfMult, 0.05f, 1.0f);
         currentBassMult = std::clamp(bassMult, 0.2f, 2.5f);
 
+        // ISO 9613-1 Atmospheric Absorption Modulator
+        AetherAcoustics::AtmosphericProperties atmo;
+        atmo.temperatureC = airTempC;
+        atmo.relativeHumidityPct = airHumidityPct;
+        float atmoAlpha10k = atmo.computeAbsorptionAlpha(10000.0f);
+        // Dry air (high alpha) lowers effective HF cutoff; humid air keeps it open
+        float atmoScale = std::clamp(1.0f - (atmoAlpha10k - 0.15f) * 0.8f, 0.4f, 1.25f);
+        float finalDampCutoff = currentDampCutoffHz * atmoScale;
+
         // Precompute filter coefficients for HF damping and LF crossover (~250 Hz)
-        float wCutoffHF = 2.0f * 3.14159265f * currentDampCutoffHz / fs;
+        float wCutoffHF = 2.0f * 3.14159265f * finalDampCutoff / fs;
         float baseAlphaHF = std::clamp(std::exp(-wCutoffHF), 0.02f, 0.96f);
 
         float wCutoffLF = 2.0f * 3.14159265f * 250.0f / fs;

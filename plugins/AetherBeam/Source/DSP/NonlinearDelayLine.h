@@ -19,6 +19,10 @@ public:
         std::fill(buffer.begin(), buffer.end(), 0.0f);
         writePos = 0;
         filterState = 0.0f;
+        ap1_in = 0.0f;
+        ap1_out = 0.0f;
+        ap2_in = 0.0f;
+        ap2_out = 0.0f;
     }
 
     inline void write(float inputSample)
@@ -27,8 +31,8 @@ public:
         writePos = (writePos + 1) % bufferSize;
     }
 
-    // Read with dynamic wave-steepening delay modulation and Fubini waveshaping
-    inline float readNonlinear(float nominalDelaySec, float pressureModDepth, float gammaFubini, float alphaDamp)
+    // Read with dynamic wave-steepening delay modulation, surface scattering, and ISO 9613-1 air damping
+    inline float readNonlinear(float nominalDelaySec, float pressureModDepth, float gammaFubini, float alphaDamp, float surfaceScattering = 0.0f)
     {
         // 1. Instantaneous delayed sample estimation
         float nominalDelaySamples = nominalDelaySec * fs;
@@ -67,8 +71,25 @@ public:
         // 3. Fubini dynamic waveshaping: y = x - gamma * x^3 (harmonic overtone steepening)
         float shaped = interpolated - gammaFubini * (interpolated * interpolated * interpolated);
 
-        // 4. ISO 9613-1 physical air loss & boundary lowpass damping
-        filterState = (1.0f - alphaDamp) * shaped + alphaDamp * filterState;
+        // 4. Surface Scattering & Roughness Allpass Dispersion
+        float scattered = shaped;
+        if (surfaceScattering > 0.01f)
+        {
+            float gScat = std::clamp(surfaceScattering * 0.45f, 0.0f, 0.45f);
+            // 2-stage allpass phase-dispersion diffusion for micro-surface roughness
+            float ap1 = -gScat * scattered + ap1_in;
+            ap1_out = ap1;
+            ap1_in = scattered + gScat * ap1;
+
+            float ap2 = -gScat * ap1_out + ap2_in;
+            ap2_out = ap2;
+            ap2_in = ap1_out + gScat * ap2;
+
+            scattered = (1.0f - surfaceScattering) * shaped + surfaceScattering * ap2_out;
+        }
+
+        // 5. ISO 9613-1 physical atmospheric molecular relaxation & wall absorption
+        filterState = (1.0f - alphaDamp) * scattered + alphaDamp * filterState;
         return filterState;
     }
 
@@ -78,4 +99,6 @@ private:
     int bufferSize = 0;
     int writePos = 0;
     float filterState = 0.0f;
+    float ap1_in = 0.0f, ap1_out = 0.0f;
+    float ap2_in = 0.0f, ap2_out = 0.0f;
 };

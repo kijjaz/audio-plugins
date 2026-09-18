@@ -46,6 +46,7 @@ public:
 
     void switchSpaceAndPosition(int spaceIdx, int posIdx);
     void setCustomCoordinates(float srcXNorm, float srcYNorm, float lisXNorm, float lisYNorm);
+    bool loadCustomObjMesh(const juce::File& objFile);
 
     int getCurrentSpaceIndex() const { return currentSpaceIndex; }
     int getCurrentPositionIndex() const { return currentPositionIndex; }
@@ -57,6 +58,10 @@ public:
     MicPolarPattern getCurrentMicPattern() const { return currentMicPattern; }
     float getCurrentStereoWidth() const { return currentStereoWidth; }
     float getCurrentOccupancy() const { return currentOccupancy; }
+    float getCurrentAirTemp() const { return currentAirTemp; }
+    float getCurrentAirHumidity() const { return currentAirHumidity; }
+    float getCurrentSurfaceScattering() const { return currentSurfaceScattering; }
+    const AetherAcoustics::SpaceData* getCustomSpaceData() const { return hasCustomSpace ? &customSpace : nullptr; }
 
 private:
     juce::AudioProcessorValueTreeState apvts;
@@ -77,6 +82,12 @@ private:
     std::atomic<MicPolarPattern> currentMicPattern{ MicPolarPattern::Binaural };
     std::atomic<float> currentStereoWidth{ 1.0f };
     std::atomic<float> currentOccupancy{ 0.0f };
+    std::atomic<float> currentAirTemp{ 20.0f };
+    std::atomic<float> currentAirHumidity{ 50.0f };
+    std::atomic<float> currentSurfaceScattering{ 0.25f };
+
+    bool hasCustomSpace = false;
+    AetherAcoustics::SpaceData customSpace;
 
     std::atomic<bool> coordinatesDirty{ false };
 

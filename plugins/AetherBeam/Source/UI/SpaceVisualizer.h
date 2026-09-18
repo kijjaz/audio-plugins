@@ -3,11 +3,12 @@
 #include "../DSP/AcousticDatabase.h"
 #include "../DSP/BinauralSpatializer.h"
 
-class SpaceVisualizer : public juce::Component, private juce::Timer
+class SpaceVisualizer : public juce::Component, public juce::FileDragAndDropTarget, private juce::Timer
 {
 public:
     std::function<void(float srcXN, float srcYN, float lisXN, float lisYN)> onNodesMoved;
     std::function<void(float srcXN, float srcYN, float lisXN, float lisYN)> onDragEnded;
+    std::function<void(const juce::File& file)> onObjFileDropped;
 
     SpaceVisualizer()
     {
@@ -100,7 +101,7 @@ public:
 
             // Realtime ray trace during drag
             currentRays = AetherAcoustics::computeRealtimeRays(currentSource, currentListener,
-                                                              currentSpace->minBound, currentSpace->maxBound, currentSpace->id, 1, 7);
+                                                              currentSpace->minBound, currentSpace->maxBound, currentSpace->id.c_str(), 1, 7);
 
             if (onNodesMoved)
             {
@@ -120,7 +121,7 @@ public:
         if ((dragMode == DragTarget::Source || dragMode == DragTarget::Listener) && currentSpace != nullptr)
         {
             currentRays = AetherAcoustics::computeRealtimeRays(currentSource, currentListener,
-                                                              currentSpace->minBound, currentSpace->maxBound, currentSpace->id, 4, 96);
+                                                              currentSpace->minBound, currentSpace->maxBound, currentSpace->id.c_str(), 4, 96);
             float spanX = currentSpace->maxBound.x - currentSpace->minBound.x;
             float spanY = currentSpace->maxBound.y - currentSpace->minBound.y;
             float sXN = (currentSource.x - currentSpace->minBound.x) / spanX;
@@ -141,6 +142,43 @@ public:
     void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails& wheel) override
     {
         zoomScale = juce::jlimit(0.4f, 3.0f, zoomScale * (1.0f + wheel.deltaY * 0.5f));
+        repaint();
+    }
+
+    bool isInterestedInFileDrag(const juce::StringArray& files) override
+    {
+        for (const auto& f : files)
+        {
+            if (f.endsWithIgnoreCase(".obj") || f.endsWithIgnoreCase(".ply"))
+                return true;
+        }
+        return false;
+    }
+
+    void fileDragEnter(const juce::StringArray&, int, int) override
+    {
+        isFileHovering = true;
+        repaint();
+    }
+
+    void fileDragExit(const juce::StringArray&) override
+    {
+        isFileHovering = false;
+        repaint();
+    }
+
+    void filesDropped(const juce::StringArray& files, int, int) override
+    {
+        isFileHovering = false;
+        for (const auto& f : files)
+        {
+            if (f.endsWithIgnoreCase(".obj") || f.endsWithIgnoreCase(".ply"))
+            {
+                if (onObjFileDropped)
+                    onObjFileDropped(juce::File(f));
+                break;
+            }
+        }
         repaint();
     }
 
@@ -279,8 +317,19 @@ public:
         // 8. Interactive Hint (Bottom)
         g.setFont(juce::Font(9.5f, juce::Font::italic));
         g.setColour(juce::Colour(0x8894a3b8));
-        g.drawText("Drag SOURCE / MIC to trace acoustic reflections live | Drag space to orbit 3D camera | Scroll wheel zooms",
+        g.drawText("Drag SOURCE / MIC to trace acoustic reflections live | Drop .OBJ files to import custom 3D rooms | Scroll zooms",
                    12, getHeight() - 18, getWidth() - 24, 14, juce::Justification::left);
+
+        // 9. Dropzone Overlay when dragging an OBJ file
+        if (isFileHovering)
+        {
+            g.setColour(juce::Colour(0xd00284c7));
+            g.fillRoundedRectangle(bounds.reduced(8.0f), 8.0f);
+            g.setColour(juce::Colours::white);
+            g.drawRoundedRectangle(bounds.reduced(8.0f), 8.0f, 2.5f);
+            g.setFont(juce::Font(18.0f, juce::Font::bold));
+            g.drawText("DROP 3D .OBJ MESH TO LOAD ARCHITECTURE", bounds, juce::Justification::centred);
+        }
     }
 
 private:
@@ -399,6 +448,8 @@ private:
     float zoomScale = 1.0f;
 
     juce::Point<float> lastMousePos;
+
+    bool isFileHovering = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpaceVisualizer)
 };
