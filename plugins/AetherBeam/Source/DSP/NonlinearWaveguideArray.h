@@ -52,6 +52,7 @@ public:
     }
 
     inline void processSample(float inSample, float peakSPL, float nonlinearityScale, 
+                              MicPolarPattern micPattern, float stereoWidth,
                               float& outL, float& outR, float& lateInjection)
     {
         outL = 0.0f;
@@ -78,10 +79,12 @@ public:
             float steepeningDepth = nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * fs * 0.1f;
             float alphaDamp = std::clamp(0.10f + 0.012f * d, 0.05f, 0.85f);
 
-            // 3. Woodworth spatial ITD
+            // 3. Microphone Directionality & ITD/ILD
             float azimuthRad = std::atan2(desc.dirX, desc.dirY);
             float itdSecL = 0.0f, itdSecR = 0.0f;
-            BinauralSpatializer::computeWoodworthITD(azimuthRad, itdSecL, itdSecR);
+            float micGainL = 1.0f, micGainR = 1.0f;
+
+            BinauralSpatializer::computeMicrophoneResponse(micPattern, azimuthRad, itdSecL, itdSecR, micGainL, micGainR);
 
             float delayL = desc.delaySec + itdSecL;
             float delayR = desc.delaySec + itdSecR;
@@ -93,9 +96,9 @@ public:
             float gain = desc.gain * desc.absorptionFactor;
             float phaseSign = (desc.order == 0) ? 1.0f : ((k % 2 == 1) ? -1.0f : 1.0f);
 
-            // 5. Accumulate binaural early beams
-            outL += pathL * gain * phaseSign;
-            outR += pathR * gain * phaseSign;
+            // 5. Accumulate early beams with polar pattern capsule weighting
+            outL += pathL * gain * phaseSign * micGainL;
+            outR += pathR * gain * phaseSign * micGainR;
 
             // 6. Seed late diffuse FDN with reflections (orders >= 1), scaled properly to energize the diffuse field
             if (desc.order >= 1)
@@ -103,6 +106,9 @@ public:
                 lateInjection += (pathL + pathR) * 0.5f * (gain * 2.5f);
             }
         }
+
+        // 7. Apply continuous Mid/Side stereo width
+        BinauralSpatializer::applyStereoWidth(outL, outR, stereoWidth);
     }
 
 private:

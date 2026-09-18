@@ -41,11 +41,23 @@ Pre-compiled Release binaries for all platforms are built automatically via GitH
 * **Strict Architectural Boundary Containment**: Validates reflection vertices against genuine non-box architecture (pitched ceilings, domes, semicircular exedrae), discarding any rays that escape into open space.
 * **Interactive 3D Visualizer**: Real-time rotating wireframe renderer showing sound source (🔴), listener (🟢), direct line-of-sight beam (🟡), and color-coded higher-order reflections. You can drag source and listener directly on the 3D plane while audio runs lock-free.
 
-### 2. Finite-Amplitude Acoustic Shock Wave Steepening ($fff$ Dynamics)
+### 2. Spatial Microphone Polar Patterns & Directionality
+Select authentic microphone pickup patterns and configure stereo staging:
+* **Binaural (HRTF Spherical Shadowing)**: Woodworth-Schlosser time-of-flight ITD and high-frequency head-shadowing filter.
+* **ORTF Cardioid Pair**: French standard 110 deg angle with 17 cm physical capsule spacing.
+* **Blumlein Figure-8 Pair**: 90 deg bidirectional coincident ribbon arrangement providing classic holographic imaging.
+* **Omni Stereo Pair**: 40 cm spaced pressure transducers capturing spacious, uncolored room ambience.
+* **Continuous Stereo Width**: 0.0x (mono sum), 1.0x (natural acoustic stage), up to 2.0x (hyper-wide side energy).
+
+### 3. Audience & Furnishing Absorption Simulator (Occupancy Dial)
+* Computes real-time dynamic room absorption adjustments based on Sabine and Eyring acoustic physics.
+* Dynamically scales RT60 decay times (reducing total reverberation by up to 27.5% at full occupancy) and steepens high-frequency absorption roll-off as the hall fills with audience and plush upholstery.
+
+### 4. Finite-Amplitude Acoustic Shock Wave Steepening ($fff$ Dynamics)
 * Simulates physical air wave steepening governed by **Burgers' equation** under high acoustic sound pressure levels up to **$122\text{ dB SPL}$** (simulating a full symphony orchestra playing at *fortississimo*).
 * Uses the **Fubini-Bessel series** to model subtle quadratic and cubic overtone generation in early reflections, giving brass and orchestral percussion authentic physical impact in the room.
 
-### 3. 3-Band Material Absorption & Damping EQ
+### 5. 3-Band Material Absorption & Damping EQ
 Sound recirculating dozens of times through an acoustic space experiences exponential spectral shaping:
 * **HF Damping (`dampFreq`)**: Sweepable from $800\text{ Hz}$ to $18,000\text{ Hz}$ to model absorption by carpets, clothing, audience, and curtains.
 * **HF Decay Multiplier (`hfDecayMult`)**: Controls the relative decay rate of treble against mid frequencies ($0.1\times - 1.0\times$).
@@ -59,10 +71,13 @@ Sound recirculating dozens of times through an acoustic space experiences expone
 | :--- | :--- | :--- | :--- |
 | **Air Dynamics** | **Air Beta** | $0.00 - 2.50$ | Acoustic nonlinearity parameter ($\beta = 1 + B/2A$). Sets wave steepening intensity. |
 | | **Drive SPL** | $80 - 150\text{ dB}$ | Virtual source sound pressure level. At $122\text{ dB}$ ($fff$), air harmonics activate. |
-| **Material EQ** | **RT60 Scale** | $0.20\times - 2.50\times$ | Dynamic time scale for reverberation decay. Updates smoothly in real time. |
+| **Material & Occupancy** | **RT60 Scale** | $0.20\times - 2.50\times$ | Dynamic time scale for reverberation decay. Updates smoothly in real time. |
+| | **Occupancy** | $0\% - 100\%$ | Audience & furnishing absorption. Dynamically scales $RT_{60}$ and HF damping. |
 | | **HF Damping** | $800 - 18,000\text{ Hz}$ | High-frequency absorption corner frequency (carpet, curtains, audience). |
 | | **HF Mult** | $0.10\times - 1.00\times$ | Relative decay speed of high frequencies. |
 | | **Bass Mult** | $0.20\times - 2.00\times$ | Low-frequency resonance modifier below $250\text{ Hz}$. |
+| **Spatial Mic & Output** | **Mic Pattern** | Binaural / ORTF / Blumlein / Omni | Capsule polar pattern and spatial geometry. |
+| | **Stereo Width** | $0.00\times - 2.00\times$ | Mid/Side stereo width processing. |
 | **Output** | **Dry / Wet** | $0.0\% - 100.0\%$ | Equal-power linear interpolation dry/wet mix. |
 
 ---

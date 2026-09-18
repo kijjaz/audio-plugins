@@ -8,7 +8,7 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ### 1. [AetherBeam Reverb](plugins/AetherBeam/README.md)
 * **Type**: Real-Time 3D Ray-Tracing Acoustic Reverb & Nonlinear Waveguide.
-* **Key Features**: Orders 0–4 physical specular ray tracing (up to 96 paths), strict non-box architectural boundary containment, finite-amplitude wave steepening (Fubini-Bessel series at $fff \approx 122\text{ dB SPL}$), and 3-Band Material Damping EQ.
+* **Key Features**: Orders 0–4 physical specular ray tracing (up to 96 paths) with 3D wireframe perspective mesh, spatial microphone polar patterns (Binaural, ORTF, Blumlein, Omni), dynamic audience occupancy absorption simulator, finite-amplitude wave steepening (Fubini-Bessel series at $fff \approx 122\text{ dB SPL}$), and 3-Band Material Damping EQ.
 * **Spaces**: Musikverein Vienna, Sydney Opera House, Hagia Sophia, Šibenik Cathedral, Sponza Palace, Capitol Studios Chamber 4, Rome Pantheon, and more.
 * 📦 **[Download Latest AetherBeam Builds (macOS, Windows, Linux)](https://github.com/kijjaz/audio-plugins/actions/workflows/aetherbeam.yml)**
 

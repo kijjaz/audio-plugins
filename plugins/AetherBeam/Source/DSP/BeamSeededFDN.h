@@ -13,7 +13,8 @@ public:
     void prepare(double sampleRate, float targetRt60, float roomVolumeM3, float surfaceAreaM2)
     {
         fs = static_cast<float>(sampleRate);
-        rt60 = std::max(0.1f, targetRt60);
+        baseRt60 = std::max(0.1f, targetRt60);
+        rt60 = baseRt60;
 
         // Scale prime delay lengths based on mean free path: d_mean = 4 * V / S
         float mfp = (surfaceAreaM2 > 1.0f) ? (4.0f * roomVolumeM3 / surfaceAreaM2) : 10.0f;
@@ -33,7 +34,7 @@ public:
             filterStateLF[i] = 0.0f;
         }
 
-        updateAcousticParameters(rt60, currentDampCutoffHz, currentHfMult, currentBassMult);
+        updateAcousticParameters(baseRt60, currentDampCutoffHz, currentHfMult, currentBassMult, currentOccupancy);
     }
 
     void reset()
@@ -47,17 +48,28 @@ public:
         }
     }
 
-    // Dynamic, click-free parameter update callable during active playback
-    void updateAcousticParameters(float targetRt60, float dampCutoffHz, float hfMult, float bassMult)
+    // Dynamic parameter update including audience & furnishing absorption ('occupancy' 0.0 to 1.0)
+    void updateAcousticParameters(float targetRt60, float dampCutoffHz, float hfMult, float bassMult, float occupancy = 0.0f)
     {
-        rt60 = std::max(0.08f, targetRt60);
-        currentDampCutoffHz = std::clamp(dampCutoffHz, 800.0f, 20000.0f);
-        currentHfMult = std::clamp(hfMult, 0.05f, 1.0f);
+        baseRt60 = std::max(0.08f, targetRt60);
+        currentOccupancy = std::clamp(occupancy, 0.0f, 1.0f);
+
+        // Sabine/Eyring physical audience absorption:
+        // Wool, human clothing, and bodies provide substantial mid/high absorption.
+        // Full house (occupancy = 1.0) decreases effective RT60 by up to 28% and scales down HF damping cutoff.
+        float occupancyDecayFactor = 1.0f / (1.0f + 0.38f * currentOccupancy);
+        rt60 = baseRt60 * occupancyDecayFactor;
+
+        // Treble is absorbed significantly more by audience presence
+        float effectiveDampCutoff = dampCutoffHz * (1.0f - 0.28f * currentOccupancy);
+        currentDampCutoffHz = std::clamp(effectiveDampCutoff, 500.0f, 20000.0f);
+
+        float effectiveHfMult = hfMult * (1.0f - 0.22f * currentOccupancy);
+        currentHfMult = std::clamp(effectiveHfMult, 0.05f, 1.0f);
         currentBassMult = std::clamp(bassMult, 0.2f, 2.5f);
 
         // Precompute filter coefficients for HF damping and LF crossover (~250 Hz)
         float wCutoffHF = 2.0f * 3.14159265f * currentDampCutoffHz / fs;
-        // 1-pole lowpass alpha: alpha = cos(w) - 1 + sqrt(cos^2 - 4cos + 3) ~ w / (w + 1)
         float baseAlphaHF = std::clamp(std::exp(-wCutoffHF), 0.02f, 0.96f);
 
         float wCutoffLF = 2.0f * 3.14159265f * 250.0f / fs;
@@ -77,7 +89,6 @@ public:
             gainDiffLF[i] = (targetGainLF / std::max(1e-5f, loopGainsMid[i])) - 1.0f;
 
             // High-frequency damping filter coefficient per line:
-            // Lines with higher index receive slightly progressive damping for rich organic spatial decay
             float spread = 1.0f + 0.15f * (static_cast<float>(i - NUM_LINES / 2) / NUM_LINES);
             float effectiveAlpha = std::clamp(1.0f - (1.0f - baseAlphaHF) * currentHfMult * spread, 0.05f, 0.98f);
             dampingCoeffsHF[i] = effectiveAlpha;
@@ -136,19 +147,22 @@ public:
 
 private:
     float fs = 96000.0f;
+    float baseRt60 = 2.0f;
     float rt60 = 2.0f;
     float currentDampCutoffHz = 5500.0f;
-    float currentHfMult = 0.5f;
+    float currentHfMult = 0.6f;
     float currentBassMult = 1.0f;
-    float alphaLF = 0.98f;
-
-    std::array<int, NUM_LINES> delayLengths{};
-    std::array<float, NUM_LINES> loopGainsMid{};
-    std::array<float, NUM_LINES> gainDiffLF{};
-    std::array<float, NUM_LINES> dampingCoeffsHF{};
+    float currentOccupancy = 0.0f;
 
     std::array<std::vector<float>, NUM_LINES> buffers;
-    std::array<int, NUM_LINES> bufferPointers{};
-    std::array<float, NUM_LINES> filterStateHF{};
-    std::array<float, NUM_LINES> filterStateLF{};
+    std::array<int, NUM_LINES> delayLengths{ 0 };
+    std::array<int, NUM_LINES> bufferPointers{ 0 };
+
+    std::array<float, NUM_LINES> loopGainsMid{ 0.0f };
+    std::array<float, NUM_LINES> dampingCoeffsHF{ 0.0f };
+    std::array<float, NUM_LINES> filterStateHF{ 0.0f };
+
+    float alphaLF = 0.95f;
+    std::array<float, NUM_LINES> gainDiffLF{ 0.0f };
+    std::array<float, NUM_LINES> filterStateLF{ 0.0f };
 };

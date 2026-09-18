@@ -6,6 +6,7 @@
 #include "DSP/NonlinearWaveguideArray.h"
 #include "DSP/BeamSeededFDN.h"
 #include "DSP/CleverTailDetector.h"
+#include "DSP/BinauralSpatializer.h"
 #include "DSP/AcousticDefinitions.h"
 #include "DSP/AcousticDatabase.h"
 
@@ -53,6 +54,10 @@ public:
     AetherAcoustics::Vec3 getCurrentListenerPos() const;
     std::vector<AetherAcoustics::RaySegment> getCurrentRays() const;
 
+    MicPolarPattern getCurrentMicPattern() const { return currentMicPattern; }
+    float getCurrentStereoWidth() const { return currentStereoWidth; }
+    float getCurrentOccupancy() const { return currentOccupancy; }
+
 private:
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -68,6 +73,10 @@ private:
     std::atomic<float> targetSourceYNorm{ 0.35f };
     std::atomic<float> targetListenerXNorm{ 0.5f };
     std::atomic<float> targetListenerYNorm{ 0.75f };
+
+    std::atomic<MicPolarPattern> currentMicPattern{ MicPolarPattern::Binaural };
+    std::atomic<float> currentStereoWidth{ 1.0f };
+    std::atomic<float> currentOccupancy{ 0.0f };
 
     std::atomic<bool> coordinatesDirty{ false };
 

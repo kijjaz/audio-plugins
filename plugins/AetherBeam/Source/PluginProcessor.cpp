@@ -79,6 +79,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout AetherBeamAudioProcessor::cr
         juce::ParameterID{"bassDecayMult", 1}, "Bass Mult",
         juce::NormalisableRange<float>(0.2f, 2.0f, 0.01f), 1.0f));
 
+    // Audience & Furnishing Occupancy Absorption (Sabine / Eyring physics)
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{"occupancy", 1}, "Occupancy / People",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f));
+
+    // Spatial Microphone Polar Patterns
+    juce::StringArray micChoices;
+    micChoices.add("Binaural HRTF");
+    micChoices.add("ORTF Cardioid Pair");
+    micChoices.add("Blumlein Fig-8 Pair");
+    micChoices.add("Omni Stereo Pair");
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{"micPattern", 1}, "Microphone Pattern", micChoices, 0));
+
+    // Mid/Side Stereo Width
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{"stereoWidth", 1}, "Stereo Width",
+        juce::NormalisableRange<float>(0.0f, 2.0f, 0.01f), 1.0f));
+
     // Dry / Wet Mix
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{"mix", 1}, "Dry / Wet Mix",
@@ -211,9 +231,17 @@ void AetherBeamAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBl
     float dampFreq = apvts.getRawParameterValue("dampFreq")->load();
     float hfMult = apvts.getRawParameterValue("hfDecayMult")->load();
     float bassMult = apvts.getRawParameterValue("bassDecayMult")->load();
+    float occupancy = apvts.getRawParameterValue("occupancy")->load();
+    int micPatIdx = static_cast<int>(apvts.getRawParameterValue("micPattern")->load());
+    float stereoWidth = apvts.getRawParameterValue("stereoWidth")->load();
+
+    MicPolarPattern micPattern = static_cast<MicPolarPattern>(juce::jlimit(0, 3, micPatIdx));
+    currentMicPattern.store(micPattern, std::memory_order_relaxed);
+    currentStereoWidth.store(stereoWidth, std::memory_order_relaxed);
+    currentOccupancy.store(occupancy, std::memory_order_relaxed);
 
     fdn.prepare(sampleRate, currentRt60 * decayScale, currentVolume, currentArea);
-    fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult);
+    fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy);
 
     tailDetector.prepare(sampleRate, -96.0f, 1.5f, 500.0f);
     updateAcousticPaths(currentRays);
@@ -248,6 +276,14 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     float dampFreq = apvts.getRawParameterValue("dampFreq")->load();
     float hfMult = apvts.getRawParameterValue("hfDecayMult")->load();
     float bassMult = apvts.getRawParameterValue("bassDecayMult")->load();
+    float occupancy = apvts.getRawParameterValue("occupancy")->load();
+    int micPatIdx = static_cast<int>(apvts.getRawParameterValue("micPattern")->load());
+    float stereoWidth = apvts.getRawParameterValue("stereoWidth")->load();
+
+    MicPolarPattern micPattern = static_cast<MicPolarPattern>(juce::jlimit(0, 3, micPatIdx));
+    currentMicPattern.store(micPattern, std::memory_order_relaxed);
+    currentStereoWidth.store(stereoWidth, std::memory_order_relaxed);
+    currentOccupancy.store(occupancy, std::memory_order_relaxed);
 
     int spaceIndex = static_cast<int>(apvts.getRawParameterValue("space")->load());
     int positionIndex = static_cast<int>(apvts.getRawParameterValue("position")->load());
@@ -259,12 +295,12 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     {
         switchSpaceAndPosition(spaceIndex, positionIndex);
         fdn.prepare(getSampleRate(), currentRt60 * decayScale, currentVolume, currentArea);
-        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult);
+        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy);
     }
     else
     {
-        // Continuously update FDN RT60 and 3-Band Material Damping parameters smoothly per block
-        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult);
+        // Continuously update FDN RT60, 3-Band Material Damping, and Occupancy absorption per block
+        fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult, occupancy);
     }
 
     if (coordinatesDirty.load(std::memory_order_relaxed))
@@ -316,7 +352,7 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         float inMono = (inL + inR) * 0.5f;
 
         float earlyL = 0.0f, earlyR = 0.0f, lateInject = 0.0f;
-        waveguideArray.processSample(inMono, driveSPL, beta, earlyL, earlyR, lateInject);
+        waveguideArray.processSample(inMono, driveSPL, beta, micPattern, stereoWidth, earlyL, earlyR, lateInject);
 
         float lateL = 0.0f, lateR = 0.0f;
         fdn.processSample(lateInject, 1.0f, lateL, lateR);

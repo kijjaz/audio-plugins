@@ -39,10 +39,14 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> splAttachment;
     juce::Label splLabel;
 
-    // Section 2: Material Damping & Reverb EQ
+    // Section 2: Material Damping & Occupancy EQ
     juce::Slider decaySlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayAttachment;
     juce::Label decayLabel;
+
+    juce::Slider occupancySlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> occupancyAttachment;
+    juce::Label occupancyLabel;
 
     juce::Slider dampFreqSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dampFreqAttachment;
@@ -56,7 +60,15 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bassMultAttachment;
     juce::Label bassMultLabel;
 
-    // Section 3: Master Output
+    // Section 3: Spatial Mic & Master Output
+    juce::ComboBox micPatternSelector;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> micPatternAttachment;
+    juce::Label micPatternLabel;
+
+    juce::Slider stereoWidthSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> stereoWidthAttachment;
+    juce::Label stereoWidthLabel;
+
     juce::Slider mixSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
     juce::Label mixLabel;
