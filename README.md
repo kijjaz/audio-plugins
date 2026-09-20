@@ -6,7 +6,14 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ## 🚀 Available Plugins & Quick Links
 
-### 1. [AetherBeam Reverb](plugins/AetherBeam/README.md)
+### 1. [Fried Tofu](plugins/FriedTofu/README.md)
+* **Type**: Wave Digital Filter (WDF) Diode Clipper & Analog Saturation.
+* **Key Features**: True one-port WDF non-linear solver with damped Newton-Raphson iteration, 4 Shockley diode models (Si 1N4148, Ge 1N34A, Schottky BAT41, Red LED), asymmetric odd/even harmonic blending, 4x polyphase oversampling, real-time oscilloscope, and dynamic static transfer curve visualizer.
+* 📦 **[Download Latest Fried Tofu Builds (macOS, Windows, Linux)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml)**
+
+---
+
+### 2. [AetherBeam Reverb](plugins/AetherBeam/README.md)
 * **Type**: Real-Time 3D Ray-Tracing Acoustic Reverb & Nonlinear Waveguide.
 * **Key Features**: Orders 0–4 physical specular ray tracing (up to 96 paths) with 3D wireframe perspective mesh, spatial microphone polar patterns (Binaural, ORTF, Blumlein, Omni), dynamic audience occupancy absorption simulator, finite-amplitude wave steepening (Fubini-Bessel series at $fff \approx 122\text{ dB SPL}$), and 3-Band Material Damping EQ.
 * **Spaces**: Musikverein Vienna, Sydney Opera House, Hagia Sophia, Šibenik Cathedral, Sponza Palace, Capitol Studios Chamber 4, Rome Pantheon, and more.
@@ -14,7 +21,7 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-### 2. [Vacuum Tape Sim](plugins/VacuumTapeSim/README.md)
+### 3. [Vacuum Tape Sim](plugins/VacuumTapeSim/README.md)
 * **Type**: Analog Tube Compression & Tape Hysteresis Emulation.
 * **Key Features**: Physical "Voltage Drain" tube supply sag modeling, dynamic magnetic tape hysteresis coercivity, mechanical wow & flutter transport simulation, and Wallace loss filters.
 * 📦 **[Download Latest VacuumTapeSim Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/vacuum_tape_sim.yml)**

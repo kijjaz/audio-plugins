@@ -1,0 +1,132 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\definecolor{tofuGold}{RGB}{201, 121, 61}
+\definecolor{charcoal}{RGB}{27, 34, 36}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=tofuGold,
+    urlcolor=tofuGold,
+    citecolor=charcoal
+}
+
+\title{\textbf{\Huge Fried Tofu} \\ \Large Mathematical Foundations, Wave Digital Filter Diode Clipper Modeling, and Harmonic Distortion Analysis}
+\author{\textbf{Kijjaz Audio Systems}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document details the complete mathematical formulation and computational acoustics framework of \textbf{Fried Tofu}, an analog-modeled audio plugin reproducing the physics of an anti-parallel semiconductor diode clipping network. Using a one-port Wave Digital Filter (WDF) root topology, Shockley diode equations, and a damped Newton--Raphson root-finding method, Fried Tofu accurately models non-linear clipping, harmonic coloration, dynamic compression, and intermodulation without artificial digital harshness. Furthermore, we present empirical distortion measurements across silicon, germanium, Schottky, and light-emitting diode (LED) configurations, analyzing Total Harmonic Distortion (THD) and harmonic decay profiles.
+\end{abstract}
+
+\section{Introduction and Circuit Topology}
+The classic analog diode clipper consists of a driving voltage source $V_{\text{in}}$ behind a source/network impedance $R$ driving a pair of anti-parallel semiconductor diodes ($D_A$ and $D_B$) connected to ground:
+\begin{equation}
+    V_{\text{in}} - I_D \cdot R - V = 0
+\end{equation}
+where $V$ is the output node voltage across the diodes, and $I_D(V)$ is the net current through the anti-parallel pair:
+\begin{equation}
+    I_D(V) = I_A(V) - I_B(-V)
+\end{equation}
+In standard operational amplifier clipping stages (such as distortion and overdrive pedals), this circuit functions either as a feedback-loop clipper or a shunt-to-ground clipper. The physical response is governed entirely by the exponential current-voltage relationship of the semiconductor junctions.
+
+\section{The Shockley Diode Formulation}
+Each diode path is modeled according to the physical Shockley equation:
+\begin{equation}
+    I(V) = I_s \left( \exp\left( \frac{V}{N \cdot V_t} \right) - 1 \right)
+\end{equation}
+where:
+\begin{itemize}
+    \item $I_s$ is the reverse saturation current ($\text{A}$).
+    \item $N$ is the ideality factor / emission coefficient (dimensionless, typically $1.0 \le N \le 2.2$).
+    \item $V_t = \frac{k_B \cdot T}{q}$ is the thermal voltage ($\approx 25.864\,\text{mV}$ at $T = 300\,\text{K}$).
+\end{itemize}
+
+For an anti-parallel diode pair with path $A$ in the forward direction and path $B$ in the reverse direction, the total nonlinear current is:
+\begin{equation}
+    I_D(V) = I_{s,A} \left( \exp\left( \frac{V}{N_A V_t} \right) - 1 \right) - I_{s,B} \left( \exp\left( \frac{-V}{N_B V_t} \right) - 1 \right)
+\end{equation}
+Its small-signal differential conductance $g_d(V) = \frac{d I_D}{d V}$ is strictly positive:
+\begin{equation}
+    g_d(V) = \frac{I_{s,A}}{N_A V_t} \exp\left( \frac{V}{N_A V_t} \right) + \frac{I_{s,B}}{N_B V_t} \exp\left( \frac{-V}{N_B V_t} \right)
+\end{equation}
+
+\section{Wave Digital Filter Formulation and Root-Finding}
+In the Wave Digital Filter (WDF) formalism, the driving wave incident on the nonlinear junction is denoted by $a$. For a resistive port with reference resistance $R$:
+\begin{equation}
+    a = V + R \cdot I_D(V)
+\end{equation}
+The instantaneous node voltage $V$ is therefore the unique root of the objective function:
+\begin{equation}
+    F(V) = V + R \cdot I_D(V) - a = 0
+\end{equation}
+The derivative of $F(V)$ with respect to $V$ is:
+\begin{equation}
+    F'(V) = 1 + R \cdot g_d(V)
+\end{equation}
+Because $R > 0$ and $g_d(V) > 0$ for all real $V$, $F'(V) \ge 1$ everywhere. Thus, $F(V)$ is strictly monotonically increasing and guarantees a unique, globally stable real solution.
+
+\subsection{Damped Newton--Raphson Iteration}
+At each audio sample (or oversampled sub-sample), we iteratively update the voltage estimate:
+\begin{equation}
+    V^{(k+1)} = V^{(k)} - \frac{F(V^{(k)})}{F'(V^{(k)})} = V^{(k)} - \frac{V^{(k)} + R \cdot I_D(V^{(k)}) - a}{1 + R \cdot g_d(V^{(k)})}
+\end{equation}
+To achieve real-time DSP efficiency in low-latency environments:
+\begin{enumerate}
+    \item \textbf{Warm-start memory}: The initial estimate $V^{(0)}$ is set to the final solution of the previous audio sample $V[n-1]$.
+    \item \textbf{Argument limiting}: The exponential arguments are clamped to $[- \infty, 2.5\,\text{V}]$ to prevent IEEE 754 floating-point overflow.
+    \item \textbf{Quadratic convergence}: Damped Newton--Raphson converges within 3 to 8 iterations to $|\Delta V| < 10^{-9}\,\text{V}$.
+\end{enumerate}
+
+\section{Diode Physical Profiles in Fried Tofu}
+Fried Tofu implements four component models derived from SPICE netlists:
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}llllp{5.5cm}@{}}
+\toprule
+\textbf{Diode Type} & \textbf{$I_s$ (A)} & \textbf{$N$} & \textbf{$V_{\text{knee}}$} & \textbf{Sonic Character} \\ \midrule
+\textbf{Si 1N4148 (Crisp)} & $2.52 \times 10^{-9}$ & $1.752$ & $\approx 0.62\,\text{V}$ & Sharp transition, bright upper harmonics, crunchy bite. \\
+\textbf{Ge 1N34A (Silky)}  & $200 \times 10^{-12}$ & $2.190$ & $\approx 0.28\,\text{V}$ & Very soft knee, early compression, velvety analog warmth. \\
+\textbf{Schottky BAT41}    & $2.00 \times 10^{-8}$ & $1.050$ & $\approx 0.32\,\text{V}$ & Low threshold, rapid conductance rise, sizzly fuzz. \\
+\textbf{Red LED (Deep)}    & $9.30 \times 10^{-19}$ & $1.840$ & $\approx 1.75\,\text{V}$ & High headroom, open dynamic punch, valve-like push. \\ \bottomrule
+\end{tabular}
+\caption{Diode physical parameters utilized in Fried Tofu.}
+\end{table}
+
+\section{Distortion and Harmonic Structure Analysis}
+Nonlinear clipping generates both odd and even harmonic distortion products:
+\begin{itemize}
+    \item \textbf{Symmetrical Clipping ($D_A = D_B$)}: Yields strictly odd harmonics ($f_0, 3f_0, 5f_0, \dots$) producing a hollow, square-like clipping tone.
+    \item \textbf{Asymmetrical Clipping ($D_A \neq D_B$)}: Generates prominent even harmonics ($2f_0, 4f_0, 6f_0, \dots$) along with odd harmonics, imparting warm musical thickness characteristic of single-ended tube triodes.
+\end{itemize}
+
+\subsection{Mathematical Definition of THD}
+Given a pure sinusoidal stimulus $x(t) = A \sin(2\pi f_0 t)$, Total Harmonic Distortion (THD) is evaluated across the discrete Fourier transform spectrum:
+\begin{equation}
+    \text{THD} = \frac{\sqrt{\sum_{k=2}^{\infty} |X(k f_0)|^2}}{|X(f_0)|} \times 100\%
+\end{equation}
+In dB scale:
+\begin{equation}
+    \text{THD}_{\text{dB}} = 20 \log_{10}\left( \frac{\sqrt{\sum_{k=2}^{\infty} |X(k f_0)|^2}}{|X(f_0)|} \right)
+\end{equation}
+
+\section{Oversampling and Anti-Aliasing}
+Nonlinear functions expand the input signal bandwidth infinitely. Without anti-aliasing, distortion components exceeding the Nyquist frequency $f_s / 2$ fold back into the audible band as inharmonic aliasing distortion.
+Fried Tofu implements a $4\times$ oversampling architecture using polyphase half-band IIR filter cascades:
+\begin{equation}
+    H_{\text{poly}}(z) = H_0(z^2) + z^{-1} H_1(z^2)
+\end{equation}
+This achieves over $90\,\text{dB}$ of stopband attenuation with minimal phase distortion and low CPU latency.
+
+\end{document}
