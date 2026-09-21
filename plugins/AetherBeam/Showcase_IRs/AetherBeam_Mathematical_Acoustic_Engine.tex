@@ -151,48 +151,14 @@ p(d, t') = p_{\text{peak}} \sum_{n=1}^{\infty} \frac{2}{n \sigma(d)} J_n(n \sigm
 where $J_n(\cdot)$ is the Bessel function of the first kind of order $n$.
 
 \subsection{Discrete Nonlinear Waveguide Implementation}
-In the discrete DSP domain (at sampling rate $f_s = 96\,\text{kHz}$), the cumulative wave steepening along ray path $k$ of distance $d_k$ is evaluated per sample $x[n]$ through dynamic pressure-perturbed delay modulation and Fubini polynomial waveshaping:
+In the discrete DSP domain (at sampling rate $f_s = 96\,\text{kHz}$), the cumulative wave steepening along ray path $k$ of distance $d_k$ is evaluated per sample $x[n]$ via memoryless polynomial wave-shaping with dynamic coefficient $\gamma_k$:
 \begin{equation}
 \gamma_k = \frac{\beta \cdot p_{\text{peak}} \cdot d_k}{2 \rho_0 c_0^3}
 \end{equation}
 \begin{equation}
-\Delta \tau_k(t) = -\frac{\beta \cdot d_k}{\rho_0 c_0^3} \cdot p(t - \tau_k)
+y_k[n] = x[n] + \gamma_k \cdot x^2[n] - \frac{1}{3} \gamma_k^2 \cdot x^3[n]
 \end{equation}
-\begin{equation}
-y_k[n] = \tilde{x}[n + \Delta \tau_k] - \gamma_k \cdot \tilde{x}^3[n + \Delta \tau_k]
-\end{equation}
-where $\tilde{x}$ is the 4-point Hermite-interpolated fractional delay read.
-
-\subsection{Physical Proof: Loudness-Dependent Timbral Evolution}
-A critical property of the AetherBeam architecture is that playing sound at varying sound pressure levels (SPL) does \textbf{not} merely scale the output amplitude linearly ($y \neq C \cdot x$). Rather, it fundamentally reorganizes the spectral envelope and harmonic distortion structure:
-
-\begin{enumerate}
-    \item \textbf{Pianissimo ($pp \approx 50\,\text{dB SPL}$, $p_{\text{peak}} \approx 0.0063\,\text{Pa}$):} 
-    Here, the Goldberg parameter $\sigma \ll 0.01$. The wave steepening perturbation $\Delta \tau_k \approx 0$ and $\gamma_k \to 0$. The delay line operates in its linear regime, preserving a dark, pristine, and uncolored reverberant decay governed purely by boundary absorption.
-    
-    \item \textbf{Fortississimo ($fff \approx 122\,\text{dB SPL}$, $p_{\text{peak}} \approx 25.18\,\text{Pa}$):} 
-    Compressive wave crests heat the medium adiabatically and propagate at local sound velocity $c(p) = c_0 + \frac{\beta - 1}{\rho_0 c_0} p$, while rarefaction troughs lag behind. As sound traverses large enclosures ($d_k \ge 25\,\text{m}$), the steepening perturbation accumulates, transferring fundamental energy into odd and even overtones.
-\end{enumerate}
-
-To prove this behavior numerically, an identical $440\,\text{Hz}$ pure sinusoidal probe tone was synthesized at two acoustic excitation levels ($80\,\text{dB SPL}$ vs. $130\,\text{dB SPL}$) and processed through the calibrated waveguide array. Normalizing both responses to identical peak output ($0\,\text{dBFS}$) reveals the pure timbral transformation:
-
-\begin{table}[ht]
-\centering
-\small
-\begin{tabular}{lccc}
-\toprule
-\textbf{Excitation Level} & \textbf{Fundamental ($f_0 = 440\,\text{Hz}$)} & \textbf{3rd Harmonic ($3f_0 = 1320\,\text{Hz}$)} & \textbf{Harmonic Ratio ($H_3 / H_1$)} \\
-\midrule
-Soft ($pp$, $80\,\text{dB SPL}$) & $0.00\,\text{dBFS}$ (ref) & $-40.73\,\text{dBFS}$ & $0.918\,\%$ \\
-Loud ($fff$, $130\,\text{dB SPL}$) & $0.00\,\text{dBFS}$ (ref) & $-20.86\,\text{dBFS}$ & $9.055\,\%$ \\
-\midrule
-\textbf{Spectral Shift} & \textbf{Normalized Unity} & \textbf{+19.87 dB Excitation} & \textbf{9.86$\times$ Harmonic Density} \\
-\bottomrule
-\end{tabular}
-\caption{Measured harmonic energy redistribution under normalized peak output, proving loudness-dependent spectral synthesis in AetherBeam.}
-\end{table}
-
-Under loud excitations, high-order harmonic density increases by nearly an order of magnitude ($+19.87\,\text{dB}$). Furthermore, because higher-order early reflections seed the late diffuse feedback delay network (FDN), this harmonic sizzle dynamically cascades through the entire reverberant decay tail.
+This induces subtle quadratic and cubic overtone generation in early reflections, matching the physical sensation of brass and percussion impact in concert halls.
 
 \section{Frequency-Dependent Air Absorption and Wall Impedance}
 
@@ -237,9 +203,18 @@ where:
 \toprule
 \textbf{Enclosure} & \textbf{Dimensions (m)} & \textbf{Volume ($m^3$)} & $RT_{60}$ \textbf{(s)} & \textbf{Max Order} & \textbf{Valid Rays} & $L_p$ \textbf{(dB SPL)} \\
 \midrule
-Musikverein Golden Hall & $48.8 \times 19.1 \times 17.7$ & 15,000 & 2.05 & 4 & 76 & 122 ($fff$) \\
-Sydney Opera House & $52.0 \times 26.0 \times 25.0$ & 16,500 & 2.00 & 4 & 68 & 122 ($fff$) \\
-Hagia Sophia Byzantine & $65.0 \times 60.0 \times 55.0$ & 180,000 & 11.00 & 4 & 84 & 122 ($fff$) \\
+Capitol Studios Chamber 4 (LA) & $4.2 \times 6.8 \times 3.4$ & 57 & 4.20 & 4 & 8 & 122 ($fff$) \\
+Abbey Road Studio Chamber 2 (London) & $3.7 \times 6.4 \times 2.8$ & 66 & 2.80 & 4 & 8 & 122 ($fff$) \\
+Sponza Palace Atrium (Dubrovnik) & $15.6 \times 34.8 \times 16.5$ & 8,400 & 2.45 & 4 & 8 & 122 ($fff$) \\
+St. James Cathedral (Sibenik) & $17.0 \times 40.5 \times 29.8$ & 14,200 & 4.80 & 4 & 8 & 122 ($fff$) \\
+Grosser Musikvereinssaal (Vienna) & $19.8 \times 48.8 \times 17.7$ & 15,000 & 2.05 & 4 & 7 & 122 ($fff$) \\
+Concertgebouw Grote Zaal (Amsterdam) & $28.0 \times 44.0 \times 17.0$ & 18,780 & 2.20 & 4 & 7 & 122 ($fff$) \\
+The Pantheon Rotunda \& Dome (Rome) & $43.3 \times 43.3 \times 43.3$ & 85,000 & 6.20 & 4 & 8 & 122 ($fff$) \\
+Berlin Philharmonie (Vineyard) & $50.0 \times 69.0 \times 21.0$ & 21,000 & 2.10 & 4 & 8 & 122 ($fff$) \\
+Sydney Opera House Concert Hall & $24.0 \times 52.0 \times 25.0$ & 25,000 & 2.00 & 4 & 8 & 122 ($fff$) \\
+Hagia Sophia Grand Dome (Istanbul) & $68.0 \times 75.0 \times 55.0$ & 150,000 & 11.00 & 4 & 6 & 122 ($fff$) \\
+Hamilton Mausoleum (Scotland) & $17.0 \times 17.0 \times 36.0$ & 7,500 & 15.00 & 4 & 8 & 122 ($fff$) \\
+Ancient Theatre of Epidaurus (Greece) & $115.9 \times 72.7 \times 23.4$ & 45,000 & 1.25 & 4 & 4 & 122 ($fff$) \\
 \bottomrule
 \end{tabular}
 \caption{Physical acoustic parameters of synthesized showcase spaces.}

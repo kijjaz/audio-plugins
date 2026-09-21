@@ -303,30 +303,111 @@ h_{L,R}(t) = \sum_{k=1}^{K} A_k \cdot \mathcal{N}_k\Big( \delta(t - \tau_k) * h_
         </thead>
         <tbody>
             <tr>
-                <td>Musikverein Golden Hall</td>
-                <td>48.8 &times; 19.1 &times; 17.7</td>
+                <td>Capitol Studios Chamber 4 (Los Angeles)</td>
+                <td>4.2 &times; 6.8 &times; 3.4</td>
+                <td class="right">57</td>
+                <td class="right">4.20</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Abbey Road Studio Chamber 2 (London)</td>
+                <td>3.7 &times; 6.4 &times; 2.8</td>
+                <td class="right">66</td>
+                <td class="right">2.80</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Sponza Palace Atrium (Dubrovnik)</td>
+                <td>15.6 &times; 34.8 &times; 16.5</td>
+                <td class="right">8,400</td>
+                <td class="right">2.45</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>St. James Cathedral (UNESCO Sibenik)</td>
+                <td>17.0 &times; 40.5 &times; 29.8</td>
+                <td class="right">14,200</td>
+                <td class="right">4.80</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Grosser Musikvereinssaal (Vienna)</td>
+                <td>19.8 &times; 48.8 &times; 17.7</td>
                 <td class="right">15,000</td>
                 <td class="right">2.05</td>
                 <td class="center">4</td>
-                <td class="center">76</td>
+                <td class="center">7</td>
                 <td class="right">122 dB (<em>fff</em>)</td>
             </tr>
             <tr>
-                <td>Sydney Opera House</td>
-                <td>52.0 &times; 26.0 &times; 25.0</td>
-                <td class="right">16,500</td>
+                <td>Concertgebouw Grote Zaal (Amsterdam)</td>
+                <td>28.0 &times; 44.0 &times; 17.0</td>
+                <td class="right">18,780</td>
+                <td class="right">2.20</td>
+                <td class="center">4</td>
+                <td class="center">7</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>The Pantheon Rotunda & Dome (Rome)</td>
+                <td>43.3 &times; 43.3 &times; 43.3</td>
+                <td class="right">85,000</td>
+                <td class="right">6.20</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Berlin Philharmonie (Vineyard Hall)</td>
+                <td>50.0 &times; 69.0 &times; 21.0</td>
+                <td class="right">21,000</td>
+                <td class="right">2.10</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Sydney Opera House Concert Hall</td>
+                <td>24.0 &times; 52.0 &times; 25.0</td>
+                <td class="right">25,000</td>
                 <td class="right">2.00</td>
                 <td class="center">4</td>
-                <td class="center">68</td>
+                <td class="center">8</td>
                 <td class="right">122 dB (<em>fff</em>)</td>
             </tr>
             <tr>
-                <td>Hagia Sophia Byzantine</td>
-                <td>65.0 &times; 60.0 &times; 55.0</td>
-                <td class="right">180,000</td>
+                <td>Hagia Sophia Grand Dome (Istanbul)</td>
+                <td>68.0 &times; 75.0 &times; 55.0</td>
+                <td class="right">150,000</td>
                 <td class="right">11.00</td>
                 <td class="center">4</td>
-                <td class="center">84</td>
+                <td class="center">6</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Hamilton Mausoleum (Scotland)</td>
+                <td>17.0 &times; 17.0 &times; 36.0</td>
+                <td class="right">7,500</td>
+                <td class="right">15.00</td>
+                <td class="center">4</td>
+                <td class="center">8</td>
+                <td class="right">122 dB (<em>fff</em>)</td>
+            </tr>
+            <tr>
+                <td>Ancient Theatre of Epidaurus (Greece)</td>
+                <td>115.9 &times; 72.7 &times; 23.4</td>
+                <td class="right">45,000</td>
+                <td class="right">1.25</td>
+                <td class="center">4</td>
+                <td class="center">4</td>
                 <td class="right">122 dB (<em>fff</em>)</td>
             </tr>
         </tbody>
