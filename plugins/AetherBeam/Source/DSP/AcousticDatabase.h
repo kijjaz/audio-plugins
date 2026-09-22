@@ -15,14 +15,14 @@ namespace AetherAcoustics
             return spaces;
         }
 
-        static int getNumSpaces() { return 16; }
+        static int getNumSpaces() { return 12; }
         static int getNumPositionsPerSpace() { return 4; }
 
     private:
         static std::vector<SpaceData> initDatabase()
         {
             std::vector<SpaceData> list;
-            list.reserve(16);
+            list.reserve(12);
 
             // Space 0: capitol_chamber_4
             {
@@ -57,6 +57,84 @@ namespace AetherAcoustics
                     pd.name = "Corner Speaker to Far Corner Mic";
                     pd.source = { 1.200000f, 0.800000f, 0.600000f };
                     pd.listener = { -1.500000f, 5.800000f, 1.600000f };
+                    pd.directDistance = 5.770000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.770000f;
+                        rs.order = 0;
+                        rs.gain = 0.173000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.090000f;
+                        rs.order = 1;
+                        rs.gain = 0.163000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ 0.460000f, 2.160000f, 0.000000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.250000f;
+                        rs.order = 1;
+                        rs.gain = 0.159000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ 1.650000f, 1.270000f, 0.710000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.250000f;
+                        rs.order = 1;
+                        rs.gain = 0.159000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ -1.950000f, 4.950000f, 1.440000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.980000f;
+                        rs.order = 1;
+                        rs.gain = 0.142000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ -0.340000f, 3.480000f, 3.110000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 7.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.138000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ 0.870000f, 0.000000f, 0.720000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 7.570000f;
+                        rs.order = 1;
+                        rs.gain = 0.131000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ -1.110000f, 6.800000f, 1.460000f });
+                        rs.points.push_back({ -1.500000f, 5.800000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -65,6 +143,84 @@ namespace AetherAcoustics
                     pd.name = "Front Wall Slap to Center Chamber";
                     pd.source = { 0.000000f, 1.200000f, 0.800000f };
                     pd.listener = { 0.000000f, 3.800000f, 1.400000f };
+                    pd.directDistance = 2.670000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 2.670000f;
+                        rs.order = 0;
+                        rs.gain = 0.375000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.410000f;
+                        rs.order = 1;
+                        rs.gain = 0.291000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 2.150000f, -0.000000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.390000f;
+                        rs.order = 1;
+                        rs.gain = 0.226000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ -1.730000f, 2.280000f, 1.080000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.390000f;
+                        rs.order = 1;
+                        rs.gain = 0.226000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ 1.730000f, 2.280000f, 1.080000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.650000f;
+                        rs.order = 1;
+                        rs.gain = 0.214000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 2.460000f, 3.020000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.040000f;
+                        rs.order = 1;
+                        rs.gain = 0.197000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.940000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 8.620000f;
+                        rs.order = 1;
+                        rs.gain = 0.115000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.200000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 6.800000f, 1.190000f });
+                        rs.points.push_back({ 0.000000f, 3.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -73,6 +229,84 @@ namespace AetherAcoustics
                     pd.name = "Angled Wall Bounce to Stereo Right";
                     pd.source = { -1.000000f, 1.000000f, 0.600000f };
                     pd.listener = { 1.600000f, 5.200000f, 1.500000f };
+                    pd.directDistance = 5.020000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.020000f;
+                        rs.order = 0;
+                        rs.gain = 0.199000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.370000f;
+                        rs.order = 1;
+                        rs.gain = 0.185000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ -0.260000f, 2.200000f, 0.000000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.390000f;
+                        rs.order = 1;
+                        rs.gain = 0.184000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ 1.920000f, 4.630000f, 1.390000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.170000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ -1.670000f, 1.540000f, 0.740000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.420000f;
+                        rs.order = 1;
+                        rs.gain = 0.155000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ 0.470000f, 3.200000f, 3.080000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.780000f;
+                        rs.order = 1;
+                        rs.gain = 0.147000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ -0.580000f, -0.000000f, 0.750000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 7.890000f;
+                        rs.order = 1;
+                        rs.gain = 0.126000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.000000f, 1.000000f, 0.600000f });
+                        rs.points.push_back({ 1.040000f, 6.800000f, 1.310000f });
+                        rs.points.push_back({ 1.600000f, 5.200000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -81,6 +315,95 @@ namespace AetherAcoustics
                     pd.name = "Rear Diffuse Field to Sweetspot";
                     pd.source = { 0.500000f, 2.000000f, 0.700000f };
                     pd.listener = { -0.800000f, 4.500000f, 1.200000f };
+                    pd.directDistance = 2.860000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 2.860000f;
+                        rs.order = 0;
+                        rs.gain = 0.349000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.292000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ 0.020000f, 2.920000f, 0.000000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.292000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ 0.020000f, 2.920000f, 0.000000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.240000f;
+                        rs.order = 1;
+                        rs.gain = 0.234000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ -1.840000f, 3.540000f, 1.030000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.610000f;
+                        rs.order = 1;
+                        rs.gain = 0.216000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ 1.760000f, 2.640000f, 0.850000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.194000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ -0.190000f, 3.150000f, 3.080000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.650000f;
+                        rs.order = 1;
+                        rs.gain = 0.150000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ 0.100000f, 0.000000f, 0.850000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 7.240000f;
+                        rs.order = 1;
+                        rs.gain = 0.137000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.500000f, 2.000000f, 0.700000f });
+                        rs.points.push_back({ -0.380000f, 6.800000f, 1.040000f });
+                        rs.points.push_back({ -0.800000f, 4.500000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -217,6 +540,19 @@ namespace AetherAcoustics
                     pd.name = "Speaker Behind Ceramic Pipes to Mics";
                     pd.source = { -1.200000f, 0.800000f, 0.600000f };
                     pd.listener = { 1.200000f, 5.400000f, 1.400000f };
+                    pd.directDistance = 5.250000f;
+                    pd.rays.reserve(1);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.700000f;
+                        rs.order = 1;
+                        rs.gain = 0.148000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.200000f, 0.800000f, 0.600000f });
+                        rs.points.push_back({ -0.890000f, 0.000000f, 0.700000f });
+                        rs.points.push_back({ 1.200000f, 5.400000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -225,6 +561,95 @@ namespace AetherAcoustics
                     pd.name = "Direct Column Diffuser Slap";
                     pd.source = { 0.000000f, 1.000000f, 0.700000f };
                     pd.listener = { 0.000000f, 3.500000f, 1.400000f };
+                    pd.directDistance = 2.600000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 2.600000f;
+                        rs.order = 0;
+                        rs.gain = 0.385000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.260000f;
+                        rs.order = 1;
+                        rs.gain = 0.304000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 1.830000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.293000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 2.630000f, 2.200000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.293000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 2.630000f, 2.200000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.293000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 2.630000f, 2.200000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 3.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.293000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 2.630000f, 2.200000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.230000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ 0.000000f, 2.500000f, 2.800000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 4.520000f;
+                        rs.order = 1;
+                        rs.gain = 0.219000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 1.000000f, 0.700000f });
+                        rs.points.push_back({ -1.850000f, 2.250000f, 1.050000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -233,6 +658,30 @@ namespace AetherAcoustics
                     pd.name = "Tiled Corner Flutter Reflection";
                     pd.source = { -1.400000f, 0.500000f, 0.600000f };
                     pd.listener = { 1.400000f, 5.800000f, 1.500000f };
+                    pd.directDistance = 6.060000f;
+                    pd.rays.reserve(2);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.530000f;
+                        rs.order = 1;
+                        rs.gain = 0.152000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.400000f, 0.500000f, 0.600000f });
+                        rs.points.push_back({ 1.850000f, 5.160000f, 1.390000f });
+                        rs.points.push_back({ 1.400000f, 5.800000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.950000f;
+                        rs.order = 1;
+                        rs.gain = 0.143000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -1.400000f, 0.500000f, 0.600000f });
+                        rs.points.push_back({ -1.180000f, 0.000000f, 0.670000f });
+                        rs.points.push_back({ 1.400000f, 5.800000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -241,6 +690,30 @@ namespace AetherAcoustics
                     pd.name = "Mid-Chamber Pipe Scatter";
                     pd.source = { 0.800000f, 1.500000f, 0.600000f };
                     pd.listener = { -0.800000f, 4.800000f, 1.400000f };
+                    pd.directDistance = 3.750000f;
+                    pd.rays.reserve(2);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.198000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.800000f, 1.500000f, 0.600000f });
+                        rs.points.push_back({ -1.850000f, 3.860000f, 1.170000f });
+                        rs.points.push_back({ -0.800000f, 4.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.198000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.800000f, 1.500000f, 0.600000f });
+                        rs.points.push_back({ 1.850000f, 2.440000f, 0.830000f });
+                        rs.points.push_back({ -0.800000f, 4.800000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -511,6 +984,95 @@ namespace AetherAcoustics
                     pd.name = "Courtyard Center to Ground Arcade";
                     pd.source = { 0.000000f, 17.000000f, 1.200000f };
                     pd.listener = { -4.500000f, 12.000000f, 1.200000f };
+                    pd.directDistance = 6.730000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.730000f;
+                        rs.order = 0;
+                        rs.gain = 0.149000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.740000f;
+                        rs.order = 1;
+                        rs.gain = 0.146000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -2.250000f, 14.500000f, 0.990000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 7.230000f;
+                        rs.order = 1;
+                        rs.gain = 0.136000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -4.780000f, 11.960000f, 1.200000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 9.540000f;
+                        rs.order = 1;
+                        rs.gain = 0.103000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -4.940000f, 16.560000f, 1.180000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.080000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -5.710000f, 13.600000f, 5.250000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.700000f;
+                        rs.order = 1;
+                        rs.gain = 0.078000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -7.950000f, 14.820000f, 1.200000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.700000f;
+                        rs.order = 1;
+                        rs.gain = 0.078000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ -7.950000f, 14.820000f, 1.200000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.860000f;
+                        rs.order = 1;
+                        rs.gain = 0.077000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 17.000000f, 1.200000f });
+                        rs.points.push_back({ 2.370000f, 13.480000f, 4.230000f });
+                        rs.points.push_back({ -4.500000f, 12.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -519,6 +1081,95 @@ namespace AetherAcoustics
                     pd.name = "Front Portal to Deep Courtyard Recess";
                     pd.source = { 0.000000f, 5.000000f, 1.500000f };
                     pd.listener = { 0.000000f, 28.000000f, 1.500000f };
+                    pd.directDistance = 23.000000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 16.500000f, 0.990000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 16.500000f, -0.010000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 16.500000f, -0.010000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.500000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ -2.420000f, 16.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.500000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ -2.420000f, 16.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.500000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ -2.420000f, 16.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.500000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.500000f });
+                        rs.points.push_back({ -2.420000f, 16.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -527,6 +1178,95 @@ namespace AetherAcoustics
                     pd.name = "Ground Arcade to 1st-Tier Balcony";
                     pd.source = { 4.200000f, 10.000000f, 1.200000f };
                     pd.listener = { -4.200000f, 22.000000f, 5.800000f };
+                    pd.directDistance = 15.350000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.350000f;
+                        rs.order = 0;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.510000f;
+                        rs.order = 1;
+                        rs.gain = 0.063000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ 2.660000f, 13.870000f, 2.190000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.510000f;
+                        rs.order = 1;
+                        rs.gain = 0.063000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ 2.590000f, 13.980000f, 2.230000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 17.390000f;
+                        rs.order = 1;
+                        rs.gain = 0.057000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ -2.480000f, 22.860000f, 6.360000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.460000f;
+                        rs.order = 1;
+                        rs.gain = 0.053000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ -2.440000f, 12.360000f, 6.220000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.460000f;
+                        rs.order = 1;
+                        rs.gain = 0.053000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ -2.450000f, 12.360000f, 6.220000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 21.260000f;
+                        rs.order = 1;
+                        rs.gain = 0.046000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ -3.050000f, 18.000000f, 11.010000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 21.280000f;
+                        rs.order = 1;
+                        rs.gain = 0.046000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.200000f, 10.000000f, 1.200000f });
+                        rs.points.push_back({ 0.300000f, 8.740000f, 7.140000f });
+                        rs.points.push_back({ -4.200000f, 22.000000f, 5.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -535,6 +1275,95 @@ namespace AetherAcoustics
                     pd.name = "Diagonal Column Corner Cross Echo";
                     pd.source = { -4.800000f, 7.000000f, 1.200000f };
                     pd.listener = { 4.800000f, 27.000000f, 1.400000f };
+                    pd.directDistance = 22.190000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.190000f;
+                        rs.order = 0;
+                        rs.gain = 0.045000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.190000f;
+                        rs.order = 1;
+                        rs.gain = 0.044000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -1.570000f, 13.740000f, 0.990000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -4.980000f, 6.790000f, 1.480000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -4.980000f, 6.790000f, 1.470000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.930000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -4.610000f, 6.590000f, 1.200000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.930000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -4.610000f, 6.590000f, 1.200000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.930000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -4.610000f, 6.590000f, 1.200000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.930000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -4.800000f, 7.000000f, 1.200000f });
+                        rs.points.push_back({ -4.610000f, 6.590000f, 1.200000f });
+                        rs.points.push_back({ 4.800000f, 27.000000f, 1.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -692,6 +1521,95 @@ namespace AetherAcoustics
                     pd.name = "High Altar Sanctuary to Center Nave";
                     pd.source = { 0.000000f, 34.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 18.000000f, 1.200000f };
+                    pd.directDistance = 16.010000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.010000f;
+                        rs.order = 0;
+                        rs.gain = 0.062000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.210000f, 24.060000f, 1.390000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.210000f, 24.060000f, 1.390000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.050000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.510000f, 25.170000f, 1.380000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.060000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.420000f, 31.740000f, 1.650000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.080000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.730000f, 25.420000f, 1.340000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.110000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.730000f, 30.580000f, 1.560000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.130000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 34.000000f, 1.800000f });
+                        rs.points.push_back({ -0.960000f, 25.560000f, 1.310000f });
+                        rs.points.push_back({ 0.000000f, 18.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -700,6 +1618,96 @@ namespace AetherAcoustics
                     pd.name = "Stone Pulpit to North Aisle Vaults";
                     pd.source = { -3.500000f, 26.000000f, 2.500000f };
                     pd.listener = { -5.500000f, 14.000000f, 1.200000f };
+                    pd.directDistance = 12.230000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.630000f;
+                        rs.order = 1;
+                        rs.gain = 0.078000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -4.210000f, 25.440000f, 1.880000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.790000f;
+                        rs.order = 1;
+                        rs.gain = 0.077000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -4.230000f, 25.650000f, 2.960000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 13.820000f;
+                        rs.order = 1;
+                        rs.gain = 0.071000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -2.280000f, 18.190000f, -0.200000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 13.990000f;
+                        rs.order = 1;
+                        rs.gain = 0.070000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -2.130000f, 18.220000f, -0.300000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 14.170000f;
+                        rs.order = 1;
+                        rs.gain = 0.070000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -1.980000f, 18.240000f, -0.410000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.420000f;
+                        rs.order = 1;
+                        rs.gain = 0.060000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -6.510000f, 20.250000f, 6.950000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.110000f;
+                        rs.order = 1;
+                        rs.gain = 0.054000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -0.830000f, 26.500000f, -1.160000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.130000f;
+                        rs.order = 1;
+                        rs.gain = 0.054000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -3.500000f, 26.000000f, 2.500000f });
+                        rs.points.push_back({ -0.910000f, 26.740000f, 5.390000f });
+                        rs.points.push_back({ -5.500000f, 14.000000f, 1.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -708,6 +1716,95 @@ namespace AetherAcoustics
                     pd.name = "Octagonal Dome Crossing to West Portal";
                     pd.source = { 0.000000f, 28.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 5.000000f, 1.600000f };
+                    pd.directDistance = 23.000000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.410000f;
+                        rs.order = 1;
+                        rs.gain = 0.042000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ 0.360000f, 27.870000f, 1.420000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.760000f;
+                        rs.order = 1;
+                        rs.gain = 0.041000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ -2.930000f, 16.430000f, 1.190000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.041000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ 0.830000f, 27.750000f, 2.660000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.280000f;
+                        rs.order = 1;
+                        rs.gain = 0.041000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ -1.250000f, 27.380000f, 0.600000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ -3.320000f, 10.470000f, 0.440000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.560000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ -0.980000f, 28.390000f, 1.350000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 25.370000f;
+                        rs.order = 1;
+                        rs.gain = 0.039000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 28.000000f, 1.800000f });
+                        rs.points.push_back({ -2.100000f, 27.180000f, 3.760000f });
+                        rs.points.push_back({ 0.000000f, 5.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -716,6 +1813,95 @@ namespace AetherAcoustics
                     pd.name = "Side Apse to Elevated Organ Gallery";
                     pd.source = { 4.500000f, 32.000000f, 1.500000f };
                     pd.listener = { 0.000000f, 7.000000f, 7.200000f };
+                    pd.directDistance = 26.030000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.030000f;
+                        rs.order = 0;
+                        rs.gain = 0.038000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.420000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 3.350000f, 31.030000f, 2.120000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.520000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 1.760000f, 24.250000f, 1.350000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.580000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 1.630000f, 24.030000f, 1.280000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.640000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 1.510000f, 23.830000f, 1.200000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.700000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 2.720000f, 30.640000f, 2.430000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.700000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 1.390000f, 23.650000f, 1.120000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 4.500000f, 32.000000f, 1.500000f });
+                        rs.points.push_back({ 2.870000f, 31.200000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 7.000000f, 7.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -781,6 +1967,84 @@ namespace AetherAcoustics
                     pd.name = "Conductor Podium to Front Row";
                     pd.source = { 0.000000f, 4.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 10.000000f, 1.500000f };
+                    pd.directDistance = 6.010000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.010000f;
+                        rs.order = 0;
+                        rs.gain = 0.166000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.161000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.200000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 14.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.070000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.710000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 20.690000f;
+                        rs.order = 1;
+                        rs.gain = 0.047000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ 9.900000f, 7.000000f, 1.650000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 20.690000f;
+                        rs.order = 1;
+                        rs.gain = 0.047000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ -9.900000f, 7.000000f, 1.650000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 32.660000f;
+                        rs.order = 1;
+                        rs.gain = 0.030000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 6.970000f, 17.700000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 83.600000f;
+                        rs.order = 1;
+                        rs.gain = 0.012000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 4.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 48.800000f, 1.640000f });
+                        rs.points.push_back({ 0.000000f, 10.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -789,6 +2053,84 @@ namespace AetherAcoustics
                     pd.name = "Mid-Parquet Golden Hall Sweetspot";
                     pd.source = { 0.000000f, 6.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 24.000000f, 1.600000f };
+                    pd.directDistance = 18.000000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.056000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.040000f;
+                        rs.order = 1;
+                        rs.gain = 0.053000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 12.070000f, 1.200000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.760000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 9.900000f, 15.000000f, 1.700000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 26.760000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ -9.900000f, 15.000000f, 1.700000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.760000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.720000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 14.940000f, 17.700000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 67.600000f;
+                        rs.order = 1;
+                        rs.gain = 0.014000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 48.800000f, 1.670000f });
+                        rs.points.push_back({ 0.000000f, 24.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -797,6 +2139,73 @@ namespace AetherAcoustics
                     pd.name = "Left Balcony Lateral Reflection";
                     pd.source = { 2.000000f, 5.000000f, 1.800000f };
                     pd.listener = { -8.000000f, 28.000000f, 6.500000f };
+                    pd.directDistance = 25.520000f;
+                    pd.rays.reserve(6);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 25.520000f;
+                        rs.order = 0;
+                        rs.gain = 0.039000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 2.000000f, 5.000000f, 1.800000f });
+                        rs.points.push_back({ -8.000000f, 28.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 25.760000f;
+                        rs.order = 1;
+                        rs.gain = 0.038000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 2.000000f, 5.000000f, 1.800000f });
+                        rs.points.push_back({ 0.980000f, 7.340000f, 1.200000f });
+                        rs.points.push_back({ -8.000000f, 28.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.800000f;
+                        rs.order = 1;
+                        rs.gain = 0.028000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 2.000000f, 5.000000f, 1.800000f });
+                        rs.points.push_back({ 0.480000f, 0.000000f, 2.510000f });
+                        rs.points.push_back({ -8.000000f, 28.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.880000f;
+                        rs.order = 1;
+                        rs.gain = 0.028000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 2.000000f, 5.000000f, 1.800000f });
+                        rs.points.push_back({ 9.900000f, 12.040000f, 3.240000f });
+                        rs.points.push_back({ -8.000000f, 28.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.920000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 2.000000f, 5.000000f, 1.800000f });
+                        rs.points.push_back({ -3.870000f, 18.490000f, 17.700000f });
+                        rs.points.push_back({ -8.000000f, 28.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 65.540000f;
+                        rs.order = 1;
+                        rs.gain = 0.015000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 2.000000f, 5.000000f, 1.800000f });
+                        rs.points.push_back({ -4.780000f, 48.800000f, 4.990000f });
+                        rs.points.push_back({ -8.000000f, 28.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -805,6 +2214,84 @@ namespace AetherAcoustics
                     pd.name = "Rear Organ Gallery Perspective";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 44.000000f, 7.000000f };
+                    pd.directDistance = 37.360000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.360000f;
+                        rs.order = 0;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.550000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 10.470000f, 1.200000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 42.290000f;
+                        rs.order = 1;
+                        rs.gain = 0.023000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 9.900000f, 25.500000f, 4.400000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 42.290000f;
+                        rs.order = 1;
+                        rs.gain = 0.023000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -9.900000f, 25.500000f, 4.400000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 45.570000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 29.120000f, 17.700000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 46.890000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 48.800000f, 6.460000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 51.260000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 2.510000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 7.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -884,6 +2371,84 @@ namespace AetherAcoustics
                     pd.name = "Stage to Choir Amphitheatre Tier";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 1.500000f, 4.200000f };
+                    pd.directDistance = 6.000000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.167000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.100000f;
+                        rs.order = 1;
+                        rs.gain = 0.159000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 3.250000f, 2.880000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.360000f;
+                        rs.order = 1;
+                        rs.gain = 0.152000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 6.310000f, 1.400000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.540000f;
+                        rs.order = 1;
+                        rs.gain = 0.034000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 4.010000f, 17.000000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.640000f;
+                        rs.order = 1;
+                        rs.gain = 0.034000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 14.000000f, 4.250000f, 3.000000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.640000f;
+                        rs.order = 1;
+                        rs.gain = 0.034000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -14.000000f, 4.250000f, 3.000000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 79.540000f;
+                        rs.order = 1;
+                        rs.gain = 0.012000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 2.920000f });
+                        rs.points.push_back({ 0.000000f, 1.500000f, 4.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -892,6 +2457,62 @@ namespace AetherAcoustics
                     pd.name = "Prime Parquet Row 12 Sweetspot";
                     pd.source = { 0.000000f, 6.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 20.000000f, 1.600000f };
+                    pd.directDistance = 14.000000f;
+                    pd.rays.reserve(5);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 14.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.071000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 31.310000f;
+                        rs.order = 1;
+                        rs.gain = 0.031000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 14.000000f, 13.000000f, 1.700000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 31.310000f;
+                        rs.order = 1;
+                        rs.gain = 0.031000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ -14.000000f, 13.000000f, 1.700000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 33.650000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 12.950000f, 17.000000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 62.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.016000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 1.680000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -900,6 +2521,62 @@ namespace AetherAcoustics
                     pd.name = "Right Horseshoe Balcony Overhang";
                     pd.source = { -2.000000f, 6.000000f, 1.800000f };
                     pd.listener = { 12.000000f, 26.000000f, 6.200000f };
+                    pd.directDistance = 24.810000f;
+                    pd.rays.reserve(5);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.810000f;
+                        rs.order = 0;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ -2.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 12.000000f, 26.000000f, 6.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.960000f;
+                        rs.order = 1;
+                        rs.gain = 0.039000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -2.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ -0.920000f, 7.540000f, 1.400000f });
+                        rs.points.push_back({ 12.000000f, 26.000000f, 6.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 27.260000f;
+                        rs.order = 1;
+                        rs.gain = 0.036000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -2.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 14.000000f, 23.780000f, 5.710000f });
+                        rs.points.push_back({ 12.000000f, 26.000000f, 6.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 43.170000f;
+                        rs.order = 1;
+                        rs.gain = 0.023000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -2.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ -14.000000f, 12.320000f, 3.190000f });
+                        rs.points.push_back({ 12.000000f, 26.000000f, 6.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 57.890000f;
+                        rs.order = 1;
+                        rs.gain = 0.017000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -2.000000f, 6.000000f, 1.800000f });
+                        rs.points.push_back({ 7.500000f, 44.000000f, 4.790000f });
+                        rs.points.push_back({ 12.000000f, 26.000000f, 6.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -908,6 +2585,62 @@ namespace AetherAcoustics
                     pd.name = "Deep Rear Parterre Under Balcony";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 39.000000f, 1.800000f };
+                    pd.directDistance = 32.000000f;
+                    pd.rays.reserve(5);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 32.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.031000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 39.000000f, 1.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 42.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.023000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 44.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 39.000000f, 1.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 42.520000f;
+                        rs.order = 1;
+                        rs.gain = 0.023000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 14.000000f, 23.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 39.000000f, 1.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 42.520000f;
+                        rs.order = 1;
+                        rs.gain = 0.023000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -14.000000f, 23.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 39.000000f, 1.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 44.140000f;
+                        rs.order = 1;
+                        rs.gain = 0.022000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 23.000000f, 17.000000f });
+                        rs.points.push_back({ 0.000000f, 39.000000f, 1.800000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -1508,6 +3241,95 @@ namespace AetherAcoustics
                     pd.name = "Central Floor to Oculus Axis Focus";
                     pd.source = { 0.000000f, 0.000000f, 1.500000f };
                     pd.listener = { 4.000000f, 4.000000f, 1.500000f };
+                    pd.directDistance = 5.660000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.660000f;
+                        rs.order = 0;
+                        rs.gain = 0.177000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.155000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 2.000000f, 2.000000f, 0.000000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.155000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 2.000000f, 2.000000f, 0.000000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.330000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 16.770000f, 13.400000f, 1.500000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.330000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 13.400000f, 16.770000f, 1.500000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.770000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 19.360000f, 9.350000f, 1.500000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.770000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 9.350000f, 19.360000f, 1.500000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 38.600000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 21.030000f, 4.710000f, 1.500000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1516,6 +3338,95 @@ namespace AetherAcoustics
                     pd.name = "Imperial Altar Across Marble Rotunda";
                     pd.source = { 0.000000f, 16.000000f, 1.800000f };
                     pd.listener = { 0.000000f, -14.000000f, 1.500000f };
+                    pd.directDistance = 30.000000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.180000f;
+                        rs.order = 1;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -0.360000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.180000f;
+                        rs.order = 1;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -0.360000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 41.130000f;
+                        rs.order = 1;
+                        rs.gain = 0.024000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ 1.260000f, 21.480000f, 1.760000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 41.130000f;
+                        rs.order = 1;
+                        rs.gain = 0.024000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ -1.260000f, 21.480000f, 1.760000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 45.080000f;
+                        rs.order = 1;
+                        rs.gain = 0.022000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ -1.650000f, -21.430000f, 1.550000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 45.080000f;
+                        rs.order = 1;
+                        rs.gain = 0.022000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ 1.650000f, -21.430000f, 1.550000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 51.740000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 16.000000f, 1.800000f });
+                        rs.points.push_back({ -18.790000f, -10.720000f, 1.610000f });
+                        rs.points.push_back({ 0.000000f, -14.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1524,6 +3435,95 @@ namespace AetherAcoustics
                     pd.name = "Curved Whispering Wall Reflection";
                     pd.source = { 18.000000f, 0.000000f, 1.500000f };
                     pd.listener = { -18.000000f, 0.000000f, 1.500000f };
+                    pd.directDistance = 36.000000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.028000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 18.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -18.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1532,6 +3532,95 @@ namespace AetherAcoustics
                     pd.name = "Diagonal Across Opus Sectile Floor";
                     pd.source = { -12.000000f, -12.000000f, 1.500000f };
                     pd.listener = { 12.000000f, 12.000000f, 1.500000f };
+                    pd.directDistance = 33.940000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 33.940000f;
+                        rs.order = 0;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ -12.000000f, -12.000000f, 1.500000f });
+                        rs.points.push_back({ -0.000000f, -0.000000f, 0.000000f });
+                        rs.points.push_back({ 12.000000f, 12.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -1627,6 +3716,84 @@ namespace AetherAcoustics
                     pd.name = "Center Stage to Front Arena Stalls";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 20.000000f, 2.200000f };
+                    pd.directDistance = 13.010000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 13.010000f;
+                        rs.order = 0;
+                        rs.gain = 0.077000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 13.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.074000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 19.810000f, 2.130000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 13.220000f;
+                        rs.order = 1;
+                        rs.gain = 0.074000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 12.420000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.860000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 1.440000f, 10.650000f, 19.510000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.860000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -1.440000f, 10.650000f, 19.510000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 51.660000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 25.000000f, 13.500000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 51.660000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -25.000000f, 13.500000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, 20.000000f, 2.200000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1635,6 +3802,62 @@ namespace AetherAcoustics
                     pd.name = "Stage to Left Vineyard Terrace";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { -16.000000f, 22.000000f, 6.500000f };
+                    pd.directDistance = 22.430000f;
+                    pd.rays.reserve(5);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.430000f;
+                        rs.order = 0;
+                        rs.gain = 0.045000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -16.000000f, 22.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.930000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -2.390000f, 9.240000f, 0.800000f });
+                        rs.points.push_back({ -16.000000f, 22.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.880000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -16.130000f, 18.260000f, 5.750000f });
+                        rs.points.push_back({ -16.000000f, 22.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.570000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -12.810000f, 16.440000f, 18.440000f });
+                        rs.points.push_back({ -16.000000f, 22.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 61.700000f;
+                        rs.order = 1;
+                        rs.gain = 0.016000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -24.640000f, 40.220000f, 4.960000f });
+                        rs.points.push_back({ -16.000000f, 22.000000f, 6.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1643,6 +3866,84 @@ namespace AetherAcoustics
                     pd.name = "Stage to Rear Choir Terrace Tier";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, -5.000000f, 4.500000f };
+                    pd.directDistance = 12.300000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.300000f;
+                        rs.order = 0;
+                        rs.gain = 0.081000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.078000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -4.230000f, 3.910000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 12.890000f;
+                        rs.order = 1;
+                        rs.gain = 0.076000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 4.450000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 31.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.031000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 1.180000f, -2.000000f, 17.670000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 31.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.031000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -1.180000f, -2.000000f, 17.670000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 51.490000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 25.000000f, 1.000000f, 3.150000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 51.490000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -25.000000f, 1.000000f, 3.150000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1651,6 +3952,95 @@ namespace AetherAcoustics
                     pd.name = "Stage to Upper Rear Vineyard Tier";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 40.000000f, 8.000000f };
+                    pd.directDistance = 33.580000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 33.580000f;
+                        rs.order = 0;
+                        rs.gain = 0.030000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 33.720000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 38.520000f, 7.030000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 33.820000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 24.750000f, 3.090000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 11.020000f, 0.800000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 44.260000f;
+                        rs.order = 1;
+                        rs.gain = 0.022000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 1.140000f, 31.180000f, 19.310000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 44.260000f;
+                        rs.order = 1;
+                        rs.gain = 0.022000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -1.140000f, 31.180000f, 19.310000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 60.230000f;
+                        rs.order = 1;
+                        rs.gain = 0.016000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 25.000000f, 23.500000f, 4.900000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 60.230000f;
+                        rs.order = 1;
+                        rs.gain = 0.016000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -25.000000f, 23.500000f, 4.900000f });
+                        rs.points.push_back({ 0.000000f, 40.000000f, 8.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -1719,6 +4109,95 @@ namespace AetherAcoustics
                     pd.name = "Stage to Front Stalls Petal Focus";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 22.000000f, 1.600000f };
+                    pd.directDistance = 15.000000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.067000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.680000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 14.420000f, 11.500000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.035000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -12.000000f, 14.500000f, 1.700000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.035000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 12.000000f, 14.500000f, 1.700000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 29.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.034000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.750000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 11.650000f, 14.470000f, 13.350000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 36.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.027000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -11.650000f, 14.470000f, 13.350000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 75.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.013000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 52.000000f, 1.680000f });
+                        rs.points.push_back({ 0.000000f, 22.000000f, 1.600000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1727,6 +4206,95 @@ namespace AetherAcoustics
                     pd.name = "Stage to Mid-Hall Brushbox Parquet";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 32.000000f, 2.400000f };
+                    pd.directDistance = 25.010000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 25.010000f;
+                        rs.order = 0;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 31.280000f;
+                        rs.order = 1;
+                        rs.gain = 0.032000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 19.900000f, 11.500000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.660000f;
+                        rs.order = 1;
+                        rs.gain = 0.028000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -12.000000f, 19.500000f, 2.100000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.660000f;
+                        rs.order = 1;
+                        rs.gain = 0.028000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 12.000000f, 19.500000f, 2.100000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 39.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.025000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.910000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 40.910000f;
+                        rs.order = 1;
+                        rs.gain = 0.024000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 11.450000f, 19.660000f, 13.550000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 40.910000f;
+                        rs.order = 1;
+                        rs.gain = 0.024000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -11.450000f, 19.660000f, 13.550000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 65.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.015000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 52.000000f, 2.220000f });
+                        rs.points.push_back({ 0.000000f, 32.000000f, 2.400000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1735,6 +4303,84 @@ namespace AetherAcoustics
                     pd.name = "Stage to Elevated Side Box Tier";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 9.500000f, 26.000000f, 7.500000f };
+                    pd.directDistance = 21.990000f;
+                    pd.rays.reserve(7);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 21.990000f;
+                        rs.order = 0;
+                        rs.gain = 0.045000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.400000f;
+                        rs.order = 1;
+                        rs.gain = 0.044000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.940000f, 8.870000f, 1.100000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.570000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 12.000000f, 22.720000f, 6.520000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 34.810000f;
+                        rs.order = 1;
+                        rs.gain = 0.028000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 2.020000f, 0.000000f, 3.010000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 38.930000f;
+                        rs.order = 1;
+                        rs.gain = 0.025000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -12.000000f, 13.810000f, 3.840000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 41.670000f;
+                        rs.order = 1;
+                        rs.gain = 0.024000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -8.090000f, 15.780000f, 16.910000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 71.860000f;
+                        rs.order = 1;
+                        rs.gain = 0.014000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 6.020000f, 52.000000f, 5.410000f });
+                        rs.points.push_back({ 9.500000f, 26.000000f, 7.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -1743,6 +4389,95 @@ namespace AetherAcoustics
                     pd.name = "Stage to High Crown Vault Rear Tier";
                     pd.source = { 0.000000f, 7.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 46.000000f, 12.000000f };
+                    pd.directDistance = 40.310000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 40.310000f;
+                        rs.order = 0;
+                        rs.gain = 0.025000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 40.690000f;
+                        rs.order = 1;
+                        rs.gain = 0.024000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 9.350000f, 1.100000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 46.920000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -12.000000f, 26.500000f, 6.900000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 46.920000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 12.000000f, 26.500000f, 6.900000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 47.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 8.330000f, 31.990000f, 16.670000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 47.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ -8.330000f, 31.990000f, 16.670000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 52.010000f;
+                        rs.order = 1;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 52.000000f, 10.800000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 53.970000f;
+                        rs.order = 1;
+                        rs.gain = 0.018000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 7.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -0.000000f, 3.150000f });
+                        rs.points.push_back({ 0.000000f, 46.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -2104,6 +4839,73 @@ namespace AetherAcoustics
                     pd.name = "Omphalion Coronation to Nave Center";
                     pd.source = { 0.000000f, -10.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 8.000000f, 1.500000f };
+                    pd.directDistance = 18.000000f;
+                    pd.rays.reserve(6);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.056000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, -10.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 18.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.054000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -10.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -0.180000f, -0.000000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 70.340000f;
+                        rs.order = 1;
+                        rs.gain = 0.014000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -10.000000f, 1.800000f });
+                        rs.points.push_back({ 34.000000f, -1.000000f, 1.650000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 70.340000f;
+                        rs.order = 1;
+                        rs.gain = 0.014000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -10.000000f, 1.800000f });
+                        rs.points.push_back({ -34.000000f, -1.000000f, 1.650000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 73.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.014000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -10.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, -37.500000f, 1.690000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 77.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.013000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -10.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 37.500000f, 1.610000f });
+                        rs.points.push_back({ 0.000000f, 8.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2112,6 +4914,51 @@ namespace AetherAcoustics
                     pd.name = "Altar Sanctuary to East Apse Conch";
                     pd.source = { 0.000000f, 25.000000f, 2.000000f };
                     pd.listener = { 0.000000f, -5.000000f, 1.500000f };
+                    pd.directDistance = 30.000000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 25.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 25.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, 7.860000f, -0.000000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 55.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.018000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 25.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, 37.500000f, 1.890000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 95.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.010000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 25.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, -37.500000f, 1.670000f });
+                        rs.points.push_back({ 0.000000f, -5.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2120,6 +4967,51 @@ namespace AetherAcoustics
                     pd.name = "South Imperial Gallery Balcony";
                     pd.source = { 0.000000f, 0.000000f, 1.800000f };
                     pd.listener = { 22.000000f, 0.000000f, 14.000000f };
+                    pd.directDistance = 25.160000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 25.160000f;
+                        rs.order = 0;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 22.000000f, 0.000000f, 14.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 27.090000f;
+                        rs.order = 1;
+                        rs.gain = 0.037000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 2.510000f, 0.000000f, -0.000000f });
+                        rs.points.push_back({ 22.000000f, 0.000000f, 14.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 47.590000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 34.000000f, 0.000000f, 10.820000f });
+                        rs.points.push_back({ 22.000000f, 0.000000f, 14.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 90.820000f;
+                        rs.order = 1;
+                        rs.gain = 0.011000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ -34.000000f, 0.000000f, 6.410000f });
+                        rs.points.push_back({ 22.000000f, 0.000000f, 14.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2128,6 +5020,51 @@ namespace AetherAcoustics
                     pd.name = "West Narthex Cross Perspective";
                     pd.source = { 0.000000f, 15.000000f, 2.000000f };
                     pd.listener = { 0.000000f, -32.000000f, 1.500000f };
+                    pd.directDistance = 47.000000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 47.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 15.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, -32.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 47.130000f;
+                        rs.order = 1;
+                        rs.gain = 0.021000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 15.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, -11.860000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, -32.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 58.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.017000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 15.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, -37.500000f, 1.550000f });
+                        rs.points.push_back({ 0.000000f, -32.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 92.000000f;
+                        rs.order = 1;
+                        rs.gain = 0.011000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 15.000000f, 2.000000f });
+                        rs.points.push_back({ 0.000000f, 37.500000f, 1.880000f });
+                        rs.points.push_back({ 0.000000f, -32.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -2440,6 +5377,95 @@ namespace AetherAcoustics
                     pd.name = "Central Bronze Door Slam Echo";
                     pd.source = { 0.000000f, -7.500000f, 1.500000f };
                     pd.listener = { 0.000000f, 0.000000f, 1.500000f };
+                    pd.directDistance = 7.500000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 7.500000f;
+                        rs.order = 0;
+                        rs.gain = 0.133000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 8.080000f;
+                        rs.order = 1;
+                        rs.gain = 0.123000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, -3.750000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 8.080000f;
+                        rs.order = 1;
+                        rs.gain = 0.123000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, -3.750000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 9.430000f;
+                        rs.order = 1;
+                        rs.gain = 0.105000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ 0.340000f, -8.430000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 9.430000f;
+                        rs.order = 1;
+                        rs.gain = 0.105000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ -0.340000f, -8.430000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.290000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ 5.890000f, 6.090000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 23.290000f;
+                        rs.order = 1;
+                        rs.gain = 0.043000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ -5.890000f, 6.090000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.070000f;
+                        rs.order = 1;
+                        rs.gain = 0.041000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, -7.500000f, 1.500000f });
+                        rs.points.push_back({ 2.120000f, 8.080000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2448,6 +5474,95 @@ namespace AetherAcoustics
                     pd.name = "Curved Perimeter Whispering Wall";
                     pd.source = { 7.500000f, 0.000000f, 1.500000f };
                     pd.listener = { -7.500000f, 0.000000f, 1.500000f };
+                    pd.directDistance = 15.000000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.000000f;
+                        rs.order = 0;
+                        rs.gain = 0.067000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.065000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 7.500000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 0.000000f, 0.000000f });
+                        rs.points.push_back({ -7.500000f, 0.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2456,6 +5571,95 @@ namespace AetherAcoustics
                     pd.name = "Duke Sarcophagus Pedestal Floor";
                     pd.source = { 0.000000f, 0.000000f, 1.800000f };
                     pd.listener = { 4.000000f, 4.000000f, 1.500000f };
+                    pd.directDistance = 5.660000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 5.660000f;
+                        rs.order = 0;
+                        rs.gain = 0.177000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.550000f;
+                        rs.order = 1;
+                        rs.gain = 0.152000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 2.180000f, 2.180000f, 0.000000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 6.550000f;
+                        rs.order = 1;
+                        rs.gain = 0.152000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 2.180000f, 2.180000f, 0.000000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 11.180000f;
+                        rs.order = 1;
+                        rs.gain = 0.089000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 5.320000f, 6.470000f, 1.580000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 11.180000f;
+                        rs.order = 1;
+                        rs.gain = 0.089000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 6.470000f, 5.320000f, 1.580000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 21.610000f;
+                        rs.order = 1;
+                        rs.gain = 0.046000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ -0.420000f, -8.420000f, 1.680000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 21.610000f;
+                        rs.order = 1;
+                        rs.gain = 0.046000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ -8.420000f, -0.420000f, 1.680000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.250000f;
+                        rs.order = 1;
+                        rs.gain = 0.045000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ -7.160000f, -4.290000f, 1.690000f });
+                        rs.points.push_back({ 4.000000f, 4.000000f, 1.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2464,6 +5668,95 @@ namespace AetherAcoustics
                     pd.name = "Upper Rotunda High Cornice Elevation";
                     pd.source = { 0.000000f, 0.000000f, 1.800000f };
                     pd.listener = { 0.000000f, 6.000000f, 13.500000f };
+                    pd.directDistance = 13.150000f;
+                    pd.rays.reserve(8);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 13.150000f;
+                        rs.order = 0;
+                        rs.gain = 0.076000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.960000f;
+                        rs.order = 1;
+                        rs.gain = 0.062000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 0.740000f, 8.350000f, 10.840000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.960000f;
+                        rs.order = 1;
+                        rs.gain = 0.062000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 0.740000f, 8.350000f, 10.840000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.960000f;
+                        rs.order = 1;
+                        rs.gain = 0.062000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ -0.740000f, 8.350000f, 10.840000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.430000f;
+                        rs.order = 1;
+                        rs.gain = 0.060000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.710000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.430000f;
+                        rs.order = 1;
+                        rs.gain = 0.060000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 0.000000f, 0.710000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ 5.700000f, -6.220000f, 6.300000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 24.840000f;
+                        rs.order = 1;
+                        rs.gain = 0.040000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.800000f });
+                        rs.points.push_back({ -5.700000f, -6.220000f, 6.300000f });
+                        rs.points.push_back({ 0.000000f, 6.000000f, 13.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));
@@ -2892,6 +6185,51 @@ namespace AetherAcoustics
                     pd.name = "Orchestra Thymele Altar Sweetspot";
                     pd.source = { 0.000000f, 0.000000f, 1.500000f };
                     pd.listener = { 0.000000f, 14.000000f, 4.500000f };
+                    pd.directDistance = 14.320000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 14.320000f;
+                        rs.order = 0;
+                        rs.gain = 0.070000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 14.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 15.230000f;
+                        rs.order = 1;
+                        rs.gain = 0.062000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 3.500000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 14.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 16.020000f;
+                        rs.order = 1;
+                        rs.gain = 0.061000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 11.470000f, 0.750000f });
+                        rs.points.push_back({ 0.000000f, 14.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 22.200000f;
+                        rs.order = 1;
+                        rs.gain = 0.044000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, -4.000000f, 2.050000f });
+                        rs.points.push_back({ 0.000000f, 14.000000f, 4.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2900,6 +6238,51 @@ namespace AetherAcoustics
                     pd.name = "Mid-Cavea Diazoma Promenade Tier";
                     pd.source = { 0.000000f, 0.000000f, 1.500000f };
                     pd.listener = { 0.000000f, 28.000000f, 12.000000f };
+                    pd.directDistance = 29.900000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 29.900000f;
+                        rs.order = 0;
+                        rs.gain = 0.033000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 30.970000f;
+                        rs.order = 1;
+                        rs.gain = 0.031000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 20.420000f, 5.140000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 31.080000f;
+                        rs.order = 1;
+                        rs.gain = 0.030000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 3.110000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 37.500000f;
+                        rs.order = 1;
+                        rs.gain = 0.026000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, -4.000000f, 2.670000f });
+                        rs.points.push_back({ 0.000000f, 28.000000f, 12.000000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2908,6 +6291,51 @@ namespace AetherAcoustics
                     pd.name = "Highest Upper Cavea Rim (Tier 55)";
                     pd.source = { 0.000000f, 0.000000f, 1.500000f };
                     pd.listener = { 0.000000f, 48.000000f, 24.500000f };
+                    pd.directDistance = 53.230000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 53.230000f;
+                        rs.order = 0;
+                        rs.gain = 0.019000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 48.000000f, 24.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 54.340000f;
+                        rs.order = 1;
+                        rs.gain = 0.018000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 27.490000f, 8.610000f });
+                        rs.points.push_back({ 0.000000f, 48.000000f, 24.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 54.590000f;
+                        rs.order = 1;
+                        rs.gain = 0.017000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, 2.770000f, 0.000000f });
+                        rs.points.push_back({ 0.000000f, 48.000000f, 24.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 60.540000f;
+                        rs.order = 1;
+                        rs.gain = 0.016000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ 0.000000f, -4.000000f, 3.140000f });
+                        rs.points.push_back({ 0.000000f, 48.000000f, 24.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 {
@@ -2916,714 +6344,51 @@ namespace AetherAcoustics
                     pd.name = "Lateral Wing Parodos Entry Line";
                     pd.source = { 0.000000f, 0.000000f, 1.500000f };
                     pd.listener = { -22.000000f, 16.000000f, 8.500000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                list.push_back(std::move(sd));
-            }
-
-            // Space 12: york_minster
-            {
-                SpaceData sd;
-                sd.id = "york_minster";
-                sd.title = "York Minster Gothic Nave (England)";
-                sd.category = "Cathedrals & Abbeys";
-                sd.rt60 = 8.500000f;
-                sd.volume = 115000.000000f;
-                sd.area = 22000.000000f;
-                sd.minBound = { -14.500000f, 0.000000f, 0.000000f };
-                sd.maxBound = { 14.500000f, 100.000000f, 30.000000f };
-                sd.wireframe.reserve(138);
-                sd.wireframe.push_back({ { -7.500000f, 0.000000f, 0.000000f }, { -7.500000f, 100.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 0.000000f, 0.000000f }, { 7.500000f, 100.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 0.000000f }, { -14.500000f, 100.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 0.000000f, 0.000000f }, { 14.500000f, 100.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 12.000000f }, { -14.500000f, 100.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 0.000000f, 12.000000f }, { 14.500000f, 100.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 0.000000f, 15.000000f }, { -7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 0.000000f, 15.000000f }, { 7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 0.000000f, 30.000000f }, { 0.000000f, 100.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 0.000000f }, { 14.500000f, 0.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 0.000000f }, { -14.500000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 0.000000f, 0.000000f }, { 14.500000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 0.000000f, 0.000000f }, { -7.500000f, 0.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 0.000000f, 0.000000f }, { 7.500000f, 0.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 12.000000f }, { -7.500000f, 0.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 0.000000f, 12.000000f }, { 7.500000f, 0.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 0.000000f, 15.000000f }, { -3.750000f, 0.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 0.000000f, 24.750000f }, { 0.000000f, 0.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 0.000000f, 30.000000f }, { 3.750000f, 0.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 0.000000f, 24.750000f }, { 7.500000f, 0.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 10.000000f, 0.000000f }, { 14.500000f, 10.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 10.000000f, 0.000000f }, { -14.500000f, 10.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 10.000000f, 0.000000f }, { 14.500000f, 10.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 10.000000f, 0.000000f }, { -7.500000f, 10.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 10.000000f, 0.000000f }, { 7.500000f, 10.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 10.000000f, 12.000000f }, { -7.500000f, 10.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 10.000000f, 12.000000f }, { 7.500000f, 10.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 10.000000f, 15.000000f }, { -3.750000f, 10.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 10.000000f, 24.750000f }, { 0.000000f, 10.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 10.000000f, 30.000000f }, { 3.750000f, 10.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 10.000000f, 24.750000f }, { 7.500000f, 10.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 20.000000f, 0.000000f }, { 14.500000f, 20.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 20.000000f, 0.000000f }, { -14.500000f, 20.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 20.000000f, 0.000000f }, { 14.500000f, 20.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 20.000000f, 0.000000f }, { -7.500000f, 20.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 20.000000f, 0.000000f }, { 7.500000f, 20.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 20.000000f, 12.000000f }, { -7.500000f, 20.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 20.000000f, 12.000000f }, { 7.500000f, 20.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 20.000000f, 15.000000f }, { -3.750000f, 20.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 20.000000f, 24.750000f }, { 0.000000f, 20.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 20.000000f, 30.000000f }, { 3.750000f, 20.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 20.000000f, 24.750000f }, { 7.500000f, 20.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 30.000000f, 0.000000f }, { 14.500000f, 30.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 30.000000f, 0.000000f }, { -14.500000f, 30.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 30.000000f, 0.000000f }, { 14.500000f, 30.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 30.000000f, 0.000000f }, { -7.500000f, 30.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 30.000000f, 0.000000f }, { 7.500000f, 30.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 30.000000f, 12.000000f }, { -7.500000f, 30.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 30.000000f, 12.000000f }, { 7.500000f, 30.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 30.000000f, 15.000000f }, { -3.750000f, 30.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 30.000000f, 24.750000f }, { 0.000000f, 30.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 30.000000f, 30.000000f }, { 3.750000f, 30.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 30.000000f, 24.750000f }, { 7.500000f, 30.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 40.000000f, 0.000000f }, { 14.500000f, 40.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 40.000000f, 0.000000f }, { -14.500000f, 40.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 40.000000f, 0.000000f }, { 14.500000f, 40.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 40.000000f, 0.000000f }, { -7.500000f, 40.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 40.000000f, 0.000000f }, { 7.500000f, 40.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 40.000000f, 12.000000f }, { -7.500000f, 40.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 40.000000f, 12.000000f }, { 7.500000f, 40.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 40.000000f, 15.000000f }, { -3.750000f, 40.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 40.000000f, 24.750000f }, { 0.000000f, 40.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 40.000000f, 30.000000f }, { 3.750000f, 40.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 40.000000f, 24.750000f }, { 7.500000f, 40.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 50.000000f, 0.000000f }, { 14.500000f, 50.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 50.000000f, 0.000000f }, { -14.500000f, 50.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 50.000000f, 0.000000f }, { 14.500000f, 50.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 50.000000f, 0.000000f }, { -7.500000f, 50.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 50.000000f, 0.000000f }, { 7.500000f, 50.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 50.000000f, 12.000000f }, { -7.500000f, 50.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 50.000000f, 12.000000f }, { 7.500000f, 50.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 50.000000f, 15.000000f }, { -3.750000f, 50.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 50.000000f, 24.750000f }, { 0.000000f, 50.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 50.000000f, 30.000000f }, { 3.750000f, 50.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 50.000000f, 24.750000f }, { 7.500000f, 50.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 60.000000f, 0.000000f }, { 14.500000f, 60.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 60.000000f, 0.000000f }, { -14.500000f, 60.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 60.000000f, 0.000000f }, { 14.500000f, 60.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 60.000000f, 0.000000f }, { -7.500000f, 60.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 60.000000f, 0.000000f }, { 7.500000f, 60.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 60.000000f, 12.000000f }, { -7.500000f, 60.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 60.000000f, 12.000000f }, { 7.500000f, 60.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 60.000000f, 15.000000f }, { -3.750000f, 60.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 60.000000f, 24.750000f }, { 0.000000f, 60.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 60.000000f, 30.000000f }, { 3.750000f, 60.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 60.000000f, 24.750000f }, { 7.500000f, 60.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 70.000000f, 0.000000f }, { 14.500000f, 70.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 70.000000f, 0.000000f }, { -14.500000f, 70.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 70.000000f, 0.000000f }, { 14.500000f, 70.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 70.000000f, 0.000000f }, { -7.500000f, 70.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 70.000000f, 0.000000f }, { 7.500000f, 70.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 70.000000f, 12.000000f }, { -7.500000f, 70.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 70.000000f, 12.000000f }, { 7.500000f, 70.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 70.000000f, 15.000000f }, { -3.750000f, 70.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 70.000000f, 24.750000f }, { 0.000000f, 70.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 70.000000f, 30.000000f }, { 3.750000f, 70.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 70.000000f, 24.750000f }, { 7.500000f, 70.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 80.000000f, 0.000000f }, { 14.500000f, 80.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 80.000000f, 0.000000f }, { -14.500000f, 80.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 80.000000f, 0.000000f }, { 14.500000f, 80.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 80.000000f, 0.000000f }, { -7.500000f, 80.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 80.000000f, 0.000000f }, { 7.500000f, 80.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 80.000000f, 12.000000f }, { -7.500000f, 80.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 80.000000f, 12.000000f }, { 7.500000f, 80.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 80.000000f, 15.000000f }, { -3.750000f, 80.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 80.000000f, 24.750000f }, { 0.000000f, 80.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 80.000000f, 30.000000f }, { 3.750000f, 80.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 80.000000f, 24.750000f }, { 7.500000f, 80.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 90.000000f, 0.000000f }, { 14.500000f, 90.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 90.000000f, 0.000000f }, { -14.500000f, 90.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 90.000000f, 0.000000f }, { 14.500000f, 90.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 90.000000f, 0.000000f }, { -7.500000f, 90.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 90.000000f, 0.000000f }, { 7.500000f, 90.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 90.000000f, 12.000000f }, { -7.500000f, 90.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 90.000000f, 12.000000f }, { 7.500000f, 90.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 90.000000f, 15.000000f }, { -3.750000f, 90.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 90.000000f, 24.750000f }, { 0.000000f, 90.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 90.000000f, 30.000000f }, { 3.750000f, 90.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 90.000000f, 24.750000f }, { 7.500000f, 90.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 100.000000f, 0.000000f }, { 14.500000f, 100.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 100.000000f, 0.000000f }, { -14.500000f, 100.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 100.000000f, 0.000000f }, { 14.500000f, 100.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 100.000000f, 0.000000f }, { -7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 7.500000f, 100.000000f, 0.000000f }, { 7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 100.000000f, 12.000000f }, { -7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 100.000000f, 12.000000f }, { 7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -7.500000f, 100.000000f, 15.000000f }, { -3.750000f, 100.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { -3.750000f, 100.000000f, 24.750000f }, { 0.000000f, 100.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 100.000000f, 30.000000f }, { 3.750000f, 100.000000f, 24.750000f } });
-                sd.wireframe.push_back({ { 3.750000f, 100.000000f, 24.750000f }, { 7.500000f, 100.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 0.000000f }, { -14.500000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 0.000000f, 0.000000f }, { 14.500000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 0.000000f, 12.000000f }, { 0.000000f, 0.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 0.000000f, 12.000000f }, { 0.000000f, 0.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 100.000000f, 0.000000f }, { -14.500000f, 100.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 100.000000f, 0.000000f }, { 14.500000f, 100.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -14.500000f, 100.000000f, 12.000000f }, { 0.000000f, 100.000000f, 30.000000f } });
-                sd.wireframe.push_back({ { 14.500000f, 100.000000f, 12.000000f }, { 0.000000f, 100.000000f, 30.000000f } });
-                sd.positions.reserve(4);
-                {
-                    PositionData pd;
-                    pd.id = 0;
-                    pd.name = "Choir Stalls to West Door Nave";
-                    pd.source = { 0.000000f, 15.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 65.000000f, 1.600000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 1;
-                    pd.name = "High Altar to Lantern Tower Crossing";
-                    pd.source = { 0.000000f, 8.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 32.000000f, 1.600000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 2;
-                    pd.name = "North Transept to South Nave Aisle";
-                    pd.source = { -8.000000f, 25.000000f, 1.500000f };
-                    pd.listener = { 8.000000f, 50.000000f, 1.500000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 3;
-                    pd.name = "Organ Screen to Prime Parterre";
-                    pd.source = { 0.000000f, 20.000000f, 5.500000f };
-                    pd.listener = { 0.000000f, 45.000000f, 1.600000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                list.push_back(std::move(sd));
-            }
-
-            // Space 13: teatro_alla_scala
-            {
-                SpaceData sd;
-                sd.id = "teatro_alla_scala";
-                sd.title = "Teatro alla Scala (Milan)";
-                sd.category = "Opera Houses";
-                sd.rt60 = 1.250000f;
-                sd.volume = 11250.000000f;
-                sd.area = 4800.000000f;
-                sd.minBound = { -11.000000f, -8.000000f, 0.000000f };
-                sd.maxBound = { 11.000000f, 24.000000f, 18.000000f };
-                sd.wireframe.reserve(204);
-                sd.wireframe.push_back({ { -7.000000f, 0.000000f, 0.000000f }, { 7.000000f, 0.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -7.000000f, 0.000000f, 0.000000f }, { -7.000000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 7.000000f, 0.000000f, 0.000000f }, { 7.000000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -7.000000f, 0.000000f, 12.000000f }, { 7.000000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -9.000000f, -8.000000f, 0.000000f }, { 9.000000f, -8.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -9.000000f, 0.000000f, 0.000000f }, { -9.000000f, -8.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 9.000000f, 0.000000f, 0.000000f }, { 9.000000f, -8.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 0.000000f }, { -10.000000f, 8.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 0.000000f }, { 10.000000f, 8.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 0.000000f }, { -9.907000f, 10.042000f, 0.000000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 0.000000f }, { -9.629000f, 12.047000f, 0.000000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 0.000000f }, { -9.172000f, 13.976000f, 0.000000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 0.000000f }, { -8.544000f, 15.794000f, 0.000000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 0.000000f }, { -7.757000f, 17.466000f, 0.000000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 0.000000f }, { -6.826000f, 18.963000f, 0.000000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 0.000000f }, { -5.767000f, 20.255000f, 0.000000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 0.000000f }, { -4.601000f, 21.318000f, 0.000000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 0.000000f }, { -3.349000f, 22.134000f, 0.000000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 0.000000f }, { -2.035000f, 22.686000f, 0.000000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 0.000000f }, { -0.682000f, 22.965000f, 0.000000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 0.000000f }, { 0.682000f, 22.965000f, 0.000000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 0.000000f }, { 2.035000f, 22.686000f, 0.000000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 0.000000f }, { 3.349000f, 22.134000f, 0.000000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 0.000000f }, { 4.601000f, 21.318000f, 0.000000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 0.000000f }, { 5.767000f, 20.255000f, 0.000000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 0.000000f }, { 6.826000f, 18.963000f, 0.000000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 0.000000f }, { 7.757000f, 17.466000f, 0.000000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 0.000000f }, { 8.544000f, 15.794000f, 0.000000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 0.000000f }, { 9.172000f, 13.976000f, 0.000000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 0.000000f }, { 9.629000f, 12.047000f, 0.000000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 0.000000f }, { 9.907000f, 10.042000f, 0.000000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 0.000000f }, { 10.000000f, 8.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 3.000000f }, { -10.000000f, 8.000000f, 3.000000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 3.000000f }, { 10.000000f, 8.000000f, 3.000000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 3.000000f }, { -9.907000f, 10.042000f, 3.000000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 3.000000f }, { -9.629000f, 12.047000f, 3.000000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 3.000000f }, { -9.172000f, 13.976000f, 3.000000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 3.000000f }, { -8.544000f, 15.794000f, 3.000000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 3.000000f }, { -7.757000f, 17.466000f, 3.000000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 3.000000f }, { -6.826000f, 18.963000f, 3.000000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 3.000000f }, { -5.767000f, 20.255000f, 3.000000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 3.000000f }, { -4.601000f, 21.318000f, 3.000000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 3.000000f }, { -3.349000f, 22.134000f, 3.000000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 3.000000f }, { -2.035000f, 22.686000f, 3.000000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 3.000000f }, { -0.682000f, 22.965000f, 3.000000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 3.000000f }, { 0.682000f, 22.965000f, 3.000000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 3.000000f }, { 2.035000f, 22.686000f, 3.000000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 3.000000f }, { 3.349000f, 22.134000f, 3.000000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 3.000000f }, { 4.601000f, 21.318000f, 3.000000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 3.000000f }, { 5.767000f, 20.255000f, 3.000000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 3.000000f }, { 6.826000f, 18.963000f, 3.000000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 3.000000f }, { 7.757000f, 17.466000f, 3.000000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 3.000000f }, { 8.544000f, 15.794000f, 3.000000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 3.000000f }, { 9.172000f, 13.976000f, 3.000000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 3.000000f }, { 9.629000f, 12.047000f, 3.000000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 3.000000f }, { 9.907000f, 10.042000f, 3.000000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 3.000000f }, { 10.000000f, 8.000000f, 3.000000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 5.800000f }, { -10.000000f, 8.000000f, 5.800000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 5.800000f }, { 10.000000f, 8.000000f, 5.800000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 5.800000f }, { -9.907000f, 10.042000f, 5.800000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 5.800000f }, { -9.629000f, 12.047000f, 5.800000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 5.800000f }, { -9.172000f, 13.976000f, 5.800000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 5.800000f }, { -8.544000f, 15.794000f, 5.800000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 5.800000f }, { -7.757000f, 17.466000f, 5.800000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 5.800000f }, { -6.826000f, 18.963000f, 5.800000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 5.800000f }, { -5.767000f, 20.255000f, 5.800000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 5.800000f }, { -4.601000f, 21.318000f, 5.800000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 5.800000f }, { -3.349000f, 22.134000f, 5.800000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 5.800000f }, { -2.035000f, 22.686000f, 5.800000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 5.800000f }, { -0.682000f, 22.965000f, 5.800000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 5.800000f }, { 0.682000f, 22.965000f, 5.800000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 5.800000f }, { 2.035000f, 22.686000f, 5.800000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 5.800000f }, { 3.349000f, 22.134000f, 5.800000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 5.800000f }, { 4.601000f, 21.318000f, 5.800000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 5.800000f }, { 5.767000f, 20.255000f, 5.800000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 5.800000f }, { 6.826000f, 18.963000f, 5.800000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 5.800000f }, { 7.757000f, 17.466000f, 5.800000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 5.800000f }, { 8.544000f, 15.794000f, 5.800000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 5.800000f }, { 9.172000f, 13.976000f, 5.800000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 5.800000f }, { 9.629000f, 12.047000f, 5.800000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 5.800000f }, { 9.907000f, 10.042000f, 5.800000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 5.800000f }, { 10.000000f, 8.000000f, 5.800000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 8.600000f }, { -10.000000f, 8.000000f, 8.600000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 8.600000f }, { 10.000000f, 8.000000f, 8.600000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 8.600000f }, { -9.907000f, 10.042000f, 8.600000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 8.600000f }, { -9.629000f, 12.047000f, 8.600000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 8.600000f }, { -9.172000f, 13.976000f, 8.600000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 8.600000f }, { -8.544000f, 15.794000f, 8.600000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 8.600000f }, { -7.757000f, 17.466000f, 8.600000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 8.600000f }, { -6.826000f, 18.963000f, 8.600000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 8.600000f }, { -5.767000f, 20.255000f, 8.600000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 8.600000f }, { -4.601000f, 21.318000f, 8.600000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 8.600000f }, { -3.349000f, 22.134000f, 8.600000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 8.600000f }, { -2.035000f, 22.686000f, 8.600000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 8.600000f }, { -0.682000f, 22.965000f, 8.600000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 8.600000f }, { 0.682000f, 22.965000f, 8.600000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 8.600000f }, { 2.035000f, 22.686000f, 8.600000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 8.600000f }, { 3.349000f, 22.134000f, 8.600000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 8.600000f }, { 4.601000f, 21.318000f, 8.600000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 8.600000f }, { 5.767000f, 20.255000f, 8.600000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 8.600000f }, { 6.826000f, 18.963000f, 8.600000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 8.600000f }, { 7.757000f, 17.466000f, 8.600000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 8.600000f }, { 8.544000f, 15.794000f, 8.600000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 8.600000f }, { 9.172000f, 13.976000f, 8.600000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 8.600000f }, { 9.629000f, 12.047000f, 8.600000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 8.600000f }, { 9.907000f, 10.042000f, 8.600000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 8.600000f }, { 10.000000f, 8.000000f, 8.600000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 11.400000f }, { -10.000000f, 8.000000f, 11.400000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 11.400000f }, { 10.000000f, 8.000000f, 11.400000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 11.400000f }, { -9.907000f, 10.042000f, 11.400000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 11.400000f }, { -9.629000f, 12.047000f, 11.400000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 11.400000f }, { -9.172000f, 13.976000f, 11.400000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 11.400000f }, { -8.544000f, 15.794000f, 11.400000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 11.400000f }, { -7.757000f, 17.466000f, 11.400000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 11.400000f }, { -6.826000f, 18.963000f, 11.400000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 11.400000f }, { -5.767000f, 20.255000f, 11.400000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 11.400000f }, { -4.601000f, 21.318000f, 11.400000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 11.400000f }, { -3.349000f, 22.134000f, 11.400000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 11.400000f }, { -2.035000f, 22.686000f, 11.400000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 11.400000f }, { -0.682000f, 22.965000f, 11.400000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 11.400000f }, { 0.682000f, 22.965000f, 11.400000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 11.400000f }, { 2.035000f, 22.686000f, 11.400000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 11.400000f }, { 3.349000f, 22.134000f, 11.400000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 11.400000f }, { 4.601000f, 21.318000f, 11.400000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 11.400000f }, { 5.767000f, 20.255000f, 11.400000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 11.400000f }, { 6.826000f, 18.963000f, 11.400000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 11.400000f }, { 7.757000f, 17.466000f, 11.400000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 11.400000f }, { 8.544000f, 15.794000f, 11.400000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 11.400000f }, { 9.172000f, 13.976000f, 11.400000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 11.400000f }, { 9.629000f, 12.047000f, 11.400000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 11.400000f }, { 9.907000f, 10.042000f, 11.400000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 11.400000f }, { 10.000000f, 8.000000f, 11.400000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 14.200000f }, { -10.000000f, 8.000000f, 14.200000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 14.200000f }, { 10.000000f, 8.000000f, 14.200000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 14.200000f }, { -9.907000f, 10.042000f, 14.200000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 14.200000f }, { -9.629000f, 12.047000f, 14.200000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 14.200000f }, { -9.172000f, 13.976000f, 14.200000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 14.200000f }, { -8.544000f, 15.794000f, 14.200000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 14.200000f }, { -7.757000f, 17.466000f, 14.200000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 14.200000f }, { -6.826000f, 18.963000f, 14.200000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 14.200000f }, { -5.767000f, 20.255000f, 14.200000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 14.200000f }, { -4.601000f, 21.318000f, 14.200000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 14.200000f }, { -3.349000f, 22.134000f, 14.200000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 14.200000f }, { -2.035000f, 22.686000f, 14.200000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 14.200000f }, { -0.682000f, 22.965000f, 14.200000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 14.200000f }, { 0.682000f, 22.965000f, 14.200000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 14.200000f }, { 2.035000f, 22.686000f, 14.200000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 14.200000f }, { 3.349000f, 22.134000f, 14.200000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 14.200000f }, { 4.601000f, 21.318000f, 14.200000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 14.200000f }, { 5.767000f, 20.255000f, 14.200000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 14.200000f }, { 6.826000f, 18.963000f, 14.200000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 14.200000f }, { 7.757000f, 17.466000f, 14.200000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 14.200000f }, { 8.544000f, 15.794000f, 14.200000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 14.200000f }, { 9.172000f, 13.976000f, 14.200000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 14.200000f }, { 9.629000f, 12.047000f, 14.200000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 14.200000f }, { 9.907000f, 10.042000f, 14.200000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 14.200000f }, { 10.000000f, 8.000000f, 14.200000f } });
-                sd.wireframe.push_back({ { -10.000000f, 0.000000f, 16.500000f }, { -10.000000f, 8.000000f, 16.500000f } });
-                sd.wireframe.push_back({ { 10.000000f, 0.000000f, 16.500000f }, { 10.000000f, 8.000000f, 16.500000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 16.500000f }, { -9.907000f, 10.042000f, 16.500000f } });
-                sd.wireframe.push_back({ { -9.907000f, 10.042000f, 16.500000f }, { -9.629000f, 12.047000f, 16.500000f } });
-                sd.wireframe.push_back({ { -9.629000f, 12.047000f, 16.500000f }, { -9.172000f, 13.976000f, 16.500000f } });
-                sd.wireframe.push_back({ { -9.172000f, 13.976000f, 16.500000f }, { -8.544000f, 15.794000f, 16.500000f } });
-                sd.wireframe.push_back({ { -8.544000f, 15.794000f, 16.500000f }, { -7.757000f, 17.466000f, 16.500000f } });
-                sd.wireframe.push_back({ { -7.757000f, 17.466000f, 16.500000f }, { -6.826000f, 18.963000f, 16.500000f } });
-                sd.wireframe.push_back({ { -6.826000f, 18.963000f, 16.500000f }, { -5.767000f, 20.255000f, 16.500000f } });
-                sd.wireframe.push_back({ { -5.767000f, 20.255000f, 16.500000f }, { -4.601000f, 21.318000f, 16.500000f } });
-                sd.wireframe.push_back({ { -4.601000f, 21.318000f, 16.500000f }, { -3.349000f, 22.134000f, 16.500000f } });
-                sd.wireframe.push_back({ { -3.349000f, 22.134000f, 16.500000f }, { -2.035000f, 22.686000f, 16.500000f } });
-                sd.wireframe.push_back({ { -2.035000f, 22.686000f, 16.500000f }, { -0.682000f, 22.965000f, 16.500000f } });
-                sd.wireframe.push_back({ { -0.682000f, 22.965000f, 16.500000f }, { 0.682000f, 22.965000f, 16.500000f } });
-                sd.wireframe.push_back({ { 0.682000f, 22.965000f, 16.500000f }, { 2.035000f, 22.686000f, 16.500000f } });
-                sd.wireframe.push_back({ { 2.035000f, 22.686000f, 16.500000f }, { 3.349000f, 22.134000f, 16.500000f } });
-                sd.wireframe.push_back({ { 3.349000f, 22.134000f, 16.500000f }, { 4.601000f, 21.318000f, 16.500000f } });
-                sd.wireframe.push_back({ { 4.601000f, 21.318000f, 16.500000f }, { 5.767000f, 20.255000f, 16.500000f } });
-                sd.wireframe.push_back({ { 5.767000f, 20.255000f, 16.500000f }, { 6.826000f, 18.963000f, 16.500000f } });
-                sd.wireframe.push_back({ { 6.826000f, 18.963000f, 16.500000f }, { 7.757000f, 17.466000f, 16.500000f } });
-                sd.wireframe.push_back({ { 7.757000f, 17.466000f, 16.500000f }, { 8.544000f, 15.794000f, 16.500000f } });
-                sd.wireframe.push_back({ { 8.544000f, 15.794000f, 16.500000f }, { 9.172000f, 13.976000f, 16.500000f } });
-                sd.wireframe.push_back({ { 9.172000f, 13.976000f, 16.500000f }, { 9.629000f, 12.047000f, 16.500000f } });
-                sd.wireframe.push_back({ { 9.629000f, 12.047000f, 16.500000f }, { 9.907000f, 10.042000f, 16.500000f } });
-                sd.wireframe.push_back({ { 9.907000f, 10.042000f, 16.500000f }, { 10.000000f, 8.000000f, 16.500000f } });
-                sd.wireframe.push_back({ { -10.000000f, 8.000000f, 0.000000f }, { -10.000000f, 8.000000f, 16.500000f } });
-                sd.wireframe.push_back({ { -8.660000f, 15.500000f, 0.000000f }, { -8.660000f, 15.500000f, 16.500000f } });
-                sd.wireframe.push_back({ { -5.000000f, 20.990000f, 0.000000f }, { -5.000000f, 20.990000f, 16.500000f } });
-                sd.wireframe.push_back({ { -0.000000f, 23.000000f, 0.000000f }, { -0.000000f, 23.000000f, 16.500000f } });
-                sd.wireframe.push_back({ { 5.000000f, 20.990000f, 0.000000f }, { 5.000000f, 20.990000f, 16.500000f } });
-                sd.wireframe.push_back({ { 8.660000f, 15.500000f, 0.000000f }, { 8.660000f, 15.500000f, 16.500000f } });
-                sd.wireframe.push_back({ { 10.000000f, 8.000000f, 0.000000f }, { 10.000000f, 8.000000f, 16.500000f } });
-                sd.wireframe.push_back({ { 4.500000f, 11.000000f, 18.000000f }, { 4.111000f, 12.830000f, 18.000000f } });
-                sd.wireframe.push_back({ { 4.111000f, 12.830000f, 18.000000f }, { 3.011000f, 14.344000f, 18.000000f } });
-                sd.wireframe.push_back({ { 3.011000f, 14.344000f, 18.000000f }, { 1.391000f, 15.280000f, 18.000000f } });
-                sd.wireframe.push_back({ { 1.391000f, 15.280000f, 18.000000f }, { -0.470000f, 15.475000f, 18.000000f } });
-                sd.wireframe.push_back({ { -0.470000f, 15.475000f, 18.000000f }, { -2.250000f, 14.897000f, 18.000000f } });
-                sd.wireframe.push_back({ { -2.250000f, 14.897000f, 18.000000f }, { -3.641000f, 13.645000f, 18.000000f } });
-                sd.wireframe.push_back({ { -3.641000f, 13.645000f, 18.000000f }, { -4.402000f, 11.936000f, 18.000000f } });
-                sd.wireframe.push_back({ { -4.402000f, 11.936000f, 18.000000f }, { -4.402000f, 10.064000f, 18.000000f } });
-                sd.wireframe.push_back({ { -4.402000f, 10.064000f, 18.000000f }, { -3.641000f, 8.355000f, 18.000000f } });
-                sd.wireframe.push_back({ { -3.641000f, 8.355000f, 18.000000f }, { -2.250000f, 7.103000f, 18.000000f } });
-                sd.wireframe.push_back({ { -2.250000f, 7.103000f, 18.000000f }, { -0.470000f, 6.525000f, 18.000000f } });
-                sd.wireframe.push_back({ { -0.470000f, 6.525000f, 18.000000f }, { 1.391000f, 6.720000f, 18.000000f } });
-                sd.wireframe.push_back({ { 1.391000f, 6.720000f, 18.000000f }, { 3.011000f, 7.656000f, 18.000000f } });
-                sd.wireframe.push_back({ { 3.011000f, 7.656000f, 18.000000f }, { 4.111000f, 9.170000f, 18.000000f } });
-                sd.wireframe.push_back({ { 4.111000f, 9.170000f, 18.000000f }, { 4.500000f, 11.000000f, 18.000000f } });
-                sd.positions.reserve(4);
-                {
-                    PositionData pd;
-                    pd.id = 0;
-                    pd.name = "Stage Center to Parterre Center Row 8";
-                    pd.source = { 0.000000f, -2.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 12.000000f, 1.400000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 1;
-                    pd.name = "Orchestra Pit to Royal Box Tier 2";
-                    pd.source = { 0.000000f, 1.000000f, 0.800000f };
-                    pd.listener = { 0.000000f, 21.000000f, 6.000000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 2;
-                    pd.name = "Stage Proscenium to Lateral Box Tier 3";
-                    pd.source = { 3.000000f, -1.000000f, 1.800000f };
-                    pd.listener = { -9.500000f, 14.000000f, 9.000000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 3;
-                    pd.name = "Deep Stage Upstage to Top Gallery (Loggione)";
-                    pd.source = { 0.000000f, -6.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 18.000000f, 15.500000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                list.push_back(std::move(sd));
-            }
-
-            // Space 14: elbphilharmonie_hamburg
-            {
-                SpaceData sd;
-                sd.id = "elbphilharmonie_hamburg";
-                sd.title = "Elbphilharmonie Great Hall (Hamburg)";
-                sd.category = "Concert Halls";
-                sd.rt60 = 2.200000f;
-                sd.volume = 23000.000000f;
-                sd.area = 9500.000000f;
-                sd.minBound = { -17.500000f, 0.000000f, 0.000000f };
-                sd.maxBound = { 17.500000f, 45.000000f, 26.000000f };
-                sd.wireframe.reserve(44);
-                sd.wireframe.push_back({ { -15.000000f, 0.000000f, 0.000000f }, { 15.000000f, 0.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.000000f, 0.000000f, 0.000000f }, { -15.000000f, 0.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { 15.000000f, 0.000000f, 0.000000f }, { 17.000000f, 20.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 15.000000f, 0.000000f, 0.000000f }, { 15.000000f, 0.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { 17.000000f, 20.000000f, 0.000000f }, { 14.000000f, 44.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 17.000000f, 20.000000f, 0.000000f }, { 17.000000f, 20.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { 14.000000f, 44.000000f, 0.000000f }, { -14.000000f, 44.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 14.000000f, 44.000000f, 0.000000f }, { 14.000000f, 44.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { -14.000000f, 44.000000f, 0.000000f }, { -17.000000f, 20.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -14.000000f, 44.000000f, 0.000000f }, { -14.000000f, 44.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { -17.000000f, 20.000000f, 0.000000f }, { -15.000000f, 0.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -17.000000f, 20.000000f, 0.000000f }, { -17.000000f, 20.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { -15.000000f, 0.000000f, 12.000000f }, { 15.000000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 15.000000f, 0.000000f, 12.000000f }, { 17.000000f, 20.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 17.000000f, 20.000000f, 12.000000f }, { 14.000000f, 44.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { 14.000000f, 44.000000f, 12.000000f }, { -14.000000f, 44.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -14.000000f, 44.000000f, 12.000000f }, { -17.000000f, 20.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -17.000000f, 20.000000f, 12.000000f }, { -15.000000f, 0.000000f, 12.000000f } });
-                sd.wireframe.push_back({ { -15.000000f, 0.000000f, 26.000000f }, { 15.000000f, 0.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { 15.000000f, 0.000000f, 26.000000f }, { 17.000000f, 20.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { 17.000000f, 20.000000f, 26.000000f }, { 14.000000f, 44.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { 14.000000f, 44.000000f, 26.000000f }, { -14.000000f, 44.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { -14.000000f, 44.000000f, 26.000000f }, { -17.000000f, 20.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { -17.000000f, 20.000000f, 26.000000f }, { -15.000000f, 0.000000f, 26.000000f } });
-                sd.wireframe.push_back({ { -6.000000f, 12.000000f, 0.800000f }, { 6.000000f, 12.000000f, 0.800000f } });
-                sd.wireframe.push_back({ { 6.000000f, 12.000000f, 0.800000f }, { 7.000000f, 22.000000f, 0.800000f } });
-                sd.wireframe.push_back({ { 7.000000f, 22.000000f, 0.800000f }, { -7.000000f, 22.000000f, 0.800000f } });
-                sd.wireframe.push_back({ { -7.000000f, 22.000000f, 0.800000f }, { -6.000000f, 12.000000f, 0.800000f } });
-                sd.wireframe.push_back({ { -8.000000f, 8.000000f, 2.500000f }, { 8.000000f, 8.000000f, 2.500000f } });
-                sd.wireframe.push_back({ { 8.000000f, 8.000000f, 2.500000f }, { 10.000000f, 4.000000f, 5.000000f } });
-                sd.wireframe.push_back({ { 10.000000f, 4.000000f, 5.000000f }, { -10.000000f, 4.000000f, 5.000000f } });
-                sd.wireframe.push_back({ { -10.000000f, 4.000000f, 5.000000f }, { -8.000000f, 8.000000f, 2.500000f } });
-                sd.wireframe.push_back({ { -9.000000f, 14.000000f, 3.000000f }, { -15.000000f, 14.000000f, 7.500000f } });
-                sd.wireframe.push_back({ { -15.000000f, 14.000000f, 7.500000f }, { -15.000000f, 26.000000f, 9.000000f } });
-                sd.wireframe.push_back({ { -15.000000f, 26.000000f, 9.000000f }, { -9.000000f, 26.000000f, 4.500000f } });
-                sd.wireframe.push_back({ { -9.000000f, 26.000000f, 4.500000f }, { -9.000000f, 14.000000f, 3.000000f } });
-                sd.wireframe.push_back({ { 9.000000f, 14.000000f, 3.000000f }, { 15.000000f, 14.000000f, 7.500000f } });
-                sd.wireframe.push_back({ { 15.000000f, 14.000000f, 7.500000f }, { 15.000000f, 26.000000f, 9.000000f } });
-                sd.wireframe.push_back({ { 15.000000f, 26.000000f, 9.000000f }, { 9.000000f, 26.000000f, 4.500000f } });
-                sd.wireframe.push_back({ { 9.000000f, 26.000000f, 4.500000f }, { 9.000000f, 14.000000f, 3.000000f } });
-                sd.wireframe.push_back({ { -5.000000f, 14.000000f, 15.000000f }, { 5.000000f, 14.000000f, 15.000000f } });
-                sd.wireframe.push_back({ { 5.000000f, 14.000000f, 15.000000f }, { 5.500000f, 20.000000f, 15.500000f } });
-                sd.wireframe.push_back({ { 5.500000f, 20.000000f, 15.500000f }, { -5.500000f, 20.000000f, 15.500000f } });
-                sd.wireframe.push_back({ { -5.500000f, 20.000000f, 15.500000f }, { -5.000000f, 14.000000f, 15.000000f } });
-                sd.positions.reserve(4);
-                {
-                    PositionData pd;
-                    pd.id = 0;
-                    pd.name = "Center Stage to Front Vineyard Stalls";
-                    pd.source = { 0.000000f, 17.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 28.000000f, 2.800000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 1;
-                    pd.name = "Stage to Steep Rear Vineyard Balcony";
-                    pd.source = { 0.000000f, 17.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 40.000000f, 11.500000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 2;
-                    pd.name = "Stage to Left Vineyard Terraced Tier";
-                    pd.source = { 0.000000f, 17.000000f, 1.800000f };
-                    pd.listener = { -12.500000f, 20.000000f, 6.500000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 3;
-                    pd.name = "Stage to Rear Choir Gallery Tier";
-                    pd.source = { 0.000000f, 17.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 6.000000f, 4.500000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                list.push_back(std::move(sd));
-            }
-
-            // Space 15: cologne_cathedral
-            {
-                SpaceData sd;
-                sd.id = "cologne_cathedral";
-                sd.title = "Cologne Cathedral High Nave (Germany)";
-                sd.category = "Cathedrals & Abbeys";
-                sd.rt60 = 9.200000f;
-                sd.volume = 230000.000000f;
-                sd.area = 38000.000000f;
-                sd.minBound = { -15.750000f, 0.000000f, 0.000000f };
-                sd.maxBound = { 15.750000f, 120.000000f, 43.350000f };
-                sd.wireframe.reserve(130);
-                sd.wireframe.push_back({ { -7.250000f, 0.000000f, 0.000000f }, { -7.250000f, 120.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 0.000000f, 0.000000f }, { 7.250000f, 120.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 0.000000f, 0.000000f }, { -15.750000f, 120.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { 15.750000f, 0.000000f, 0.000000f }, { 15.750000f, 120.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 0.000000f, 19.500000f }, { -15.750000f, 120.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 0.000000f, 19.500000f }, { 15.750000f, 120.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 0.000000f, 20.000000f }, { -7.250000f, 120.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 0.000000f, 20.000000f }, { 7.250000f, 120.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 0.000000f, 0.000000f, 43.350000f }, { 0.000000f, 120.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { -15.750000f, 0.000000f, 0.000000f }, { 15.750000f, 0.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 0.000000f, 0.000000f }, { -15.750000f, 0.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 0.000000f, 0.000000f }, { 15.750000f, 0.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 0.000000f, 0.000000f }, { -7.250000f, 0.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 0.000000f, 0.000000f }, { 7.250000f, 0.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 0.000000f, 20.000000f }, { -4.833333f, 0.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 0.000000f, 39.277000f }, { 0.000000f, 0.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 0.000000f, 43.350000f }, { 4.833333f, 0.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 0.000000f, 39.277000f }, { 7.250000f, 0.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 0.000000f, 20.000000f }, { -15.750000f, 0.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 0.000000f, 20.000000f }, { 15.750000f, 0.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 12.000000f, 0.000000f }, { 15.750000f, 12.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 12.000000f, 0.000000f }, { -15.750000f, 12.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 12.000000f, 0.000000f }, { 15.750000f, 12.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 12.000000f, 0.000000f }, { -7.250000f, 12.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 12.000000f, 0.000000f }, { 7.250000f, 12.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 12.000000f, 20.000000f }, { -4.833333f, 12.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 12.000000f, 39.277000f }, { 0.000000f, 12.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 12.000000f, 43.350000f }, { 4.833333f, 12.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 12.000000f, 39.277000f }, { 7.250000f, 12.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 12.000000f, 20.000000f }, { -15.750000f, 12.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 12.000000f, 20.000000f }, { 15.750000f, 12.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 24.000000f, 0.000000f }, { 15.750000f, 24.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 24.000000f, 0.000000f }, { -15.750000f, 24.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 24.000000f, 0.000000f }, { 15.750000f, 24.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 24.000000f, 0.000000f }, { -7.250000f, 24.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 24.000000f, 0.000000f }, { 7.250000f, 24.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 24.000000f, 20.000000f }, { -4.833333f, 24.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 24.000000f, 39.277000f }, { 0.000000f, 24.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 24.000000f, 43.350000f }, { 4.833333f, 24.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 24.000000f, 39.277000f }, { 7.250000f, 24.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 24.000000f, 20.000000f }, { -15.750000f, 24.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 24.000000f, 20.000000f }, { 15.750000f, 24.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 36.000000f, 0.000000f }, { 15.750000f, 36.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 36.000000f, 0.000000f }, { -15.750000f, 36.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 36.000000f, 0.000000f }, { 15.750000f, 36.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 36.000000f, 0.000000f }, { -7.250000f, 36.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 36.000000f, 0.000000f }, { 7.250000f, 36.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 36.000000f, 20.000000f }, { -4.833333f, 36.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 36.000000f, 39.277000f }, { 0.000000f, 36.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 36.000000f, 43.350000f }, { 4.833333f, 36.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 36.000000f, 39.277000f }, { 7.250000f, 36.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 36.000000f, 20.000000f }, { -15.750000f, 36.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 36.000000f, 20.000000f }, { 15.750000f, 36.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 48.000000f, 0.000000f }, { 15.750000f, 48.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 48.000000f, 0.000000f }, { -15.750000f, 48.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 48.000000f, 0.000000f }, { 15.750000f, 48.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 48.000000f, 0.000000f }, { -7.250000f, 48.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 48.000000f, 0.000000f }, { 7.250000f, 48.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 48.000000f, 20.000000f }, { -4.833333f, 48.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 48.000000f, 39.277000f }, { 0.000000f, 48.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 48.000000f, 43.350000f }, { 4.833333f, 48.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 48.000000f, 39.277000f }, { 7.250000f, 48.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 48.000000f, 20.000000f }, { -15.750000f, 48.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 48.000000f, 20.000000f }, { 15.750000f, 48.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 60.000000f, 0.000000f }, { 15.750000f, 60.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 60.000000f, 0.000000f }, { -15.750000f, 60.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 60.000000f, 0.000000f }, { 15.750000f, 60.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 60.000000f, 0.000000f }, { -7.250000f, 60.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 60.000000f, 0.000000f }, { 7.250000f, 60.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 60.000000f, 20.000000f }, { -4.833333f, 60.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 60.000000f, 39.277000f }, { 0.000000f, 60.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 60.000000f, 43.350000f }, { 4.833333f, 60.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 60.000000f, 39.277000f }, { 7.250000f, 60.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 60.000000f, 20.000000f }, { -15.750000f, 60.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 60.000000f, 20.000000f }, { 15.750000f, 60.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 72.000000f, 0.000000f }, { 15.750000f, 72.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 72.000000f, 0.000000f }, { -15.750000f, 72.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 72.000000f, 0.000000f }, { 15.750000f, 72.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 72.000000f, 0.000000f }, { -7.250000f, 72.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 72.000000f, 0.000000f }, { 7.250000f, 72.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 72.000000f, 20.000000f }, { -4.833333f, 72.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 72.000000f, 39.277000f }, { 0.000000f, 72.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 72.000000f, 43.350000f }, { 4.833333f, 72.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 72.000000f, 39.277000f }, { 7.250000f, 72.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 72.000000f, 20.000000f }, { -15.750000f, 72.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 72.000000f, 20.000000f }, { 15.750000f, 72.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 84.000000f, 0.000000f }, { 15.750000f, 84.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 84.000000f, 0.000000f }, { -15.750000f, 84.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 84.000000f, 0.000000f }, { 15.750000f, 84.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 84.000000f, 0.000000f }, { -7.250000f, 84.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 84.000000f, 0.000000f }, { 7.250000f, 84.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 84.000000f, 20.000000f }, { -4.833333f, 84.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 84.000000f, 39.277000f }, { 0.000000f, 84.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 84.000000f, 43.350000f }, { 4.833333f, 84.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 84.000000f, 39.277000f }, { 7.250000f, 84.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 84.000000f, 20.000000f }, { -15.750000f, 84.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 84.000000f, 20.000000f }, { 15.750000f, 84.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 96.000000f, 0.000000f }, { 15.750000f, 96.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 96.000000f, 0.000000f }, { -15.750000f, 96.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 96.000000f, 0.000000f }, { 15.750000f, 96.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 96.000000f, 0.000000f }, { -7.250000f, 96.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 96.000000f, 0.000000f }, { 7.250000f, 96.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 96.000000f, 20.000000f }, { -4.833333f, 96.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 96.000000f, 39.277000f }, { 0.000000f, 96.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 96.000000f, 43.350000f }, { 4.833333f, 96.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 96.000000f, 39.277000f }, { 7.250000f, 96.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 96.000000f, 20.000000f }, { -15.750000f, 96.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 96.000000f, 20.000000f }, { 15.750000f, 96.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 108.000000f, 0.000000f }, { 15.750000f, 108.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 108.000000f, 0.000000f }, { -15.750000f, 108.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 108.000000f, 0.000000f }, { 15.750000f, 108.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 108.000000f, 0.000000f }, { -7.250000f, 108.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 108.000000f, 0.000000f }, { 7.250000f, 108.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 108.000000f, 20.000000f }, { -4.833333f, 108.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 108.000000f, 39.277000f }, { 0.000000f, 108.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 108.000000f, 43.350000f }, { 4.833333f, 108.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 108.000000f, 39.277000f }, { 7.250000f, 108.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 108.000000f, 20.000000f }, { -15.750000f, 108.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 108.000000f, 20.000000f }, { 15.750000f, 108.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -15.750000f, 120.000000f, 0.000000f }, { 15.750000f, 120.000000f, 0.000000f } });
-                sd.wireframe.push_back({ { -15.750000f, 120.000000f, 0.000000f }, { -15.750000f, 120.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 15.750000f, 120.000000f, 0.000000f }, { 15.750000f, 120.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { -7.250000f, 120.000000f, 0.000000f }, { -7.250000f, 120.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { 7.250000f, 120.000000f, 0.000000f }, { 7.250000f, 120.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 120.000000f, 20.000000f }, { -4.833333f, 120.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { -4.833333f, 120.000000f, 39.277000f }, { 0.000000f, 120.000000f, 43.350000f } });
-                sd.wireframe.push_back({ { 0.000000f, 120.000000f, 43.350000f }, { 4.833333f, 120.000000f, 39.277000f } });
-                sd.wireframe.push_back({ { 4.833333f, 120.000000f, 39.277000f }, { 7.250000f, 120.000000f, 20.000000f } });
-                sd.wireframe.push_back({ { -7.250000f, 120.000000f, 20.000000f }, { -15.750000f, 120.000000f, 19.500000f } });
-                sd.wireframe.push_back({ { 7.250000f, 120.000000f, 20.000000f }, { 15.750000f, 120.000000f, 19.500000f } });
-                sd.positions.reserve(4);
-                {
-                    PositionData pd;
-                    pd.id = 0;
-                    pd.name = "High Altar Sanctuary to Crossing Transept";
-                    pd.source = { 0.000000f, 16.000000f, 2.000000f };
-                    pd.listener = { 0.000000f, 48.000000f, 1.800000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 1;
-                    pd.name = "Crossing Transept to Mid-Nave Sweetspot";
-                    pd.source = { 0.000000f, 48.000000f, 1.800000f };
-                    pd.listener = { 0.000000f, 85.000000f, 1.600000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 2;
-                    pd.name = "Choir Screen to South Nave Aisle";
-                    pd.source = { -5.500000f, 25.000000f, 1.800000f };
-                    pd.listener = { 10.500000f, 75.000000f, 1.600000f };
-                    sd.positions.push_back(std::move(pd));
-                }
-                {
-                    PositionData pd;
-                    pd.id = 3;
-                    pd.name = "West Organ Gallery to Cathedral Entrance";
-                    pd.source = { 0.000000f, 105.000000f, 8.500000f };
-                    pd.listener = { 0.000000f, 50.000000f, 1.800000f };
+                    pd.directDistance = 28.090000f;
+                    pd.rays.reserve(4);
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.090000f;
+                        rs.order = 0;
+                        rs.gain = 0.036000f;
+                        rs.points.reserve(2);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ -22.000000f, 16.000000f, 8.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.120000f;
+                        rs.order = 1;
+                        rs.gain = 0.035000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ -21.790000f, 15.850000f, 8.300000f });
+                        rs.points.push_back({ -22.000000f, 16.000000f, 8.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 28.980000f;
+                        rs.order = 1;
+                        rs.gain = 0.032000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ -3.300000f, 2.400000f, 0.000000f });
+                        rs.points.push_back({ -22.000000f, 16.000000f, 8.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
+                    {
+                        RaySegment rs;
+                        rs.distanceMeters = 33.300000f;
+                        rs.order = 1;
+                        rs.gain = 0.029000f;
+                        rs.points.reserve(3);
+                        rs.points.push_back({ 0.000000f, 0.000000f, 1.500000f });
+                        rs.points.push_back({ -3.670000f, -4.000000f, 2.670000f });
+                        rs.points.push_back({ -22.000000f, 16.000000f, 8.500000f });
+                        pd.rays.push_back(std::move(rs));
+                    }
                     sd.positions.push_back(std::move(pd));
                 }
                 list.push_back(std::move(sd));

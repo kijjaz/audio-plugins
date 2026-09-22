@@ -84,6 +84,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout AetherBeamAudioProcessor::cr
         juce::ParameterID{"mix", 1}, "Dry / Wet Mix",
         juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.40f));
 
+    // Engine Performance / Quality Mode (CPU optimization)
+    juce::StringArray qualityChoices;
+    qualityChoices.add("Eco Mode (Low CPU)");
+    qualityChoices.add("Balanced Studio");
+    qualityChoices.add("Ultra Physical (Full)");
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{"qualityMode", 1}, "Engine Quality", qualityChoices, 1));
+
     return { params.begin(), params.end() };
 }
 
@@ -255,6 +263,7 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
     int spaceIndex = static_cast<int>(apvts.getRawParameterValue("space")->load());
     int positionIndex = static_cast<int>(apvts.getRawParameterValue("position")->load());
+    int qualityMode = static_cast<int>(apvts.getRawParameterValue("qualityMode")->load());
 
     int currentS = currentSpaceIndex.load();
     int currentP = currentPositionIndex.load();
@@ -262,7 +271,8 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     if (spaceIndex != currentS || positionIndex != currentP)
     {
         switchSpaceAndPosition(spaceIndex, positionIndex);
-        fdn.prepare(getSampleRate(), currentRt60 * decayScale, currentVolume, currentArea);
+        fdn.prepare(getSampleRate(), currentRt60 * decayScale, currentVolume, currentArea,
+                    currentDimX, currentDimY, currentDimZ);
         fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult);
     }
     else
@@ -313,6 +323,24 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         }
     }
 
+    // Check if input block has signal
+    float blockInputMag = 0.0f;
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+        blockInputMag = std::max(blockInputMag, buffer.getMagnitude(ch, 0, numSamples));
+
+    // Smart Sleep Optimization:
+    // If input is silent (< -96 dBFS) and tail has completely finished decaying, skip DSP entirely (0.0% CPU)
+    if (blockInputMag < 1.58e-5f && tailDetector.isSleeping())
+    {
+        if (mix < 1.0f)
+        {
+            // Just pass through dry signal (which is silent anyway)
+            return;
+        }
+        buffer.clear();
+        return;
+    }
+
     for (int n = 0; n < numSamples; ++n)
     {
         float inL = leftChannel[n];
@@ -320,10 +348,10 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         float inMono = (inL + inR) * 0.5f;
 
         float earlyL = 0.0f, earlyR = 0.0f, lateInject = 0.0f;
-        waveguideArray.processSample(inMono, driveSPL, beta, earlyL, earlyR, lateInject);
+        waveguideArray.processSample(inMono, driveSPL, beta, earlyL, earlyR, lateInject, qualityMode);
 
         float lateL = 0.0f, lateR = 0.0f;
-        fdn.processSample(lateInject, 1.0f, lateL, lateR);
+        fdn.processSample(lateInject, 1.0f, lateL, lateR, qualityMode);
 
         float wetL = earlyL + lateL * 1.5f;
         float wetR = earlyR + lateR * 1.5f;

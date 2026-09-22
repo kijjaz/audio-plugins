@@ -62,6 +62,11 @@ public:
         return 0.0f;
     }
 
+    inline bool isSleeping() const noexcept
+    {
+        return (envelope <= noiseFloorLinear) && (activeHoldTimer == 0) && (releaseTimer >= releaseSamples);
+    }
+
 private:
     float fs = 96000.0f;
     float noiseFloorLinear = 0.0000158f; // -96 dBFS

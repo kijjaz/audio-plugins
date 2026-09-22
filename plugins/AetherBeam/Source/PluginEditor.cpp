@@ -3,7 +3,7 @@
 AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioProcessor& p)
     : AudioProcessorEditor(&p), processorRef(p)
 {
-    setSize(1080, 800);
+    setSize(860, 710);
 
     // 1. Add 3D Wireframe Visualizer
     addAndMakeVisible(visualizer);
@@ -32,35 +32,6 @@ AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioPr
             param->setValueNotifyingHost(lYN);
     };
 
-    visualizer.onObjFileDropped = [this](const juce::File& file)
-    {
-        if (processorRef.loadCustomObjMesh(file))
-        {
-            if (auto* customSpace = processorRef.getCustomSpaceData())
-            {
-                // Add to space selector if not already there
-                if (spaceSelector.indexOfItemId(999) < 0)
-                {
-                    spaceSelector.addItem(juce::String(customSpace->title), 999);
-                }
-                spaceSelector.setSelectedId(999, juce::dontSendNotification);
-                
-                // Update position dropdown for custom space
-                positionSelector.clear(juce::dontSendNotification);
-                juce::StringArray posNames;
-                for (const auto& pos : customSpace->positions)
-                    posNames.add(pos.name);
-                posNames.add("Custom Interactive Position");
-                positionSelector.addItemList(posNames, 1);
-                positionSelector.setSelectedItemIndex(0, juce::dontSendNotification);
-
-                syncVisualizer();
-                lastSpaceIndex = 999;
-                lastPosIndex = 0;
-            }
-        }
-    };
-
     // 2. Space ComboBox
     const auto& spaces = AetherAcoustics::AcousticDatabase::getSpaces();
     juce::StringArray spaceNames;
@@ -76,6 +47,14 @@ AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioPr
     addAndMakeVisible(positionSelector);
     positionAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processorRef.getAPVTS(), "position", positionSelector);
+
+    // 4. Quality / Performance Mode ComboBox
+    qualitySelector.addItem("Eco Mode (Low CPU)", 1);
+    qualitySelector.addItem("Balanced Studio", 2);
+    qualitySelector.addItem("Ultra Physical (Full)", 3);
+    addAndMakeVisible(qualitySelector);
+    qualityAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        processorRef.getAPVTS(), "qualityMode", qualitySelector);
 
     spaceSelector.onChange = [this]()
     {
@@ -136,35 +115,13 @@ AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioPr
     setupRotary(betaSlider, betaLabel, "Air Beta", betaAttachment, "airNonlinearity");
     setupRotary(splSlider, splLabel, "Drive SPL", splAttachment, "driveSPL");
 
-    // Material Damping & Occupancy EQ
+    // Material Damping & Reverb EQ
     setupRotary(decaySlider, decayLabel, "RT60 Scale", decayAttachment, "decayScale");
-    setupRotary(occupancySlider, occupancyLabel, "Occupancy", occupancyAttachment, "occupancy");
     setupRotary(dampFreqSlider, dampFreqLabel, "HF Damping", dampFreqAttachment, "dampFreq");
     setupRotary(hfMultSlider, hfMultLabel, "HF Mult", hfMultAttachment, "hfDecayMult");
     setupRotary(bassMultSlider, bassMultLabel, "Bass Mult", bassMultAttachment, "bassDecayMult");
 
-    // Spatial Mic & Output
-    micPatternSelector.addItem("Binaural HRTF", 1);
-    micPatternSelector.addItem("ORTF Cardioid", 2);
-    micPatternSelector.addItem("Blumlein Fig-8", 3);
-    micPatternSelector.addItem("Omni Pair", 4);
-    addAndMakeVisible(micPatternSelector);
-
-    micPatternLabel.setText("Mic Pattern", juce::dontSendNotification);
-    micPatternLabel.setJustificationType(juce::Justification::centred);
-    micPatternLabel.setFont(juce::Font(11.0f, juce::Font::bold));
-    micPatternLabel.setColour(juce::Label::textColourId, juce::Colour(0xff94a3b8));
-    addAndMakeVisible(micPatternLabel);
-
-    micPatternAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        processorRef.getAPVTS(), "micPattern", micPatternSelector);
-
-    // ISO 9613-1 Microclimate & Surface Roughness
-    setupRotary(tempSlider, tempLabel, "Air Temp", tempAttachment, "airTemp");
-    setupRotary(humiditySlider, humidityLabel, "Humidity", humidityAttachment, "airHumidity");
-    setupRotary(scatteringSlider, scatteringLabel, "Roughness", scatteringAttachment, "surfaceScattering");
-
-    setupRotary(stereoWidthSlider, stereoWidthLabel, "Stereo Width", stereoWidthAttachment, "stereoWidth");
+    // Output
     setupRotary(mixSlider, mixLabel, "Dry / Wet", mixAttachment, "mix");
 
     // Poll at 25Hz to handle DAW host automation smoothly
@@ -178,32 +135,14 @@ AetherBeamAudioProcessorEditor::~AetherBeamAudioProcessorEditor()
 
 void AetherBeamAudioProcessorEditor::syncVisualizer()
 {
-    int sIdx = processorRef.getCurrentSpaceIndex();
-    if (sIdx == 999)
-    {
-        if (auto* customSpace = processorRef.getCustomSpaceData())
-        {
-            visualizer.setSpaceData(customSpace,
-                                    processorRef.getCurrentSourcePos(),
-                                    processorRef.getCurrentListenerPos(),
-                                    processorRef.getCurrentRays());
-            visualizer.setAcousticTelemetry(processorRef.getCurrentMicPattern(),
-                                            processorRef.getCurrentStereoWidth(),
-                                            processorRef.getCurrentOccupancy());
-        }
-        return;
-    }
-
     const auto& spaces = AetherAcoustics::AcousticDatabase::getSpaces();
+    int sIdx = processorRef.getCurrentSpaceIndex();
     if (sIdx >= 0 && sIdx < static_cast<int>(spaces.size()))
     {
         visualizer.setSpaceData(&spaces[static_cast<size_t>(sIdx)],
                                 processorRef.getCurrentSourcePos(),
                                 processorRef.getCurrentListenerPos(),
                                 processorRef.getCurrentRays());
-        visualizer.setAcousticTelemetry(processorRef.getCurrentMicPattern(),
-                                        processorRef.getCurrentStereoWidth(),
-                                        processorRef.getCurrentOccupancy());
     }
 }
 
@@ -244,12 +183,6 @@ void AetherBeamAudioProcessorEditor::timerCallback()
         syncVisualizer();
         lastPosIndex = currentPos;
     }
-    else
-    {
-        visualizer.setAcousticTelemetry(processorRef.getCurrentMicPattern(),
-                                        processorRef.getCurrentStereoWidth(),
-                                        processorRef.getCurrentOccupancy());
-    }
 }
 
 void AetherBeamAudioProcessorEditor::paint(juce::Graphics& g)
@@ -276,7 +209,7 @@ void AetherBeamAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawHorizontalLine(64, 0.0f, static_cast<float>(getWidth()));
 
     // Bottom control deck
-    juce::Rectangle<int> controlCardBounds(16, 546, getWidth() - 32, 238);
+    juce::Rectangle<int> controlCardBounds(16, 516, getWidth() - 32, 178);
     g.setColour(juce::Colour(0xff0b1120));
     g.fillRoundedRectangle(controlCardBounds.toFloat(), 8.0f);
     g.setColour(juce::Colour(0x3338bdf8));
@@ -285,75 +218,58 @@ void AetherBeamAudioProcessorEditor::paint(juce::Graphics& g)
     // Section Headers in Control Card
     g.setFont(juce::Font(10.0f, juce::Font::bold));
     
-    // Group 1: Air Dynamics & Microclimate (Row 1 & 2)
+    // Group 1: Air Dynamics
     g.setColour(juce::Colour(0xfff59e0b));
-    g.drawText("AIR DYNAMICS & ISO 9613-1 MICROCLIMATE", 28, 554, 300, 14, juce::Justification::left);
+    g.drawText("AIR DYNAMICS", 30, 524, 210, 14, juce::Justification::left);
 
-    // Group 2: Material & Occupancy EQ
+    // Group 2: Material Damping EQ
     g.setColour(juce::Colour(0xff38bdf8));
-    g.drawText("MATERIAL ABSORPTION & OCCUPANCY EQ", 450, 554, 330, 14, juce::Justification::left);
+    g.drawText("MATERIAL ABSORPTION & DAMPING EQ", 270, 524, 430, 14, juce::Justification::left);
 
-    // Group 3: Spatial Mic & Output
+    // Group 3: Master Output
     g.setColour(juce::Colour(0xff10b981));
-    g.drawText("SPATIAL MIC & OUTPUT", 800, 554, 250, 14, juce::Justification::left);
+    g.drawText("OUTPUT", 735, 524, 100, 14, juce::Justification::left);
 
     // Subtle group dividing vertical lines
     g.setColour(juce::Colour(0x2238bdf8));
-    g.drawVerticalLine(440, 552.0f, 776.0f);
-    g.drawVerticalLine(790, 552.0f, 776.0f);
+    g.drawVerticalLine(256, 522.0f, 686.0f);
+    g.drawVerticalLine(720, 522.0f, 686.0f);
 }
 
 void AetherBeamAudioProcessorEditor::resized()
 {
-    spaceSelector.setBounds(16, 74, 520, 32);
-    positionSelector.setBounds(550, 74, getWidth() - 566, 32);
+    // Space, Position, and Quality mode selectors
+    spaceSelector.setBounds(16, 76, 320, 32);
+    positionSelector.setBounds(346, 76, 310, 32);
+    qualitySelector.setBounds(666, 76, getWidth() - 682, 32);
 
-    visualizer.setBounds(16, 114, getWidth() - 32, 420);
+    visualizer.setBounds(16, 118, getWidth() - 32, 386);
 
-    int knobY1 = 574;
-    int knobW = 78;
-    int knobH = 92;
+    int knobY = 546;
+    int knobW = 100;
+    int knobH = 95;
 
-    // Group 1: Air Dynamics & ISO 9613-1 Microclimate (5 knobs: Beta, SPL, Temp, Humidity, Roughness)
-    betaSlider.setBounds(24, knobY1, knobW, knobH);
-    betaLabel.setBounds(18, knobY1 + knobH, knobW + 12, 18);
+    // Group 1: Air Dynamics (2 knobs)
+    betaSlider.setBounds(30, knobY, knobW, knobH);
+    betaLabel.setBounds(20, knobY + knobH, knobW + 20, 18);
 
-    splSlider.setBounds(106, knobY1, knobW, knobH);
-    splLabel.setBounds(100, knobY1 + knobH, knobW + 12, 18);
+    splSlider.setBounds(142, knobY, knobW, knobH);
+    splLabel.setBounds(132, knobY + knobH, knobW + 20, 18);
 
-    tempSlider.setBounds(188, knobY1, knobW, knobH);
-    tempLabel.setBounds(182, knobY1 + knobH, knobW + 12, 18);
+    // Group 2: Material Damping EQ (4 knobs)
+    decaySlider.setBounds(270, knobY, knobW, knobH);
+    decayLabel.setBounds(260, knobY + knobH, knobW + 20, 18);
 
-    humiditySlider.setBounds(270, knobY1, knobW, knobH);
-    humidityLabel.setBounds(264, knobY1 + knobH, knobW + 12, 18);
+    dampFreqSlider.setBounds(382, knobY, knobW, knobH);
+    dampFreqLabel.setBounds(372, knobY + knobH, knobW + 20, 18);
 
-    scatteringSlider.setBounds(352, knobY1, knobW, knobH);
-    scatteringLabel.setBounds(346, knobY1 + knobH, knobW + 12, 18);
+    hfMultSlider.setBounds(494, knobY, knobW, knobH);
+    hfMultLabel.setBounds(484, knobY + knobH, knobW + 20, 18);
 
-    // Group 2: Material Damping & Occupancy EQ (4 knobs: RT60 Scale, Occupancy, HF Damp, HF Mult)
-    decaySlider.setBounds(448, knobY1, knobW, knobH);
-    decayLabel.setBounds(442, knobY1 + knobH, knobW + 12, 18);
+    bassMultSlider.setBounds(606, knobY, knobW, knobH);
+    bassMultLabel.setBounds(596, knobY + knobH, knobW + 20, 18);
 
-    occupancySlider.setBounds(530, knobY1, knobW, knobH);
-    occupancyLabel.setBounds(524, knobY1 + knobH, knobW + 12, 18);
-
-    dampFreqSlider.setBounds(612, knobY1, knobW, knobH);
-    dampFreqLabel.setBounds(606, knobY1 + knobH, knobW + 12, 18);
-
-    hfMultSlider.setBounds(694, knobY1, knobW, knobH);
-    hfMultLabel.setBounds(688, knobY1 + knobH, knobW + 12, 18);
-
-    // Group 3: Spatial Mic & Master Output (Mic Dropdown, Stereo Width, Bass Mult, Mix)
-    micPatternSelector.setBounds(798, knobY1 + 14, 120, 26);
-    micPatternLabel.setBounds(798, knobY1 + 42, 120, 18);
-
-    bassMultSlider.setBounds(798, knobY1 + 68, knobW, knobH - 24);
-    bassMultLabel.setBounds(792, knobY1 + knobH + 46, knobW + 12, 18); // fallback position
-    bassMultSlider.setVisible(false); // Clean consolidation
-
-    stereoWidthSlider.setBounds(924, knobY1, knobW, knobH);
-    stereoWidthLabel.setBounds(918, knobY1 + knobH, knobW + 12, 18);
-
-    mixSlider.setBounds(1002, knobY1, knobW, knobH);
-    mixLabel.setBounds(996, knobY1 + knobH, knobW + 12, 18);
+    // Group 3: Master Output (1 knob)
+    mixSlider.setBounds(730, knobY, knobW, knobH);
+    mixLabel.setBounds(720, knobY + knobH, knobW + 20, 18);
 }

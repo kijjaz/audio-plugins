@@ -30,6 +30,10 @@ private:
     juce::ComboBox positionSelector;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> positionAttachment;
 
+    // Quality / Performance Mode Selector
+    juce::ComboBox qualitySelector;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> qualityAttachment;
+
     // Section 1: Air Dynamics
     juce::Slider betaSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> betaAttachment;
@@ -39,14 +43,10 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> splAttachment;
     juce::Label splLabel;
 
-    // Section 2: Material Damping & Occupancy EQ
+    // Section 2: Material Damping & Reverb EQ
     juce::Slider decaySlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayAttachment;
     juce::Label decayLabel;
-
-    juce::Slider occupancySlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> occupancyAttachment;
-    juce::Label occupancyLabel;
 
     juce::Slider dampFreqSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dampFreqAttachment;
@@ -60,28 +60,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bassMultAttachment;
     juce::Label bassMultLabel;
 
-    // Section 2B: ISO 9613-1 Microclimate & Surface Roughness
-    juce::Slider tempSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tempAttachment;
-    juce::Label tempLabel;
-
-    juce::Slider humiditySlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> humidityAttachment;
-    juce::Label humidityLabel;
-
-    juce::Slider scatteringSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> scatteringAttachment;
-    juce::Label scatteringLabel;
-
-    // Section 3: Spatial Mic & Master Output
-    juce::ComboBox micPatternSelector;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> micPatternAttachment;
-    juce::Label micPatternLabel;
-
-    juce::Slider stereoWidthSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> stereoWidthAttachment;
-    juce::Label stereoWidthLabel;
-
+    // Section 3: Master Output
     juce::Slider mixSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
     juce::Label mixLabel;

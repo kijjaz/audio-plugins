@@ -114,12 +114,13 @@ public:
     }
 
     // Process a single late energy injection sample and output stereo diffuse reverberation
-    inline void processSample(float inputSample, float drive, float& outL, float& outR)
+    inline void processSample(float inputSample, float drive, float& outL, float& outR, int qualityMode = 1)
     {
-        std::array<float, NUM_LINES> delayOuts;
+        const int activeLines = (qualityMode == 0) ? 8 : NUM_LINES;
+        std::array<float, NUM_LINES> delayOuts{};
         float sumOutputs = 0.0f;
 
-        for (int i = 0; i < NUM_LINES; ++i)
+        for (int i = 0; i < activeLines; ++i)
         {
             delayOuts[i] = buffers[i][bufferPointers[i]];
             sumOutputs += delayOuts[i];
@@ -128,17 +129,17 @@ public:
         // Stereo spatial decorrelation (odd vs even lines with phase decorrelation)
         float leftSum = 0.0f;
         float rightSum = 0.0f;
-        for (int i = 0; i < NUM_LINES; i += 2) leftSum += delayOuts[i];
-        for (int i = 1; i < NUM_LINES; i += 2) rightSum += delayOuts[i];
+        for (int i = 0; i < activeLines; i += 2) leftSum += delayOuts[i];
+        for (int i = 1; i < activeLines; i += 2) rightSum += delayOuts[i];
 
-        constexpr float normScale = 0.35355f; // 1 / sqrt(8)
+        const float normScale = 1.0f / std::sqrt(static_cast<float>(activeLines / 2));
         outL = leftSum * normScale;
         outR = rightSum * normScale;
 
         // Orthogonal Householder feedback matrix reflection: M = I - 2/N * 1*1^T
-        float householderTerm = (2.0f / NUM_LINES) * sumOutputs;
+        float householderTerm = (2.0f / activeLines) * sumOutputs;
 
-        for (int i = 0; i < NUM_LINES; ++i)
+        for (int i = 0; i < activeLines; ++i)
         {
             // Base nominal feedback loop
             float feedbackSig = (delayOuts[i] - householderTerm) * loopGainsMid[i];
@@ -151,7 +152,7 @@ public:
             float injected = inputSample * 0.85f + shapedFeedback;
 
             // 3. Soft saturation non-linearity (subtle harmonic warmth under high drive)
-            float sat = injected - 0.02f * drive * (injected * injected * injected);
+            float sat = (qualityMode == 0) ? injected : (injected - 0.02f * drive * (injected * injected * injected));
 
             // 4. Material High-Frequency Damping: 1-pole lowpass filter per line
             filterStateHF[i] = (1.0f - dampingCoeffsHF[i]) * sat + dampingCoeffsHF[i] * filterStateHF[i];

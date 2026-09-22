@@ -19,10 +19,6 @@ public:
         std::fill(buffer.begin(), buffer.end(), 0.0f);
         writePos = 0;
         filterState = 0.0f;
-        ap1_in = 0.0f;
-        ap1_out = 0.0f;
-        ap2_in = 0.0f;
-        ap2_out = 0.0f;
     }
 
     inline void write(float inputSample)
@@ -31,8 +27,8 @@ public:
         writePos = (writePos + 1) % bufferSize;
     }
 
-    // Read with dynamic wave-steepening delay modulation, surface scattering, and ISO 9613-1 air damping
-    inline float readNonlinear(float nominalDelaySec, float pressureModDepth, float gammaFubini, float alphaDamp, float surfaceScattering = 0.0f)
+    // Read with dynamic wave-steepening delay modulation and Fubini waveshaping
+    inline float readNonlinear(float nominalDelaySec, float pressureModDepth, float gammaFubini, float alphaDamp)
     {
         // 1. Instantaneous delayed sample estimation
         float nominalDelaySamples = nominalDelaySec * fs;
@@ -71,25 +67,25 @@ public:
         // 3. Fubini dynamic waveshaping: y = x - gamma * x^3 (harmonic overtone steepening)
         float shaped = interpolated - gammaFubini * (interpolated * interpolated * interpolated);
 
-        // 4. Surface Scattering & Roughness Allpass Dispersion
-        float scattered = shaped;
-        if (surfaceScattering > 0.01f)
-        {
-            float gScat = std::clamp(surfaceScattering * 0.45f, 0.0f, 0.45f);
-            // 2-stage allpass phase-dispersion diffusion for micro-surface roughness
-            float ap1 = -gScat * scattered + ap1_in;
-            ap1_out = ap1;
-            ap1_in = scattered + gScat * ap1;
+        // 4. ISO 9613-1 physical air loss & boundary lowpass damping
+        filterState = (1.0f - alphaDamp) * shaped + alphaDamp * filterState;
+        return filterState;
+    }
 
-            float ap2 = -gScat * ap1_out + ap2_in;
-            ap2_out = ap2;
-            ap2_in = ap1_out + gScat * ap2;
+    // Fast linear read for Eco Mode: bypasses 4-point Hermite cubic math and dynamic Fubini polynomial
+    inline float readLinear(float nominalDelaySec, float alphaDamp)
+    {
+        float nominalDelaySamples = nominalDelaySec * fs;
+        float readPos = static_cast<float>(writePos) - nominalDelaySamples;
+        while (readPos < 0.0f) readPos += static_cast<float>(bufferSize);
+        while (readPos >= static_cast<float>(bufferSize)) readPos -= static_cast<float>(bufferSize);
 
-            scattered = (1.0f - surfaceScattering) * shaped + surfaceScattering * ap2_out;
-        }
+        int idx0 = static_cast<int>(readPos);
+        float frac = readPos - static_cast<float>(idx0);
+        int idx1 = (idx0 + 1) % bufferSize;
+        float sample = (1.0f - frac) * buffer[idx0] + frac * buffer[idx1];
 
-        // 5. ISO 9613-1 physical atmospheric molecular relaxation & wall absorption
-        filterState = (1.0f - alphaDamp) * scattered + alphaDamp * filterState;
+        filterState = (1.0f - alphaDamp) * sample + alphaDamp * filterState;
         return filterState;
     }
 
@@ -99,6 +95,4 @@ private:
     int bufferSize = 0;
     int writePos = 0;
     float filterState = 0.0f;
-    float ap1_in = 0.0f, ap1_out = 0.0f;
-    float ap2_in = 0.0f, ap2_out = 0.0f;
 };

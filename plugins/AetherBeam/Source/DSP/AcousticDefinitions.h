@@ -11,46 +11,6 @@ namespace AetherAcoustics
     constexpr float ACOUSTIC_STIFFNESS = 1.204f * 343.2f * 343.2f * 343.2f; // rho0 * c0^3 ~ 48,642
     constexpr float HEAD_RADIUS = 0.0875f;        // 8.75 cm standard adult head radius
 
-    // ISO 9613-1 International Standard Atmospheric Acoustic Attenuation
-    struct AtmosphericProperties
-    {
-        float temperatureC = 20.0f;           // 0 to 40 deg C
-        float relativeHumidityPct = 50.0f;    // 10 to 95 %
-        float atmosphericPressureKPa = 101.325f;
-
-        inline float computeAbsorptionAlpha(float freqHz) const
-        {
-            float T = temperatureC + 273.15f;
-            constexpr float T01 = 273.16f;
-            constexpr float T0 = 293.15f;
-            float Pa = atmosphericPressureKPa;
-            constexpr float Pr = 101.325f;
-
-            float C = -6.8346f * std::pow(T01 / T, 1.261f) + 4.6151f;
-            float pSatPr = std::pow(10.0f, C);
-            float h = relativeHumidityPct * pSatPr;
-
-            float frO = (Pa / Pr) * (24.0f + 4.04e4f * h * (0.02f + h) / (0.391f + h));
-            float frN = (Pa / Pr) * std::sqrt(T0 / T) * (9.0f + 280.0f * h * std::exp(-4.170f * (std::pow(T0 / T, 0.333333f) - 1.0f)));
-
-            float term1 = 1.84e-11f * (Pr / Pa) * std::sqrt(T / T0);
-            float termO = std::pow(T / T0, -2.5f) * (0.01275f * std::exp(-2239.1f / T)) / (frO + (freqHz * freqHz) / frO);
-            float termN = std::pow(T / T0, -2.5f) * (0.1068f * std::exp(-3352.0f / T)) / (frN + (freqHz * freqHz) / frN);
-
-            return 8.686f * (freqHz * freqHz) * (term1 + termO + termN); // dB/m
-        }
-
-        inline float computePathAirDampingCoeff(float distanceMeters, float sampleRate) const
-        {
-            float alpha10k = computeAbsorptionAlpha(10000.0f);
-            float attenuationDb = alpha10k * distanceMeters;
-            float linearGain = std::pow(10.0f, -attenuationDb / 20.0f);
-            float fc = std::clamp(18000.0f * linearGain, 1200.0f, 20000.0f);
-            float w = 2.0f * 3.14159265f * fc / sampleRate;
-            return std::clamp(std::exp(-w), 0.05f, 0.96f);
-        }
-    };
-
     struct Vec3
     {
         float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -100,9 +60,9 @@ namespace AetherAcoustics
 
     struct SpaceData
     {
-        std::string id = "";
-        std::string title = "";
-        std::string category = "";
+        const char* id = "";
+        const char* title = "";
+        const char* category = "";
         float rt60 = 2.0f;
         float volume = 1000.0f;
         float area = 500.0f;

@@ -52,24 +52,27 @@ public:
     }
 
     inline void processSample(float inSample, float peakSPL, float nonlinearityScale, 
-                              MicPolarPattern micPattern, float stereoWidth,
-                              float airTempC, float airHumidityPct, float surfaceScattering,
-                              float& outL, float& outR, float& lateInjection)
+                              float& outL, float& outR, float& lateInjection,
+                              int qualityMode = 1)
     {
         outL = 0.0f;
         outR = 0.0f;
         lateInjection = 0.0f;
 
         int readIdx = activeBufferIndex.load(std::memory_order_acquire);
-        int count = beamCounts[readIdx];
+        int totalCount = beamCounts[readIdx];
+        
+        // Quality Scaling:
+        // Eco (0): max 24 rays (direct + primary wall arrivals), fast linear interpolation
+        // Balanced (1): max 48 rays (up to 2nd order reflections)
+        // Ultra (2): all available rays (up to 96-128 rays)
+        int maxRays = (qualityMode == 0) ? 24 : ((qualityMode == 1) ? 48 : MAX_BEAM_PATHS);
+        int count = std::min(totalCount, maxRays);
         const auto& beams = beamBuffers[readIdx];
 
         float pPeak = AetherAcoustics::P0_REF * std::pow(10.0f, peakSPL / 20.0f);
         float stiffness = AetherAcoustics::ACOUSTIC_STIFFNESS;
-
-        AetherAcoustics::AtmosphericProperties atmo;
-        atmo.temperatureC = airTempC;
-        atmo.relativeHumidityPct = airHumidityPct;
+        bool isEco = (qualityMode == 0);
 
         for (int k = 0; k < count; ++k)
         {
@@ -78,44 +81,46 @@ public:
             // 1. Write audio sample to path delay line
             delayLines[k].write(inSample);
 
-            // 2. Physical wave-steepening parameters & ISO 9613-1 Atmospheric Air Damping
+            // 2. Physical wave-steepening parameters
             float d = desc.distanceMeters;
-            float gamma = std::clamp(nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * 5e3f, 0.0f, 0.6f);
-            float steepeningDepth = nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * fs * 0.1f;
-            
-            // ISO 9613-1 physical molecular relaxation coefficient for this ray length
-            float alphaDamp = atmo.computePathAirDampingCoeff(d, fs);
+            float alphaDamp = std::clamp(0.10f + 0.012f * d, 0.05f, 0.85f);
 
-            // 3. Microphone Directionality & ITD/ILD
+            // 3. Woodworth spatial ITD
             float azimuthRad = std::atan2(desc.dirX, desc.dirY);
             float itdSecL = 0.0f, itdSecR = 0.0f;
-            float micGainL = 1.0f, micGainR = 1.0f;
-
-            BinauralSpatializer::computeMicrophoneResponse(micPattern, azimuthRad, itdSecL, itdSecR, micGainL, micGainR);
+            BinauralSpatializer::computeWoodworthITD(azimuthRad, itdSecL, itdSecR);
 
             float delayL = desc.delaySec + itdSecL;
             float delayR = desc.delaySec + itdSecR;
 
-            // 4. Pressure-modulated read with surface scattering dispersion
-            float pathL = delayLines[k].readNonlinear(delayL, steepeningDepth, gamma, alphaDamp, surfaceScattering);
-            float pathR = delayLines[k].readNonlinear(delayR, steepeningDepth, gamma, alphaDamp, surfaceScattering);
+            // 4. Delay read: Fast linear interpolation in Eco mode, full Burgers shock steepening in Balanced/Ultra
+            float pathL = 0.0f, pathR = 0.0f;
+            if (isEco)
+            {
+                pathL = delayLines[k].readLinear(delayL, alphaDamp);
+                pathR = delayLines[k].readLinear(delayR, alphaDamp);
+            }
+            else
+            {
+                float gamma = std::clamp(nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * 5e3f, 0.0f, 0.6f);
+                float steepeningDepth = nonlinearityScale * (d * AetherAcoustics::BETA_AIR * pPeak) / stiffness * fs * 0.1f;
+                pathL = delayLines[k].readNonlinear(delayL, steepeningDepth, gamma, alphaDamp);
+                pathR = delayLines[k].readNonlinear(delayR, steepeningDepth, gamma, alphaDamp);
+            }
 
             float gain = desc.gain * desc.absorptionFactor;
             float phaseSign = (desc.order == 0) ? 1.0f : ((k % 2 == 1) ? -1.0f : 1.0f);
 
-            // 5. Accumulate early beams with polar pattern capsule weighting
-            outL += pathL * gain * phaseSign * micGainL;
-            outR += pathR * gain * phaseSign * micGainR;
+            // 5. Accumulate binaural early beams
+            outL += pathL * gain * phaseSign;
+            outR += pathR * gain * phaseSign;
 
-            // 6. Seed late diffuse FDN with reflections (orders >= 1), scaled properly to energize the diffuse field
+            // 6. Seed late diffuse FDN with reflections (orders >= 1)
             if (desc.order >= 1)
             {
                 lateInjection += (pathL + pathR) * 0.5f * (gain * 2.5f);
             }
         }
-
-        // 7. Apply continuous Mid/Side stereo width
-        BinauralSpatializer::applyStereoWidth(outL, outR, stereoWidth);
     }
 
 private:
