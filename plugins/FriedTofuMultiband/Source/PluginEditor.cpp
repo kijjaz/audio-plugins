@@ -52,7 +52,7 @@ FriedTofuMBAudioProcessorEditor::FriedTofuMBAudioProcessorEditor(FriedTofuMBAudi
 
     // Band Active Controls
     setupRotary(bandDriveSlider,    bandDriveLabel,    "BAND DRIVE", " dB");
-    setupRotary(bandNetworkZSlider, bandNetworkZLabel, "NETWORK Z",  " Ω");
+    setupRotary(bandNetworkZSlider, bandNetworkZLabel, "NETWORK Z",  juce::String(juce::CharPointer_UTF8(" \xce\xa9")));
     setupRotary(bandGainSlider,     bandGainLabel,     "BAND LEVEL", " dB");
 
     // Diode Combos
