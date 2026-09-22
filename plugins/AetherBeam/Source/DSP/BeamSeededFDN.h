@@ -9,11 +9,27 @@ class BeamSeededFDN
 {
 public:
     static constexpr int NUM_LINES = 16;
+    static constexpr int MAX_LINE_BUFFER_SAMPLES = 48000; // 0.5s max line delay at 96kHz
 
     void prepare(double sampleRate, float targetRt60, float roomVolumeM3, float surfaceAreaM2,
                  float dimX = 10.0f, float dimY = 15.0f, float dimZ = 6.0f)
     {
         fs = static_cast<float>(sampleRate);
+        for (int i = 0; i < NUM_LINES; ++i)
+        {
+            buffers[i].assign(MAX_LINE_BUFFER_SAMPLES, 0.0f);
+            bufferPointers[i] = 0;
+            filterStateHF[i] = 0.0f;
+            filterStateLF[i] = 0.0f;
+        }
+
+        reconfigureGeometry(targetRt60, roomVolumeM3, surfaceAreaM2, dimX, dimY, dimZ);
+    }
+
+    // Lock-free and allocation-free geometry update safe to call anytime
+    void reconfigureGeometry(float targetRt60, float roomVolumeM3, float surfaceAreaM2,
+                             float dimX = 10.0f, float dimY = 15.0f, float dimZ = 6.0f)
+    {
         rt60 = std::max(0.1f, targetRt60);
 
         // Scale prime delay lengths based on mean free path: d_mean = 4 * V / S
@@ -55,11 +71,9 @@ public:
             // Ensure mutual coprimality / odd parity
             if (baseDelay % 2 == 0) baseDelay += 1;
 
-            delayLengths[i] = std::max(64, baseDelay);
-            buffers[i].assign(delayLengths[i], 0.0f);
-            bufferPointers[i] = 0;
-            filterStateHF[i] = 0.0f;
-            filterStateLF[i] = 0.0f;
+            int clampedLen = std::clamp(baseDelay, 64, MAX_LINE_BUFFER_SAMPLES - 1);
+            delayLengths[i] = clampedLen;
+            bufferPointers[i] = bufferPointers[i] % clampedLen;
         }
 
         updateAcousticParameters(rt60, currentDampCutoffHz, currentHfMult, currentBassMult);

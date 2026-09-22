@@ -45,8 +45,6 @@ AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioPr
 
     // 3. Position ComboBox
     addAndMakeVisible(positionSelector);
-    positionAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        processorRef.getAPVTS(), "position", positionSelector);
 
     // 4. Quality / Performance Mode ComboBox
     qualitySelector.addItem("Eco Mode (Low CPU)", 1);
@@ -77,6 +75,9 @@ AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioPr
         int pIdx = positionSelector.getSelectedItemIndex();
         if (sIdx >= 0 && pIdx >= 0)
         {
+            if (auto* param = processorRef.getAPVTS().getParameter("position"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(pIdx)));
+
             processorRef.switchSpaceAndPosition(sIdx, pIdx);
             syncVisualizer();
             lastPosIndex = pIdx;
@@ -87,6 +88,7 @@ AetherBeamAudioProcessorEditor::AetherBeamAudioProcessorEditor(AetherBeamAudioPr
     int initSpace = static_cast<int>(processorRef.getAPVTS().getRawParameterValue("space")->load());
     int initPos = static_cast<int>(processorRef.getAPVTS().getRawParameterValue("position")->load());
     updatePositionDropdown(initSpace);
+    positionSelector.setSelectedItemIndex(initPos, juce::dontSendNotification);
     processorRef.switchSpaceAndPosition(initSpace, initPos);
     syncVisualizer();
     lastSpaceIndex = initSpace;
@@ -174,12 +176,14 @@ void AetherBeamAudioProcessorEditor::timerCallback()
     if (currentSpace != lastSpaceIndex)
     {
         updatePositionDropdown(currentSpace);
+        positionSelector.setSelectedItemIndex(currentPos, juce::dontSendNotification);
         syncVisualizer();
         lastSpaceIndex = currentSpace;
         lastPosIndex = currentPos;
     }
     else if (currentPos != lastPosIndex)
     {
+        positionSelector.setSelectedItemIndex(currentPos, juce::dontSendNotification);
         syncVisualizer();
         lastPosIndex = currentPos;
     }

@@ -28,7 +28,6 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> spaceAttachment;
 
     juce::ComboBox positionSelector;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> positionAttachment;
 
     // Quality / Performance Mode Selector
     juce::ComboBox qualitySelector;

@@ -271,8 +271,8 @@ void AetherBeamAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
     if (spaceIndex != currentS || positionIndex != currentP)
     {
         switchSpaceAndPosition(spaceIndex, positionIndex);
-        fdn.prepare(getSampleRate(), currentRt60 * decayScale, currentVolume, currentArea,
-                    currentDimX, currentDimY, currentDimZ);
+        fdn.reconfigureGeometry(currentRt60 * decayScale, currentVolume, currentArea,
+                                currentDimX, currentDimY, currentDimZ);
         fdn.updateAcousticParameters(currentRt60 * decayScale, dampFreq, hfMult, bassMult);
     }
     else
