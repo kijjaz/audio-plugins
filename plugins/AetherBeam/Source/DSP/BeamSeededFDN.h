@@ -10,15 +10,29 @@ class BeamSeededFDN
 public:
     static constexpr int NUM_LINES = 16;
 
-    void prepare(double sampleRate, float targetRt60, float roomVolumeM3, float surfaceAreaM2)
+    void prepare(double sampleRate, float targetRt60, float roomVolumeM3, float surfaceAreaM2,
+                 float dimX = 10.0f, float dimY = 15.0f, float dimZ = 6.0f)
     {
         fs = static_cast<float>(sampleRate);
-        baseRt60 = std::max(0.1f, targetRt60);
-        rt60 = baseRt60;
+        rt60 = std::max(0.1f, targetRt60);
 
         // Scale prime delay lengths based on mean free path: d_mean = 4 * V / S
         float mfp = (surfaceAreaM2 > 1.0f) ? (4.0f * roomVolumeM3 / surfaceAreaM2) : 10.0f;
         float scaleFactor = std::max(0.4f, mfp / 8.0f) * (fs / 24000.0f);
+
+        // Physical dimension round-trip sample counts (axial, tangential & oblique reflections)
+        constexpr float c0 = 343.2f;
+        float lx = std::max(2.0f, dimX);
+        float ly = std::max(2.0f, dimY);
+        float lz = std::max(2.0f, dimZ);
+
+        int tauX  = static_cast<int>(std::round((2.0f * lx / c0) * fs));
+        int tauY  = static_cast<int>(std::round((2.0f * ly / c0) * fs));
+        int tauZ  = static_cast<int>(std::round((2.0f * lz / c0) * fs));
+        int tauXY = static_cast<int>(std::round((2.0f * std::sqrt(lx * lx + ly * ly) / c0) * fs));
+        int tauYZ = static_cast<int>(std::round((2.0f * std::sqrt(ly * ly + lz * lz) / c0) * fs));
+        int tauXZ = static_cast<int>(std::round((2.0f * std::sqrt(lx * lx + lz * lz) / c0) * fs));
+        int tauXYZ= static_cast<int>(std::round((2.0f * std::sqrt(lx * lx + ly * ly + lz * lz) / c0) * fs));
 
         constexpr int primes[NUM_LINES] = {
             1009, 1093, 1153, 1229, 1297, 1381, 1453, 1523,
@@ -27,14 +41,28 @@ public:
 
         for (int i = 0; i < NUM_LINES; ++i)
         {
-            delayLengths[i] = static_cast<int>(primes[i] * scaleFactor);
+            int baseDelay = static_cast<int>(primes[i] * scaleFactor);
+
+            // Lines 0-7: Anchored to physical axial & tangential dimensional reflections
+            if (i == 0 && tauX > 64)   baseDelay = (tauX + baseDelay) / 2;
+            else if (i == 1 && tauY > 64) baseDelay = (tauY + baseDelay) / 2;
+            else if (i == 2 && tauZ > 64) baseDelay = (tauZ + baseDelay) / 2;
+            else if (i == 3 && tauXY > 64) baseDelay = (tauXY + baseDelay) / 2;
+            else if (i == 4 && tauYZ > 64) baseDelay = (tauYZ + baseDelay) / 2;
+            else if (i == 5 && tauXZ > 64) baseDelay = (tauXZ + baseDelay) / 2;
+            else if (i == 6 && tauXYZ > 64) baseDelay = (tauXYZ + baseDelay) / 2;
+
+            // Ensure mutual coprimality / odd parity
+            if (baseDelay % 2 == 0) baseDelay += 1;
+
+            delayLengths[i] = std::max(64, baseDelay);
             buffers[i].assign(delayLengths[i], 0.0f);
             bufferPointers[i] = 0;
             filterStateHF[i] = 0.0f;
             filterStateLF[i] = 0.0f;
         }
 
-        updateAcousticParameters(baseRt60, currentDampCutoffHz, currentHfMult, currentBassMult, currentOccupancy);
+        updateAcousticParameters(rt60, currentDampCutoffHz, currentHfMult, currentBassMult);
     }
 
     void reset()
@@ -48,38 +76,17 @@ public:
         }
     }
 
-    // Dynamic parameter update including ISO 9613-1 microclimate and audience absorption
-    void updateAcousticParameters(float targetRt60, float dampCutoffHz, float hfMult, float bassMult, float occupancy = 0.0f,
-                                  float airTempC = 20.0f, float airHumidityPct = 50.0f)
+    // Dynamic, click-free parameter update callable during active playback
+    void updateAcousticParameters(float targetRt60, float dampCutoffHz, float hfMult, float bassMult)
     {
-        baseRt60 = std::max(0.08f, targetRt60);
-        currentOccupancy = std::clamp(occupancy, 0.0f, 1.0f);
-
-        // Sabine/Eyring physical audience absorption:
-        // Wool, human clothing, and bodies provide substantial mid/high absorption.
-        // Full house (occupancy = 1.0) decreases effective RT60 by up to 28% and scales down HF damping cutoff.
-        float occupancyDecayFactor = 1.0f / (1.0f + 0.38f * currentOccupancy);
-        rt60 = baseRt60 * occupancyDecayFactor;
-
-        // Treble is absorbed significantly more by audience presence
-        float effectiveDampCutoff = dampCutoffHz * (1.0f - 0.28f * currentOccupancy);
-        currentDampCutoffHz = std::clamp(effectiveDampCutoff, 500.0f, 20000.0f);
-
-        float effectiveHfMult = hfMult * (1.0f - 0.22f * currentOccupancy);
-        currentHfMult = std::clamp(effectiveHfMult, 0.05f, 1.0f);
+        rt60 = std::max(0.08f, targetRt60);
+        currentDampCutoffHz = std::clamp(dampCutoffHz, 800.0f, 20000.0f);
+        currentHfMult = std::clamp(hfMult, 0.05f, 1.0f);
         currentBassMult = std::clamp(bassMult, 0.2f, 2.5f);
 
-        // ISO 9613-1 Atmospheric Absorption Modulator
-        AetherAcoustics::AtmosphericProperties atmo;
-        atmo.temperatureC = airTempC;
-        atmo.relativeHumidityPct = airHumidityPct;
-        float atmoAlpha10k = atmo.computeAbsorptionAlpha(10000.0f);
-        // Dry air (high alpha) lowers effective HF cutoff; humid air keeps it open
-        float atmoScale = std::clamp(1.0f - (atmoAlpha10k - 0.15f) * 0.8f, 0.4f, 1.25f);
-        float finalDampCutoff = currentDampCutoffHz * atmoScale;
-
         // Precompute filter coefficients for HF damping and LF crossover (~250 Hz)
-        float wCutoffHF = 2.0f * 3.14159265f * finalDampCutoff / fs;
+        float wCutoffHF = 2.0f * 3.14159265f * currentDampCutoffHz / fs;
+        // 1-pole lowpass alpha: alpha = cos(w) - 1 + sqrt(cos^2 - 4cos + 3) ~ w / (w + 1)
         float baseAlphaHF = std::clamp(std::exp(-wCutoffHF), 0.02f, 0.96f);
 
         float wCutoffLF = 2.0f * 3.14159265f * 250.0f / fs;
@@ -99,6 +106,7 @@ public:
             gainDiffLF[i] = (targetGainLF / std::max(1e-5f, loopGainsMid[i])) - 1.0f;
 
             // High-frequency damping filter coefficient per line:
+            // Lines with higher index receive slightly progressive damping for rich organic spatial decay
             float spread = 1.0f + 0.15f * (static_cast<float>(i - NUM_LINES / 2) / NUM_LINES);
             float effectiveAlpha = std::clamp(1.0f - (1.0f - baseAlphaHF) * currentHfMult * spread, 0.05f, 0.98f);
             dampingCoeffsHF[i] = effectiveAlpha;
@@ -157,22 +165,19 @@ public:
 
 private:
     float fs = 96000.0f;
-    float baseRt60 = 2.0f;
     float rt60 = 2.0f;
     float currentDampCutoffHz = 5500.0f;
-    float currentHfMult = 0.6f;
+    float currentHfMult = 0.5f;
     float currentBassMult = 1.0f;
-    float currentOccupancy = 0.0f;
+    float alphaLF = 0.98f;
+
+    std::array<int, NUM_LINES> delayLengths{};
+    std::array<float, NUM_LINES> loopGainsMid{};
+    std::array<float, NUM_LINES> gainDiffLF{};
+    std::array<float, NUM_LINES> dampingCoeffsHF{};
 
     std::array<std::vector<float>, NUM_LINES> buffers;
-    std::array<int, NUM_LINES> delayLengths{ 0 };
-    std::array<int, NUM_LINES> bufferPointers{ 0 };
-
-    std::array<float, NUM_LINES> loopGainsMid{ 0.0f };
-    std::array<float, NUM_LINES> dampingCoeffsHF{ 0.0f };
-    std::array<float, NUM_LINES> filterStateHF{ 0.0f };
-
-    float alphaLF = 0.95f;
-    std::array<float, NUM_LINES> gainDiffLF{ 0.0f };
-    std::array<float, NUM_LINES> filterStateLF{ 0.0f };
+    std::array<int, NUM_LINES> bufferPointers{};
+    std::array<float, NUM_LINES> filterStateHF{};
+    std::array<float, NUM_LINES> filterStateLF{};
 };

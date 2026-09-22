@@ -6,7 +6,6 @@
 #include "DSP/NonlinearWaveguideArray.h"
 #include "DSP/BeamSeededFDN.h"
 #include "DSP/CleverTailDetector.h"
-#include "DSP/BinauralSpatializer.h"
 #include "DSP/AcousticDefinitions.h"
 #include "DSP/AcousticDatabase.h"
 
@@ -46,7 +45,6 @@ public:
 
     void switchSpaceAndPosition(int spaceIdx, int posIdx);
     void setCustomCoordinates(float srcXNorm, float srcYNorm, float lisXNorm, float lisYNorm);
-    bool loadCustomObjMesh(const juce::File& objFile);
 
     int getCurrentSpaceIndex() const { return currentSpaceIndex; }
     int getCurrentPositionIndex() const { return currentPositionIndex; }
@@ -54,14 +52,6 @@ public:
     AetherAcoustics::Vec3 getCurrentSourcePos() const;
     AetherAcoustics::Vec3 getCurrentListenerPos() const;
     std::vector<AetherAcoustics::RaySegment> getCurrentRays() const;
-
-    MicPolarPattern getCurrentMicPattern() const { return currentMicPattern; }
-    float getCurrentStereoWidth() const { return currentStereoWidth; }
-    float getCurrentOccupancy() const { return currentOccupancy; }
-    float getCurrentAirTemp() const { return currentAirTemp; }
-    float getCurrentAirHumidity() const { return currentAirHumidity; }
-    float getCurrentSurfaceScattering() const { return currentSurfaceScattering; }
-    const AetherAcoustics::SpaceData* getCustomSpaceData() const { return hasCustomSpace ? &customSpace : nullptr; }
 
 private:
     juce::AudioProcessorValueTreeState apvts;
@@ -79,16 +69,6 @@ private:
     std::atomic<float> targetListenerXNorm{ 0.5f };
     std::atomic<float> targetListenerYNorm{ 0.75f };
 
-    std::atomic<MicPolarPattern> currentMicPattern{ MicPolarPattern::Binaural };
-    std::atomic<float> currentStereoWidth{ 1.0f };
-    std::atomic<float> currentOccupancy{ 0.0f };
-    std::atomic<float> currentAirTemp{ 20.0f };
-    std::atomic<float> currentAirHumidity{ 50.0f };
-    std::atomic<float> currentSurfaceScattering{ 0.25f };
-
-    bool hasCustomSpace = false;
-    AetherAcoustics::SpaceData customSpace;
-
     std::atomic<bool> coordinatesDirty{ false };
 
     mutable std::mutex rayMutex;
@@ -99,6 +79,9 @@ private:
     float currentRt60 = 4.2f;
     float currentVolume = 57.0f;
     float currentArea = 92.0f;
+    float currentDimX = 4.2f;
+    float currentDimY = 6.8f;
+    float currentDimZ = 3.4f;
 
     void updateAcousticPaths(const std::vector<AetherAcoustics::RaySegment>& rays);
 

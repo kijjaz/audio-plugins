@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import scipy.signal as signal
 
 FS = 96000
 SPEED_OF_SOUND = 343.2
@@ -117,30 +118,100 @@ def render_binaural_ir(space, pos, peak_spl_db=122.0):
         if 0 <= idx_r < n_samples:
             out_r[idx_r] += amp * phase
             
-    # 2. Diffuse Late Reverberation Tail (Seeded after Mean Free Path)
-    mfp = (4.0 * vol / area) if area > 1.0 else 10.0
-    t = np.arange(n_samples, dtype=np.float32) / FS
-    decay_env = np.exp(-6.907755 * t / rt60) # -60 dB decay
+    # 2. 3D Architectural Modal Standing Waves & Schroeder Diffuse Tail
+    bounds = space['bounds']
+    b_min = np.array(bounds['min'], dtype=np.float32)
+    b_max = np.array(bounds['max'], dtype=np.float32)
+    L = np.maximum(b_max - b_min, 0.1)
+    Lx, Ly, Lz = float(L[0]), float(L[1]), float(L[2])
     
-    # Progressive high frequency air absorption across propagation time
+    # Calculate Schroeder transition frequency: f_sch = 2000 * sqrt(RT60 / V)
+    f_schroeder = 2000.0 * np.sqrt(rt60 / max(vol, 1.0))
+    modal_cutoff = max(min(f_schroeder, 350.0), 120.0) # Up to 350 Hz for small chambers, min 120 Hz
+    
+    # Discover 3D eigenmodes within physical enclosure
+    axial, tangential, oblique = [], [], []
+    max_nx = int(modal_cutoff * 2 * Lx / SPEED_OF_SOUND) + 1
+    max_ny = int(modal_cutoff * 2 * Ly / SPEED_OF_SOUND) + 1
+    max_nz = 0 if space['id'] == 'epidaurus_amphitheatre' else int(modal_cutoff * 2 * Lz / SPEED_OF_SOUND) + 1
+    
+    for nx in range(max_nx + 1):
+        for ny in range(max_ny + 1):
+            for nz in range(max_nz + 1):
+                if nx == 0 and ny == 0 and nz == 0:
+                    continue
+                f = 0.5 * SPEED_OF_SOUND * np.sqrt((nx / Lx)**2 + (ny / Ly)**2 + (nz / Lz)**2)
+                if 20.0 <= f <= modal_cutoff:
+                    order = int(nx > 0) + int(ny > 0) + int(nz > 0)
+                    if order == 1:
+                        axial.append((f, nx, ny, nz, 'axial', 1.0, 1.35))
+                    elif order == 2:
+                        tangential.append((f, nx, ny, nz, 'tangential', 0.707, 1.15))
+                    else:
+                        oblique.append((f, nx, ny, nz, 'oblique', 0.5, 1.0))
+                        
+    axial.sort(key=lambda x: x[0])
+    tangential.sort(key=lambda x: x[0])
+    oblique.sort(key=lambda x: x[0])
+    
+    selected_modes = axial + tangential[:max(0, 64 - len(axial))]
+    if len(selected_modes) < 64:
+        selected_modes += oblique[:64 - len(selected_modes)]
+    selected_modes.sort(key=lambda x: x[0])
+    
+    # Compute normalized 3D position coordinates within boundary box [0, 1]
+    src_norm = np.clip((np.array(pos['src'], dtype=np.float32) - b_min) / L, 0.0, 1.0)
+    lis_norm = np.clip((np.array(pos['lis'], dtype=np.float32) - b_min) / L, 0.0, 1.0)
+    
+    t = np.arange(n_samples, dtype=np.float32) / FS
+    decay_env = np.exp(-6.907755 * t / rt60) # -60 dB nominal decay
     hf_damp = np.exp(-1.6 * t / rt60)
     
-    # Deterministic seed per position for reproducibility
+    # 2a. Diffuse field above modal transition frequency
     seed_val = abs(hash(space['id'])) % 100000 + pos['id'] * 137
     rng = np.random.RandomState(seed_val)
     noise_l = rng.normal(0, 1.0, n_samples).astype(np.float32)
     noise_r = rng.normal(0, 1.0, n_samples).astype(np.float32)
     
-    diffuse_l = noise_l * decay_env * (0.55 + 0.45 * hf_damp)
-    diffuse_r = noise_r * decay_env * (0.55 + 0.45 * hf_damp)
+    # High-pass diffuse noise above modal cutoff to prevent redundant low-end clutter
+    b_hp, a_hp = signal.butter(2, modal_cutoff / (FS / 2.0), btype='high')
+    diffuse_l = signal.lfilter(b_hp, a_hp, noise_l * decay_env * (0.55 + 0.45 * hf_damp)).astype(np.float32)
+    diffuse_r = signal.lfilter(b_hp, a_hp, noise_r * decay_env * (0.55 + 0.45 * hf_damp)).astype(np.float32)
     
-    # Diffuse onset ramp after mean free path
+    # 2b. Physical 3D Standing Wave Resonators (Nodes & Antinodes)
+    modal_l = np.zeros(n_samples, dtype=np.float32)
+    modal_r = np.zeros(n_samples, dtype=np.float32)
+    
+    for f, nx, ny, nz, mtype, weight, q_mult in selected_modes:
+        # Spatial eigenmode shape: Psi(x, y, z) = cos(nx*pi*x/Lx) * cos(ny*pi*y/Ly) * cos(nz*pi*z/Lz)
+        psi_src = np.cos(nx * np.pi * src_norm[0]) * np.cos(ny * np.pi * src_norm[1]) * np.cos(nz * np.pi * src_norm[2])
+        psi_lis = np.cos(nx * np.pi * lis_norm[0]) * np.cos(ny * np.pi * lis_norm[1]) * np.cos(nz * np.pi * lis_norm[2])
+        coupling = psi_src * psi_lis * weight
+        if abs(coupling) < 1e-4:
+            continue
+            
+        # Axial modes experience fewer boundary collisions -> ring longer (higher Q)
+        tau_mode = (rt60 * q_mult) / 6.907755
+        decay_m = np.exp(-t / tau_mode)
+        
+        # Spatial binaural decorrelation based on mode orientation
+        ph0_l = ((nx * 73 + ny * 179 + nz * 283) % 1000) / 1000.0 * 2.0 * np.pi
+        ph0_r = ph0_l + 0.25 * np.pi * ((nx % 2) * 2 - 1)
+        
+        modal_l += (coupling * np.cos(2.0 * np.pi * f * t + ph0_l) * decay_m).astype(np.float32)
+        modal_r += (coupling * np.cos(2.0 * np.pi * f * t + ph0_r) * decay_m).astype(np.float32)
+        
+    # Diffuse & modal onset ramp after Mean Free Path propagation time
+    mfp = (4.0 * vol / area) if area > 1.0 else 10.0
     t_onset = mfp / SPEED_OF_SOUND
     onset_ramp = np.clip((t - t_onset) / 0.04, 0.0, 1.0)
     
     tail_gain = 0.25 / np.sqrt(vol + 10.0)
-    out_l += diffuse_l * onset_ramp * tail_gain
-    out_r += diffuse_r * onset_ramp * tail_gain
+    num_m = max(len(selected_modes), 1)
+    modal_scale = (0.22 / np.sqrt(num_m)) * (tail_gain * 3.5)
+    
+    out_l += (diffuse_l * tail_gain + modal_l * modal_scale) * onset_ramp
+    out_r += (diffuse_r * tail_gain + modal_r * modal_scale) * onset_ramp
     
     # 100 ms smooth release fade at buffer tail
     fade_len = int(0.1 * FS)
