@@ -20,6 +20,16 @@
     "game-audio",
     "audio-worklet"
   ],
+  "files": [
+    "src",
+    "README.md",
+    "package.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kijjaz/audio-plugins.git",
+    "directory": "plugins/FlyByWeb"
+  },
   "author": "Kijjaz • Gemini 3.8 Flash",
   "license": "MIT"
 }
