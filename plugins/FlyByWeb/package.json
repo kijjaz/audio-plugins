@@ -1,0 +1,25 @@
+{
+  "name": "flyby-web",
+  "version": "1.0.0",
+  "description": "Zero-asset, ultra-lightweight 3D binaural spatializer for Web Audio, WebGL, and WebXR",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve demo -p 3000",
+    "test": "node --experimental-vm-modules test/test.js"
+  },
+  "keywords": [
+    "webaudio",
+    "spatial-audio",
+    "binaural",
+    "3d-audio",
+    "hrtf",
+    "threejs",
+    "webxr",
+    "game-audio",
+    "audio-worklet"
+  ],
+  "author": "Kijjaz • Gemini 3.8 Flash",
+  "license": "MIT"
+}

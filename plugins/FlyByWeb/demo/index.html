@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyByWeb • Zero-Asset 3D Binaural Spatializer</title>
+    <link rel="stylesheet" href="demo.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Pro-Console Header -->
+        <header class="console-header">
+            <div class="brand">
+                <div class="brand-badge">WEB AUDIO 3D</div>
+                <h1 class="brand-title">FLYBY<span class="gold-text">WEB</span></h1>
+                <span class="brand-sub">ANATOMICAL 3D BINAURAL SPATIALIZER</span>
+            </div>
+            <div class="transport-bar">
+                <button id="btnPower" class="btn-power">START AUDIO ENGINE</button>
+                <div class="audio-status" id="audioStatus">AUDIO ENGINE IDLE</div>
+            </div>
+            <div class="header-authors">
+                KIJJAZ • GEMINI 3.8 FLASH
+            </div>
+        </header>
+
+        <!-- Main Display Row: 3D Radar + Elevation HUD -->
+        <main class="console-main">
+            <section class="radar-card">
+                <div class="card-header">
+                    <span class="card-title">AZIMUTH RADAR & DISTANCE (HORIZONTAL PLANE)</span>
+                    <span class="badge" id="badgeAzimuth">AZ: 0.0°</span>
+                </div>
+                <div class="canvas-wrap">
+                    <canvas id="radarCanvas" width="460" height="460"></canvas>
+                </div>
+            </section>
+
+            <section class="elevation-card">
+                <div class="card-header">
+                    <span class="card-title">VERTICAL ELEVATION PROFILE (PINNA / TORSO)</span>
+                    <span class="badge" id="badgeElevation">EL: 0.0°</span>
+                </div>
+                <div class="canvas-wrap">
+                    <canvas id="elevationCanvas" width="460" height="460"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <!-- Lower Control Section -->
+        <footer class="console-controls">
+            <!-- Sound Source Selector -->
+            <div class="control-panel">
+                <h3 class="panel-title">TEST SOUND SOURCE</h3>
+                <div class="btn-group">
+                    <button id="btnSoundSynth" class="btn-toggle active">ANALOG SYNTH</button>
+                    <button id="btnSoundDrums" class="btn-toggle">TRANSIENT BEATS</button>
+                    <button id="btnSoundNoise" class="btn-toggle">PINK NOISE</button>
+                </div>
+                <div class="source-status" id="sourceStatus">Playing: Synth Arp Sequence</div>
+            </div>
+
+            <!-- Autonomous Flight Modes -->
+            <div class="control-panel">
+                <h3 class="panel-title">FLIGHT TRAJECTORY</h3>
+                <div class="btn-group">
+                    <button id="btnModeManual" class="btn-mode active">MANUAL</button>
+                    <button id="btnModeSwoop" class="btn-mode">SWOOP</button>
+                    <button id="btnModeHelical" class="btn-mode">HELICAL</button>
+                    <button id="btnModeZenith" class="btn-mode">ZENITH</button>
+                    <button id="btnModeFlutter" class="btn-mode">FLUTTER</button>
+                </div>
+                <div class="speed-slider-wrap">
+                    <label>Speed: <span id="valSpeed">0.25</span> Hz</label>
+                    <input type="range" id="sliderSpeed" min="0.05" max="2.0" step="0.05" value="0.25">
+                </div>
+            </div>
+
+            <!-- Innovation Controls -->
+            <div class="control-panel slider-panel">
+                <h3 class="panel-title">ACOUSTICS & TUNING</h3>
+                <div class="slider-row">
+                    <label>Pinna Tuning: <span id="valPinna">1.00x</span></label>
+                    <input type="range" id="sliderPinna" min="75" max="125" value="100">
+                </div>
+                <div class="slider-row">
+                    <label>Elevation Depth: <span id="valElDepth">1.00x</span></label>
+                    <input type="range" id="sliderElDepth" min="0" max="150" value="100">
+                </div>
+                <div class="slider-row">
+                    <label>Transient Crispness: <span id="valCrisp">75%</span></label>
+                    <input type="range" id="sliderCrisp" min="0" max="100" value="75">
+                </div>
+                <div class="slider-row">
+                    <label>Room Grounding: <span id="valGround">40%</span></label>
+                    <input type="range" id="sliderGround" min="0" max="100" value="40">
+                </div>
+                <div class="slider-row">
+                    <label>Doppler Amount: <span id="valDoppler">100%</span></label>
+                    <input type="range" id="sliderDoppler" min="0" max="200" value="100">
+                </div>
+            </div>
+
+            <!-- Manual Coordinate Dials & Room Boundaries -->
+            <div class="control-panel slider-panel">
+                <h3 class="panel-title">COORDINATES & BOUNDARIES</h3>
+                <div class="slider-row">
+                    <label>Azimuth: <span id="valAz">0°</span></label>
+                    <input type="range" id="sliderAz" min="-180" max="180" value="0">
+                </div>
+                <div class="slider-row">
+                    <label>Elevation: <span id="valEl">0°</span></label>
+                    <input type="range" id="sliderEl" min="-50" max="90" value="0">
+                </div>
+                <div class="slider-row">
+                    <label>Distance: <span id="valDist">1.5m</span></label>
+                    <input type="range" id="sliderDist" min="0.3" max="8.0" step="0.1" value="1.5">
+                </div>
+                <div class="slider-row">
+                    <label>Ceiling (+Z): <span id="valCeil">2.5m</span></label>
+                    <input type="range" id="sliderCeil" min="0.5" max="5.0" step="0.1" value="2.5">
+                </div>
+                <div class="slider-row">
+                    <label>Floor (-Z): <span id="valFloor">-0.8m</span></label>
+                    <input type="range" id="sliderFloor" min="-2.5" max="0.0" step="0.1" value="-0.8">
+                </div>
+                <div class="slider-row" style="margin-top: 6px; display: flex; align-items: center; justify-content: space-between;">
+                    <label for="checkCeiling" style="cursor: pointer;">Ceiling Reflection (Opt-in):</label>
+                    <input type="checkbox" id="checkCeiling" style="cursor: pointer; width: 18px; height: 18px; accent-color: var(--accent-gold);">
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="demo.js"></script>
+</body>
+</html>

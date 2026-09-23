@@ -40,6 +40,19 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
+### 5. [FlyBy (VST3 / AU)](plugins/FlyBy/README.md)
+* **Type**: 3D Binaural Spatial Panner & Dynamic Elevation Engine.
+* **Key Features**: Spherical Rayleigh-Woodworth ITD, dual pinna notches ($N_1, N_2$) with overhead zenith presence and torso reflection, transient preservation attack detection to eliminate pinna comb-filtering smear, floor grounding reflections, dynamic speed-adaptive Doppler frequency shifts, and autonomous 3D flight trajectories (Swoop, Helical, Zenith, Flutter).
+* 📦 **[Download Latest FlyBy Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml)**
+
+---
+
+### 6. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
+* **Type**: Zero-Dependency Web Audio 3D Spatial Audio Library & AudioWorklet Engine.
+* **Key Features**: Drop-in high-performance AudioWorklet DSP with zero build dependencies, Three.js / WebXR camera tracking integration, full feature parity with FlyBy VST3, opt-in ceiling and floor boundary reflections, and interactive browser-based 3D radar demo.
+
+---
+
 ## 💻 Supported Formats & Platforms
 
 | Platform | Formats | Architectures | Installation & Security Notes |
