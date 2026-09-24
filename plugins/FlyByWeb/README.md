@@ -35,6 +35,7 @@ Traditional browser spatialization approaches force a trade-off:
 | :--- | :--- | :--- |
 | **Rayleigh-Woodworth ITD** | Continuous spherical head delay model with 4-point Cubic Hermite sub-sample interpolation. | Clean, continuous Doppler pitch shift without digital zipper noise. |
 | **Head Shadowing (ILD)** | Continuous 1-pole spherical diffraction filter based on ear-normal angle $\theta$. | Accurate acoustic head diffraction around skull. |
+| **Front/Back Disambiguation** | Posterior pinna shadow ($-4.5\,\text{dB} > 4.6\,\text{kHz}$ from behind) + Concha bowl resonance ($+2.2\,\text{dB} @ 3.2\,\text{kHz}$ in front). | Completely resolves front vs. back ambiguity along the cone of confusion. |
 | **Pinna Elevation Notches** | Modulates primary notch ($N_1: 6.0\text{--}11.2\,\text{kHz}$), secondary notch ($N_2: 9.8\text{--}13.0\,\text{kHz}$), zenith presence shelf, and torso comb ($1.2\,\text{kHz}$). | Distinct perception of sound moving up, down, and overhead. |
 | **TransientPreserver™** | Fast/slow envelope follower detects attack onsets ($>6\,\text{dB}$ jump in $<2\,\text{ms}$) and relaxes pinna notches for $8\,\text{ms}$. | Drums and sharp transients remain punchy instead of becoming phasey/dull. |
 | **Boundary Grounding** | Image-source specular early reflections for floor & ceiling with frequency-dependent surface absorption. | Creates natural acoustic anchoring in virtual rooms. |
