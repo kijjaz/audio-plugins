@@ -104,7 +104,10 @@ public:
         notchN2.reset();
         zenithPresence.reset();
         torsoComb.reset();
+        rearPinnaShadow.reset();
+        conchaBoost.reset();
         lastEl = -999.0f;
+        lastFrontBack = -999.0f;
         lastScale = -999.0f;
         lastStrength = -999.0f;
         lastNotchMult = -999.0f;
@@ -112,14 +115,16 @@ public:
 
     /**
      * @param elevationDeg: -90 to +90 degrees
+     * @param frontBackFactor: +1.0 = directly in front, -1.0 = directly behind
      * @param pinnaScale: 0.75 to 1.25 (1.0 = standard anatomical model)
      * @param elevationStrength: 0.0 to 1.0 (depth/intensity of pinna notch cues)
      * @param notchDepthMultiplier: 0.0 to 1.0 (dynamically modulated by TransientPreserver)
      */
-    void update(float elevationDeg, float pinnaScale = 1.0f, float elevationStrength = 1.0f,
-                float notchDepthMultiplier = 1.0f) {
+    void update(float elevationDeg, float frontBackFactor = 1.0f, float pinnaScale = 1.0f,
+                float elevationStrength = 1.0f, float notchDepthMultiplier = 1.0f) {
         // Fast-path change threshold check: skip costly trig & biquad coefficient calculation if virtually unchanged
         if (std::abs(elevationDeg - lastEl) < 0.05f &&
+            std::abs(frontBackFactor - lastFrontBack) < 0.01f &&
             std::abs(pinnaScale - lastScale) < 0.005f &&
             std::abs(elevationStrength - lastStrength) < 0.005f &&
             std::abs(notchDepthMultiplier - lastNotchMult) < 0.01f) {
@@ -127,6 +132,7 @@ public:
         }
 
         lastEl = elevationDeg;
+        lastFrontBack = frontBackFactor;
         lastScale = pinnaScale;
         lastStrength = elevationStrength;
         lastNotchMult = notchDepthMultiplier;
@@ -167,6 +173,22 @@ public:
         float torsoFreq = (1200.0f - belowFactor * 350.0f);
         float torsoGainDb = (-8.0f * belowFactor) * elevationStrength;
         torsoComb.setPeaking(torsoFreq, torsoGainDb, 2.8f, sampleRate);
+
+        // 5. Front/Back Pinna Flap Posterior Shadowing:
+        // The outer ear pinna flap faces forward. Sounds arriving from behind (Y < 0, frontBackFactor < 0)
+        // are heavily shadowed above 4.5 kHz by the cartilaginous flap (up to -4.5 dB).
+        float rearFactor = std::clamp(-frontBackFactor, 0.0f, 1.0f);
+        float rearCutoff = (4600.0f * pinnaScale);
+        float rearGainDb = -4.5f * rearFactor * elevationStrength;
+        rearPinnaShadow.setHighShelf(rearCutoff, rearGainDb, sampleRate);
+
+        // 6. Concha Bowl Frontal Acoustic Resonance:
+        // Sound entering directly from the front (+Y, frontBackFactor > 0) resonates inside the concha
+        // bowl cavity around ~3.2 kHz with +2.2 dB boost.
+        float frontFactor = std::clamp(frontBackFactor, 0.0f, 1.0f);
+        float conchaFreq = (3200.0f * pinnaScale);
+        float conchaGainDb = 2.2f * frontFactor * elevationStrength;
+        conchaBoost.setPeaking(conchaFreq, conchaGainDb, 1.8f, sampleRate);
     }
 
     inline float process(float in) {
@@ -174,6 +196,8 @@ public:
         x = notchN2.process(x);
         x = zenithPresence.process(x);
         x = torsoComb.process(x);
+        x = rearPinnaShadow.process(x);
+        x = conchaBoost.process(x);
         return x;
     }
 
@@ -183,8 +207,11 @@ private:
     BiquadFilter notchN2;
     BiquadFilter zenithPresence;
     BiquadFilter torsoComb;
+    BiquadFilter rearPinnaShadow;
+    BiquadFilter conchaBoost;
 
     float lastEl = -999.0f;
+    float lastFrontBack = -999.0f;
     float lastScale = -999.0f;
     float lastStrength = -999.0f;
     float lastNotchMult = -999.0f;

@@ -129,13 +129,15 @@ public:
         headShadowLeft.update(leftTheta);
         headShadowRight.update(rightTheta);
 
-        // 3. Pinna Notches (Elevation)
+        // 3. Pinna Notches (Elevation) & Front/Back Cues
         currentElevation = elDeg;
         currentPinnaScale = params.pinnaScale;
         currentElevationStrength = params.elevationStrength;
         currentCrispness = params.crispness;
-        pinnaLeft.update(elDeg, params.pinnaScale, params.elevationStrength, 1.0f);
-        pinnaRight.update(elDeg, params.pinnaScale, params.elevationStrength, 1.0f);
+        float horizDist = std::sqrt(params.position.x * params.position.x + params.position.y * params.position.y);
+        currentFrontBackFactor = params.position.y / std::max(0.001f, horizDist);
+        pinnaLeft.update(elDeg, currentFrontBackFactor, params.pinnaScale, params.elevationStrength, 1.0f);
+        pinnaRight.update(elDeg, currentFrontBackFactor, params.pinnaScale, params.elevationStrength, 1.0f);
 
         // 4. Boundary Early Reflections (Floor & Ceiling Grounding)
         BoundaryReflector::BoundaryConfig bCfg;
@@ -177,8 +179,8 @@ public:
         float notchMult = transientPreserver.getNotchDepthMultiplier(currentCrispness);
 
         // Dynamically modulate pinna notch depth to protect transients (internally thresholded)
-        pinnaLeft.update(currentElevation, currentPinnaScale, currentElevationStrength, notchMult);
-        pinnaRight.update(currentElevation, currentPinnaScale, currentElevationStrength, notchMult);
+        pinnaLeft.update(currentElevation, currentFrontBackFactor, currentPinnaScale, currentElevationStrength, notchMult);
+        pinnaRight.update(currentElevation, currentFrontBackFactor, currentPinnaScale, currentElevationStrength, notchMult);
 
         // Write mono sample to delay lines
         delayLeft.write(inMono);
@@ -232,6 +234,7 @@ private:
     BoundaryReflector boundaryReflector;
 
     float currentElevation = 0.0f;
+    float currentFrontBackFactor = 1.0f;
     float currentPinnaScale = 1.0f;
     float currentElevationStrength = 1.0f;
     float currentCrispness = 0.7f;

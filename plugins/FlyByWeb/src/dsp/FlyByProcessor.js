@@ -149,11 +149,14 @@ class PinnaFilter {
         this.notchN2 = new BiquadFilter();
         this.zenithPresence = new BiquadFilter();
         this.torsoComb = new BiquadFilter();
+        this.rearPinnaShadow = new BiquadFilter();
+        this.conchaBoost = new BiquadFilter();
 
         this.lastEl = -999.0;
         this.lastScale = -999.0;
         this.lastStrength = -999.0;
         this.lastNotchMult = -999.0;
+        this.lastFrontBack = -999.0;
     }
 
     reset() {
@@ -161,14 +164,18 @@ class PinnaFilter {
         this.notchN2.reset();
         this.zenithPresence.reset();
         this.torsoComb.reset();
+        this.rearPinnaShadow.reset();
+        this.conchaBoost.reset();
         this.lastEl = -999.0;
         this.lastScale = -999.0;
         this.lastStrength = -999.0;
         this.lastNotchMult = -999.0;
+        this.lastFrontBack = -999.0;
     }
 
-    update(elevationDeg, pinnaScale = 1.0, elevationStrength = 1.0, notchDepthMultiplier = 1.0) {
+    update(elevationDeg, frontBackFactor = 1.0, pinnaScale = 1.0, elevationStrength = 1.0, notchDepthMultiplier = 1.0) {
         if (Math.abs(elevationDeg - this.lastEl) < 0.05 &&
+            Math.abs(frontBackFactor - this.lastFrontBack) < 0.01 &&
             Math.abs(pinnaScale - this.lastScale) < 0.005 &&
             Math.abs(elevationStrength - this.lastStrength) < 0.005 &&
             Math.abs(notchDepthMultiplier - this.lastNotchMult) < 0.01) {
@@ -176,6 +183,7 @@ class PinnaFilter {
         }
 
         this.lastEl = elevationDeg;
+        this.lastFrontBack = frontBackFactor;
         this.lastScale = pinnaScale;
         this.lastStrength = elevationStrength;
         this.lastNotchMult = notchDepthMultiplier;
@@ -204,6 +212,21 @@ class PinnaFilter {
         const torsoFreq = 1200.0 - belowFactor * 350.0;
         const torsoGainDb = (-8.0 * belowFactor) * elevationStrength;
         this.torsoComb.setPeaking(torsoFreq, torsoGainDb, 2.8, this.sampleRate);
+
+        // 5. Front vs Back Anatomical Spectral Cues
+        // frontBackFactor: +1.0 = directly in front (+Y), -1.0 = directly behind (-Y)
+        const rearFactor = Math.max(0.0, -frontBackFactor);  // 0.0 in front, up to 1.0 behind
+        const frontFactor = Math.max(0.0, frontBackFactor); // 0.0 behind, up to 1.0 in front
+
+        // Pinna Flap Posterior Occlusion:
+        // Sounds from the rear pass behind the ear flap, attenuating 4.5 kHz+ highs by up to -4.5 dB
+        const rearShelfGainDb = -4.5 * rearFactor * elevationStrength;
+        this.rearPinnaShadow.setHighShelf(4600.0 * pinnaScale, rearShelfGainDb, this.sampleRate);
+
+        // Frontal Concha Bowl Resonance Boost:
+        // Sounds entering from the front reflect into the concha canal, boosting 3.2 kHz presence by +2.2 dB
+        const conchaGainDb = 2.2 * frontFactor * elevationStrength;
+        this.conchaBoost.setPeaking(3200.0 * pinnaScale, conchaGainDb, 1.8, this.sampleRate);
     }
 
     process(inVal) {
@@ -211,6 +234,8 @@ class PinnaFilter {
         x = this.notchN2.process(x);
         x = this.zenithPresence.process(x);
         x = this.torsoComb.process(x);
+        x = this.rearPinnaShadow.process(x);
+        x = this.conchaBoost.process(x);
         return x;
     }
 }
@@ -488,7 +513,8 @@ class FlyByProcessor extends AudioWorkletProcessor {
         // Adaptive Delay Slew Rate
         const delayDelta = Math.max(Math.abs(this.targetLeftDelay - this.currentLeftDelay),
                                     Math.abs(this.targetRightDelay - this.currentRightDelay));
-        this.adaptiveDelaySlew = Math.min(Math.max(0.0015, 0.0015 + delayDelta * 0.0001), 0.015);
+        // Front vs Back Factor: +1.0 = directly in front (+Y), -1.0 = directly behind (-Y)
+        const frontBackFactor = posY / Math.max(0.001, horizDist);
 
         // Sample processing loop
         for (let i = 0; i < numSamples; ++i) {
@@ -498,8 +524,8 @@ class FlyByProcessor extends AudioWorkletProcessor {
             this.transientPreserver.process(inMono);
             const notchMult = this.transientPreserver.getNotchDepthMultiplier(crispness);
 
-            this.pinnaL.update(elDeg, pinnaScale, elevationStrength, notchMult);
-            this.pinnaR.update(elDeg, pinnaScale, elevationStrength, notchMult);
+            this.pinnaL.update(elDeg, frontBackFactor, pinnaScale, elevationStrength, notchMult);
+            this.pinnaR.update(elDeg, frontBackFactor, pinnaScale, elevationStrength, notchMult);
 
             // 2. Fractional Delay Lines with Hermite Interpolation
             this.delayL.write(inMono);
