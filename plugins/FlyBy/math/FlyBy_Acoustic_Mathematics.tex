@@ -113,6 +113,26 @@ When a sound source is below eye level ($\phi < 0^\circ$), torso reflections int
 f_{\text{torso}}(\phi) = 1200 - \left(\frac{-\phi}{50^\circ}\right) \cdot 350 \quad [\text{Hz}], \quad G_{\text{torso}}(\phi) = -8 \cdot \left(\frac{-\phi}{50^\circ}\right) \quad [\text{dB}]
 \end{equation}
 
+\subsection{Front vs. Back Disambiguation: Posterior Pinna Shadowing and Concha Resonance}
+Horizontal ITD and ILD are geometrically identical along the cone of confusion (e.g., $(x, y, z) = (0, +y, 0)$ in front vs. $(0, -y, 0)$ behind). FlyBy resolves front-back ambiguity through two monaural anthropometric spectral cues derived from the forward-facing anatomy of the human auricle:
+
+Let the normalized front-back factor be:
+\begin{equation}
+\kappa_{\text{FB}} = \frac{y}{\max(0.001, \sqrt{x^2 + y^2})} \in [-1.0, +1.0]
+\end{equation}
+where $\kappa_{\text{FB}} = +1$ denotes direct frontal arrival ($y > 0$) and $\kappa_{\text{FB}} = -1$ denotes rear arrival ($y < 0$).
+
+\begin{enumerate}
+    \item \textbf{Posterior Pinna Shadowing ($y < 0$):} Because the cartilaginous pinna flap faces forward, sounds originating from behind the listener are shadowed by the ear flap. We model this as a high-shelf attenuation above $4.6\text{ kHz}$:
+    \begin{equation}
+    G_{\text{rear}}(\kappa_{\text{FB}}) = -4.5 \cdot \max(0, -\kappa_{\text{FB}}) \cdot E_{\text{strength}} \quad [\text{dB}], \quad f_{c,\text{rear}} = 4600 \cdot S_{\text{pinna}} \quad [\text{Hz}]
+    \end{equation}
+    \item \textbf{Frontal Concha Bowl Acoustic Resonance ($y > 0$):} Sound waves entering directly into the frontal ear aperture excite the quarter-wave acoustic cavity resonance of the concha bowl at $\approx 3.2\text{ kHz}$:
+    \begin{equation}
+    G_{\text{concha}}(\kappa_{\text{FB}}) = +2.2 \cdot \max(0, \kappa_{\text{FB}}) \cdot E_{\text{strength}} \quad [\text{dB}], \quad f_{0,\text{concha}} = 3200 \cdot S_{\text{pinna}} \quad [\text{Hz}], \quad Q = 1.8
+    \end{equation}
+\end{enumerate}
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.88\linewidth]{../spectrum_elevation_waterfall.png}
@@ -203,22 +223,22 @@ Implemented continuously without pitch-tracking artifacts via fractional cubic d
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{@{}lrrrrrr@{}}
+\begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-\textbf{Configuration} & \textbf{Azimuth} & \textbf{Elevation} & \textbf{ITD ($\mu$s)} & \textbf{ILD (dB)} & \textbf{Notch 1 (Hz)} & \textbf{Torso (dB)} \\
+\textbf{Configuration} & \textbf{Azimuth} & \textbf{Elevation} & \textbf{ITD ($\mu$s)} & \textbf{ILD (dB)} & \textbf{Notch 1 (Hz)} & \textbf{Concha (dB)} & \textbf{Rear Shelf (dB)} \\
 \midrule
-Pure Horizontal Left  & $-90^\circ$ & $0^\circ$  & $+510.2$ & $-9.3$ & 7857 & $0.0$ \\
-Center Horizon        & $0^\circ$   & $0^\circ$  & $0.0$    & $0.0$  & 7857 & $0.0$ \\
-Pure Horizontal Right & $+90^\circ$ & $0^\circ$  & $-510.2$ & $+9.3$ & 7857 & $0.0$ \\
+Pure Horizontal Left   & $-90^\circ$ & $0^\circ$  & $+510.2$ & $-9.3$ & 7857 & $0.0$ & $0.0$ \\
+Front Center (Eye)     & $0^\circ$   & $0^\circ$  & $0.0$    & $0.0$  & 7857 & $+2.2$ & $0.0$ \\
+Rear Center (Behind)   & $180^\circ$ & $0^\circ$  & $0.0$    & $0.0$  & 7857 & $0.0$ & $-4.5$ \\
+Pure Horizontal Right  & $+90^\circ$ & $0^\circ$  & $-510.2$ & $+9.3$ & 7857 & $0.0$ & $0.0$ \\
 \midrule
-Below Horizon (Nadir) & $0^\circ$   & $-40^\circ$ & $0.0$   & $0.0$  & 6371 & $-6.4$ \\
-Eye-Level             & $0^\circ$   & $0^\circ$   & $0.0$   & $0.0$  & 7857 & $0.0$ \\
-Zenith (Overhead)     & $0^\circ$   & $+90^\circ$ & $0.0$   & $0.0$  & 11200 & $0.0$ \\
+Below Horizon (Nadir)  & $0^\circ$   & $-40^\circ$ & $0.0$   & $0.0$  & 6371 & $+1.7$ & $0.0$ \\
+Zenith (Overhead)      & $0^\circ$   & $+90^\circ$ & $0.0$   & $0.0$  & 11200 & $0.0$ & $0.0$ \\
 \midrule
-Combined 3D Swoop     & $+45^\circ$ & $+45^\circ$ & $-254.8$ & $+6.2$ & 9528 & $0.0$ \\
+Combined 3D Swoop      & $+45^\circ$ & $+45^\circ$ & $-254.8$ & $+6.2$ & 9528 & $+1.6$ & $0.0$ \\
 \bottomrule
 \end{tabular}
-\caption{Comparison of physical metrics across horizontal, vertical, and combined configurations.}
+\caption{Comparison of physical metrics across horizontal, vertical, and front/back configurations.}
 \label{tab:metrics}
 \end{table}
 

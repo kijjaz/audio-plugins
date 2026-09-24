@@ -1,6 +1,6 @@
 {
   "name": "flyby-web",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zero-asset, ultra-lightweight 3D binaural spatializer for Web Audio, WebGL, and WebXR",
   "main": "src/index.js",
   "module": "src/index.js",
