@@ -1,62 +1,57 @@
 #pragma once
-#include "PluginProcessor.h"
 #include <juce_gui_basics/juce_gui_basics.h>
-#include <juce_gui_extra/juce_gui_extra.h>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "PluginProcessor.h"
+#include "UI/CarbonGoldLookAndFeel.h"
 
-class CarbonGoldLookAndFeel : public juce::LookAndFeel_V4 {
+class VacuumTapeSimAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
+{
 public:
-  CarbonGoldLookAndFeel();
-  void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
-                        float sliderPos, float rotaryStartAngle,
-                        float rotaryEndAngle, juce::Slider &) override;
-  void drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height,
-                        float sliderPos, float minSliderPos, float maxSliderPos,
-                        const juce::Slider::SliderStyle,
-                        juce::Slider &) override;
-  void drawToggleButton(juce::Graphics &g, juce::ToggleButton &button,
-                        bool shouldDrawButtonAsHighlighted,
-                        bool shouldDrawButtonAsDown) override;
-};
+    VacuumTapeSimAudioProcessorEditor (VacuumTapeSimAudioProcessor&);
+    ~VacuumTapeSimAudioProcessorEditor() override;
 
-class VacuumTapeAudioProcessorEditor : public juce::AudioProcessorEditor,
-                                       public juce::Timer {
-public:
-  VacuumTapeAudioProcessorEditor(VacuumTapeAudioProcessor &);
-  ~VacuumTapeAudioProcessorEditor() override;
-
-  void paint(juce::Graphics &) override;
-  void resized() override;
-  void timerCallback() override;
+    void paint (juce::Graphics&) override;
+    void resized() override;
+    void timerCallback() override;
 
 private:
-  VacuumTapeAudioProcessor &audioProcessor;
-  CarbonGoldLookAndFeel lnf;
+    VacuumTapeSimAudioProcessor& audioProcessor;
+    vts::CarbonGoldLookAndFeel customLookAndFeel;
 
-  juce::Font playfairRegular, playfairItalic, playfairBold;
-  juce::Font epilogueBold;
+    float tapeRotation = 0.0f;
+    float currentGlow = 0.0f;
 
-  // Parameters
-  struct ParamGroup {
-    std::vector<std::unique_ptr<juce::Slider>> sliders;
-    std::vector<std::unique_ptr<juce::Label>> labels;
-    std::vector<std::unique_ptr<juce::Component>> customComponents;
-    std::vector<
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>>
-        attachments;
-  };
+    // Sliders
+    juce::Slider driveSlider;
+    juce::Slider sagSlider;
+    juce::Slider ipsSlider;
+    juce::Slider wowSlider;
+    juce::Slider biasSlider;
+    juce::Slider asymSlider;
 
-  ParamGroup compGroup, tapeGroup, modGroup, masterGroup;
+    // Combo Box
+    juce::ComboBox eqBox;
 
-  // Animation state
-  float reelAngle = 0.0f;
-  float tubeGlow = 0.0f;
+    // Labels
+    juce::Label driveLabel;
+    juce::Label sagLabel;
+    juce::Label ipsLabel;
+    juce::Label wowLabel;
+    juce::Label biasLabel;
+    juce::Label asymLabel;
+    juce::Label eqLabel;
 
-  void createSlider(ParamGroup &group, juce::String paramID,
-                    juce::String labelText, bool isRotary,
-                    bool isLarge = false);
-  void drawRecessedPanel(juce::Graphics &g, juce::Rectangle<int> area);
-  void drawSectionHeader(juce::Graphics &g, juce::Rectangle<int> &area,
-                         juce::String title, juce::String subText);
+    // Attachments
+    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VacuumTapeAudioProcessorEditor)
+    std::unique_ptr<SliderAttachment> driveAttachment;
+    std::unique_ptr<SliderAttachment> sagAttachment;
+    std::unique_ptr<SliderAttachment> ipsAttachment;
+    std::unique_ptr<SliderAttachment> wowAttachment;
+    std::unique_ptr<SliderAttachment> biasAttachment;
+    std::unique_ptr<SliderAttachment> asymAttachment;
+    std::unique_ptr<ComboBoxAttachment> eqAttachment;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VacuumTapeSimAudioProcessorEditor)
 };

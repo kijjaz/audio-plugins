@@ -1,0 +1,5 @@
+{
+  "name": "Vacuum Tape Sim Pro",
+  "description": "A high-fidelity VST3/AU plugin interface simulation featuring vintage tape saturation, compression, and modulation controls with realistic skeuomorphic design.",
+  "requestFramePermissions": []
+}
