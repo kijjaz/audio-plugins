@@ -31,8 +31,11 @@ private:
     juce::Slider wowSlider;
     juce::Slider biasSlider;
     juce::Slider asymSlider;
+    juce::Slider outputSlider;
+    juce::Slider mixSlider;
 
-    // Combo Box
+    // Toggle & Combo Box
+    juce::ToggleButton autoGainButton;
     juce::ComboBox eqBox;
 
     // Labels
@@ -43,9 +46,12 @@ private:
     juce::Label biasLabel;
     juce::Label asymLabel;
     juce::Label eqLabel;
+    juce::Label outputLabel;
+    juce::Label mixLabel;
 
     // Attachments
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
     using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
 
     std::unique_ptr<SliderAttachment> driveAttachment;
@@ -54,6 +60,9 @@ private:
     std::unique_ptr<SliderAttachment> wowAttachment;
     std::unique_ptr<SliderAttachment> biasAttachment;
     std::unique_ptr<SliderAttachment> asymAttachment;
+    std::unique_ptr<SliderAttachment> outputAttachment;
+    std::unique_ptr<SliderAttachment> mixAttachment;
+    std::unique_ptr<ButtonAttachment> autoGainAttachment;
     std::unique_ptr<ComboBoxAttachment> eqAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VacuumTapeSimAudioProcessorEditor)

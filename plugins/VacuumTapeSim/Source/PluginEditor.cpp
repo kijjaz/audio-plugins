@@ -29,6 +29,15 @@ VacuumTapeSimAudioProcessorEditor::VacuumTapeSimAudioProcessorEditor (VacuumTape
     setupSlider (wowSlider, wowLabel, "WOW/FLUTTER", "wow_flutter", wowAttachment);
     setupSlider (biasSlider, biasLabel, "BIAS", "bias", biasAttachment);
     setupSlider (asymSlider, asymLabel, "ASYMMETRY", "asymmetry", asymAttachment);
+    setupSlider (outputSlider, outputLabel, "OUTPUT", "output", outputAttachment);
+    setupSlider (mixSlider, mixLabel, "MIX %", "mix", mixAttachment);
+
+    // Setup Auto Gain Button
+    autoGainButton.setButtonText ("AUTO GAIN");
+    autoGainButton.setColour (juce::ToggleButton::textColourId, vts::CarbonGoldLookAndFeel::goldAccent);
+    autoGainButton.setColour (juce::ToggleButton::tickColourId, vts::CarbonGoldLookAndFeel::goldAccent);
+    addAndMakeVisible (autoGainButton);
+    autoGainAttachment = std::make_unique<ButtonAttachment>(audioProcessor.apvts, "auto_gain", autoGainButton);
 
     // Setup Combo Box
     eqBox.addItemList ({"NAB", "CCIR"}, 1);
@@ -71,13 +80,13 @@ void VacuumTapeSimAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawLine(0, 60, getWidth(), 60, 2.0f);
     
     // Draw Tape Reels
-    juce::Rectangle<float> leftReel (50, 350, 150, 150);
-    juce::Rectangle<float> rightReel (getWidth() - 200, 350, 150, 150);
+    juce::Rectangle<float> leftReel (50, 320, 140, 140);
+    juce::Rectangle<float> rightReel (getWidth() - 190, 320, 140, 140);
     vts::CarbonGoldLookAndFeel::drawTapeReel(g, leftReel, tapeRotation);
     vts::CarbonGoldLookAndFeel::drawTapeReel(g, rightReel, tapeRotation);
     
     // Draw Vacuum Tube (Center Top)
-    juce::Rectangle<float> tubeBounds (getWidth() / 2 - 40, 320, 80, 140);
+    juce::Rectangle<float> tubeBounds (getWidth() / 2 - 40, 310, 80, 130);
     vts::CarbonGoldLookAndFeel::drawVacuumTube(g, tubeBounds, currentGlow);
 }
 
@@ -108,38 +117,41 @@ void VacuumTapeSimAudioProcessorEditor::resized()
     area.removeFromTop(60); // Header area
     
     if (analysisPanel)
-        analysisPanel->setBounds(50, 70, getWidth() - 100, 230);
+        analysisPanel->setBounds(50, 70, getWidth() - 100, 220);
     
-    // Create a 2x4 grid layout below the visual assets
-    int knobSize = 90;
-    int marginX = 20;
-    int marginY = 30;
+    // Layout 8 knobs in 2 rows of 4
+    int knobSize = 85;
+    int marginX = 28;
+    int marginY = 22;
     
     int startX = (getWidth() - (4 * knobSize + 3 * marginX)) / 2;
-    int startY = 520; // Below the tube and reels
+    int startY = 475; // Below the tube and reels
     
     auto positionComponent = [&](juce::Component& comp, juce::Label& label, int col, int row)
     {
         int x = startX + col * (knobSize + marginX);
-        int y = startY + row * (knobSize + marginY + 20); // +20 for label space
+        int y = startY + row * (knobSize + marginY + 22);
         
         comp.setBounds(x, y + 20, knobSize, knobSize);
-        label.setBounds(x, y, knobSize, 20);
+        label.setBounds(x - 5, y, knobSize + 10, 18);
     };
 
-    // Row 1 (Input/Tape core)
+    // Row 1 (Tape Core)
     positionComponent(driveSlider, driveLabel, 0, 0);
     positionComponent(sagSlider, sagLabel, 1, 0);
     positionComponent(ipsSlider, ipsLabel, 2, 0);
     positionComponent(wowSlider, wowLabel, 3, 0);
 
-    // Row 2 (Advanced parameters)
+    // Row 2 (Tone, Mix, and Output)
     positionComponent(biasSlider, biasLabel, 0, 1);
     positionComponent(asymSlider, asymLabel, 1, 1);
+    positionComponent(outputSlider, outputLabel, 2, 1);
+    positionComponent(mixSlider, mixLabel, 3, 1);
     
-    // ComboBox requires different layout
-    int x = startX + 2 * (knobSize + marginX);
-    int y = startY + 1 * (knobSize + marginY + 20);
-    eqBox.setBounds(x, y + 50, knobSize, 30);
-    eqLabel.setBounds(x, y + 30, knobSize, 20);
+    // Controls strip below reels
+    int sideControlsY = 425;
+    autoGainButton.setBounds(startX, sideControlsY, 130, 28);
+    
+    eqLabel.setBounds(startX + 4 * (knobSize + marginX) - marginX - 110, sideControlsY - 18, 110, 18);
+    eqBox.setBounds(startX + 4 * (knobSize + marginX) - marginX - 110, sideControlsY, 110, 28);
 }

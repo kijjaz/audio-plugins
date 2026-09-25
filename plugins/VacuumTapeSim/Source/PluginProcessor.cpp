@@ -31,6 +31,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout VacuumTapeSimAudioProcessor:
     params.push_back(std::make_unique<juce::AudioParameterFloat>("bias", "Bias", juce::NormalisableRange<float>(-1.0f, 1.0f, 0.01f), 0.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("asymmetry", "Asymmetry", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f));
     params.push_back(std::make_unique<juce::AudioParameterChoice>("eq_mode", "EQ Curve", juce::StringArray{"NAB", "CCIR"}, 0));
+    
+    // New parameters for gain staging and mixing
+    params.push_back(std::make_unique<juce::AudioParameterBool>("auto_gain", "Auto Gain", true));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("output", "Output", juce::NormalisableRange<float>(-18.0f, 18.0f, 0.1f), 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("mix", "Dry / Wet", juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f), 100.0f));
 
     return { params.begin(), params.end() };
 }
@@ -87,6 +92,23 @@ void VacuumTapeSimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     float bias = apvts.getRawParameterValue("bias")->load();
     float asym = apvts.getRawParameterValue("asymmetry")->load();
     int eq = static_cast<int>(apvts.getRawParameterValue("eq_mode")->load());
+    bool autoGain = apvts.getRawParameterValue("auto_gain")->load() > 0.5f;
+    float outputDb = apvts.getRawParameterValue("output")->load();
+    float mixPercent = apvts.getRawParameterValue("mix")->load();
+
+    // Auto-makeup calculation
+    // Since Langevin saturates as tanh-like curve, auto gain compensates for drive boost:
+    // When Drive is 1.0 -> factor 1.0
+    // When Drive is 10.0 -> factor 1.0 / sqrt(10.0) ≈ 0.316 (-10dB)
+    float autoGainFactor = 1.0f;
+    if (autoGain)
+    {
+        autoGainFactor = 1.0f / std::sqrt(std::max(0.1f, drive));
+    }
+
+    float outputLinear = juce::Decibels::decibelsToGain(outputDb) * autoGainFactor;
+    float wetRatio = mixPercent / 100.0f;
+    float dryRatio = 1.0f - wetRatio;
 
     // Update DSP
     for (int i = 0; i < totalNumInputChannels; ++i)
@@ -101,7 +123,9 @@ void VacuumTapeSimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
-            channelData[sample] = tapeDSP[channel].processSample(channelData[sample]);
+            float dry = channelData[sample];
+            float wet = tapeDSP[channel].processSample(dry);
+            channelData[sample] = (dry * dryRatio + wet * wetRatio) * outputLinear;
         }
     }
 }
