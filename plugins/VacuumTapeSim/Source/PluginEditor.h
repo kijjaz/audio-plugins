@@ -37,8 +37,10 @@ private:
     // Toggle & Combo Box
     juce::ToggleButton autoGainButton;
     juce::ComboBox eqBox;
+    juce::ComboBox presetBox;
 
     // Labels
+    juce::Label presetLabel;
     juce::Label driveLabel;
     juce::Label sagLabel;
     juce::Label ipsLabel;

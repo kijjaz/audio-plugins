@@ -49,6 +49,29 @@ VacuumTapeSimAudioProcessorEditor::VacuumTapeSimAudioProcessorEditor (VacuumTape
     
     eqAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.apvts, "eq_mode", eqBox);
     
+    // Setup Preset Selector
+    const auto& presets = audioProcessor.getPresets();
+    for (size_t i = 0; i < presets.size(); ++i)
+    {
+        presetBox.addItem (presets[i].name, static_cast<int>(i + 1));
+    }
+    presetBox.setSelectedId (audioProcessor.getCurrentProgram() + 1, juce::dontSendNotification);
+    presetBox.onChange = [this]()
+    {
+        int selected = presetBox.getSelectedId() - 1;
+        if (selected >= 0)
+        {
+            audioProcessor.setCurrentProgram(selected);
+        }
+    };
+    addAndMakeVisible (presetBox);
+
+    presetLabel.setText ("PRESET", juce::dontSendNotification);
+    presetLabel.setJustificationType (juce::Justification::centredRight);
+    presetLabel.setColour (juce::Label::textColourId, vts::CarbonGoldLookAndFeel::goldAccent);
+    presetLabel.setFont (juce::Font(13.0f, juce::Font::bold));
+    addAndMakeVisible (presetLabel);
+
     analysisPanel = std::make_unique<vts::AnalysisPanelComponent>(&audioProcessor.tapeDSP[0]);
     addAndMakeVisible(analysisPanel.get());
 
@@ -72,8 +95,8 @@ void VacuumTapeSimAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillRect(0, 0, getWidth(), 60);
 
     g.setColour (vts::CarbonGoldLookAndFeel::goldAccent);
-    g.setFont (juce::Font (24.0f, juce::Font::bold));
-    g.drawText ("VACUUM TAPE SIM", 0, 0, getWidth(), 60, juce::Justification::centred, true);
+    g.setFont (juce::Font (22.0f, juce::Font::bold));
+    g.drawText ("VACUUM TAPE SIM", 50, 0, 300, 60, juce::Justification::centredLeft, true);
     
     // Subtle separator line
     g.setColour(vts::CarbonGoldLookAndFeel::goldAccent.withAlpha(0.2f));
@@ -108,16 +131,24 @@ void VacuumTapeSimAudioProcessorEditor::timerCallback()
     
     if (analysisPanel) analysisPanel->repaint();
 
+    // Keep preset dropdown in sync with host program changes
+    int curProg = audioProcessor.getCurrentProgram();
+    if (presetBox.getSelectedId() != curProg + 1)
+    {
+        presetBox.setSelectedId(curProg + 1, juce::dontSendNotification);
+    }
+
     repaint();
 }
 
 void VacuumTapeSimAudioProcessorEditor::resized()
 {
-    auto area = getLocalBounds();
-    area.removeFromTop(60); // Header area
-    
+    // Preset dropdown in header (top right)
+    presetLabel.setBounds(getWidth() - 370, 16, 70, 28);
+    presetBox.setBounds(getWidth() - 290, 16, 240, 28);
+
     if (analysisPanel)
-        analysisPanel->setBounds(50, 70, getWidth() - 100, 220);
+        analysisPanel->setBounds(50, 75, getWidth() - 100, 220);
     
     // Layout 8 knobs in 2 rows of 4
     int knobSize = 85;

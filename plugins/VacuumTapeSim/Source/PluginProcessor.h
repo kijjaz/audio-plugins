@@ -38,9 +38,29 @@ public:
     // DSP Objects (one for Left, one for Right)
     vts::TapeDSP tapeDSP[2];
 
+    struct Preset
+    {
+        juce::String name;
+        float drive;
+        float sag;
+        float ips;
+        float wow_flutter;
+        float bias;
+        float asymmetry;
+        int eq_mode;
+        bool auto_gain;
+        float output;
+        float mix;
+    };
+
+    const std::vector<Preset>& getPresets() const { return presets; }
+    void loadPreset(int index);
+
 private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-
+    int currentProgram = 0;
+    std::vector<Preset> presets;
+    void initPresets();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VacuumTapeSimAudioProcessor)
 };
