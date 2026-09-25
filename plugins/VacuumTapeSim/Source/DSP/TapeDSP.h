@@ -21,22 +21,21 @@ public:
     {
         if (gapLossFilter.coefficients == nullptr) return 1.0f;
         float mag = 1.0f;
-        mag *= gapLossFilter.coefficients->getMagnitudeForFrequency(frequency, fs);
-        mag *= headBumpFilter.coefficients->getMagnitudeForFrequency(frequency, fs);
-        mag *= faradayFilter.coefficients->getMagnitudeForFrequency(frequency, fs);
+        mag *= static_cast<float>(gapLossFilter.coefficients->getMagnitudeForFrequency(frequency, fs));
+        mag *= static_cast<float>(headBumpFilter.coefficients->getMagnitudeForFrequency(frequency, fs));
+        mag *= static_cast<float>(faradayFilter.coefficients->getMagnitudeForFrequency(frequency, fs));
         return mag;
     }
 
     float getTransferFunction(float x)
     {
         float driven = drive * (x + asymmetry_offset);
-        // Normalized Langevin so small signal has gain 1.0
         return langevinNormalized(driven);
     }
 
     float getCurrentSagGR()
     {
-        float gr = 20.0f * std::log10(std::max(0.001, v_state));
+        float gr = static_cast<float>(20.0 * std::log10(std::max(0.001, v_state)));
         return gr;
     }
 
@@ -50,13 +49,16 @@ public:
         e_rms = 0.0;
         e_slow = 0.0;
         prev_x = 0.0f;
-        hiss_lpf_state = 0.0f;
-        hiss_env_state = 0.0f;
+        
+        // Hiss shaping states
+        hiss_b0 = 0.0f;
+        hiss_b1 = 0.0f;
+        hiss_b2 = 0.0f;
+        hiss_env = 0.0f;
 
         // Modulated Delay Buffer for Wow & Flutter
-        // 50ms buffer is plenty for wow/flutter (max wow modulation is ~5ms)
         maxDelaySamples = static_cast<int>(fs * 0.05) + 16;
-        delayBuffer.assign(maxDelaySamples, 0.0f);
+        delayBuffer.assign(static_cast<size_t>(maxDelaySamples), 0.0f);
         writeIndex = 0;
         
         // Wow/Flutter LFO phases
@@ -71,6 +73,7 @@ public:
         alpha_slow_env = 1.0 - std::exp(-1.0 / (0.2 * fs));    // 200ms slow integration
         beta_fast = 1.0 - std::exp(-1.0 / (0.05 * fs));        // 50ms fast recovery
         beta_slow = 1.0 - std::exp(-1.0 / (0.5 * fs));         // 500ms slow recovery
+        hiss_env_decay = static_cast<float>(1.0 - std::exp(-1.0 / (0.02 * fs))); // 20ms envelope tracking
         
         // Initialize Biquads
         juce::dsp::ProcessSpec spec { sampleRate, static_cast<uint32_t>(samplesPerBlock), 1 };
@@ -80,21 +83,22 @@ public:
         preEmphasis.prepare(spec);
         deEmphasis.prepare(spec);
         
-        updateParameters(1.0f, 0.5f, 15.0f, 0.0f, 0.0f, 0.0f, 0); // Default init
+        updateParameters(1.0f, 0.5f, 15.0f, 0.0f, 0.0f, 0.0f, 0, 0.0f); // Default init
     }
 
-    void updateParameters(float driveParam, float sagThreshold, float ipsParam, float biasParam, float asymmetry, float wowFlutter, int eqMode)
+    void updateParameters(float driveParam, float sagThreshold, float ipsParam, float biasParam, float asymmetry, float wowFlutter, int eqMode, float hissAmount)
     {
         this->drive = driveParam;
         this->sag_threshold = sagThreshold;
         this->ips = ipsParam;
         this->bias = biasParam;
-        this->asymmetry_offset = asymmetry * 0.1f; // Scale to subtle DC
+        this->asymmetry_offset = asymmetry * 0.1f;
         this->wow_flutter = wowFlutter;
         this->eq_mode = eqMode;
+        this->hiss_gain = hissAmount; // 0.0 to 1.0
         
         // Virtual Bias modulations
-        beta_hysteresis = 1.0f * std::pow(2.0f, bias); // Base beta is 1.0, scales with bias
+        beta_hysteresis = 1.0f * std::pow(2.0f, bias);
         
         // 1. Gap Loss (Low Pass)
         float fc = (ips * 650.0f) * std::pow(2.0f, -bias / 2.0f);
@@ -129,23 +133,22 @@ public:
         e_rms = e_rms + alpha_env * (e1 - e_rms);
         e_slow = e_slow + alpha_slow_env * (e_rms - e_slow);
         
-        float e_lin = std::sqrt(std::max(0.0, e_rms));
-        float drain = 0.0;
+        double e_lin = std::sqrt(std::max(0.0, e_rms));
+        double drain = 0.0;
         
-        // Invert sag_threshold so 100% means a very low threshold (more sag)
         float T = 1.0f - sag_threshold; 
         if (e_lin > T) {
             drain = alpha_drain * std::pow(e_lin - T, 2.0);
         }
         
-        float blend = std::min(1.0, e_slow * 2.0);
-        float beta_dynamic = beta_fast * (1.0 - blend) + beta_slow * blend;
+        double blend = std::min(1.0, e_slow * 2.0);
+        double beta_dynamic = beta_fast * (1.0 - blend) + beta_slow * blend;
         
         v_state = v_state - drain + beta_dynamic * (1.0 - v_state);
         v_state = std::clamp(v_state, 0.1, 1.0);
         
         // Apply Sag Gain
-        float sig = x * v_state;
+        float sig = static_cast<float>(x * v_state);
         
         // 2. Pre-Emphasis
         sig = preEmphasis.processSample(sig);
@@ -154,23 +157,48 @@ public:
         float dx = (sig - prev_x) * static_cast<float>(fs);
         prev_x = sig;
         
-        float h = 0.5f; // Fixed coercivity
+        float h = 0.5f;
         float driven = drive * (sig + asymmetry_offset) - h * langevin(beta_hysteresis * dx * 0.001f);
-        
-        // Use normalized Langevin: L_norm(x) = 3 * L(x)
-        // This ensures gain is ~1.0 for small signals instead of 0.333 (-9.5dB),
-        // preventing the signal from collapsing thin and noisy when drive is low.
         sig = langevinNormalized(driven);
         
-        // 4. De-Emphasis
+        // 4. Physical Tape Hiss & Barkhausen Modulation Noise
+        if (hiss_gain > 0.0001f)
+        {
+            // Pink-filter approximation (Paul Kellet's filter)
+            float white = rng.nextFloat() * 2.0f - 1.0f;
+            hiss_b0 = 0.99765f * hiss_b0 + white * 0.0990460f;
+            hiss_b1 = 0.96300f * hiss_b1 + white * 0.2965164f;
+            hiss_b2 = 0.57000f * hiss_b2 + white * 1.0526913f;
+            float pink = hiss_b0 + hiss_b1 + hiss_b2 + white * 0.1848f;
+            pink *= 0.15f; // Scale pink amplitude
+
+            // Signal-dependent Barkhausen modulation:
+            // Noise level breathes with the instantaneous energy of the magnetic signal
+            float absSig = std::abs(sig);
+            hiss_env += hiss_env_decay * (absSig - hiss_env);
+            float modulationFactor = 1.0f + 1.8f * hiss_env;
+
+            // Speed factor: 7.5 ips has ~3dB more hiss than 30 ips
+            float speedFactor = (30.0f / std::max(7.5f, ips));
+            speedFactor = std::sqrt(speedFactor);
+
+            // Base hiss amplitude: -60dBFS to -36dBFS based on hiss_gain knob
+            float baseAmp = juce::Decibels::decibelsToGain(-60.0f + hiss_gain * 24.0f);
+            float totalHiss = pink * baseAmp * modulationFactor * speedFactor;
+
+            // Inject into tape magnetic flux before playback head & de-emphasis
+            sig += totalHiss;
+        }
+
+        // 5. De-Emphasis (shapes the tape hiss and restores high frequency balance)
         sig = deEmphasis.processSample(sig);
         
-        // 5. Tape Playback Losses
+        // 6. Tape Playback Losses (gap loss rolls off highest hiss, head bump gives vintage body)
         sig = gapLossFilter.processSample(sig);
         sig = headBumpFilter.processSample(sig);
         sig = faradayFilter.processSample(sig);
         
-        // 6. Wow & Flutter Modulated Delay Line
+        // 7. Wow & Flutter Modulated Delay Line
         if (wow_flutter > 0.001f)
         {
             sig = processWowFlutter(sig);
@@ -201,6 +229,7 @@ private:
     float asymmetry_offset = 0.0f;
     float wow_flutter = 0.0f;
     int eq_mode = 0;
+    float hiss_gain = 0.0f;
     
     // Filters
     juce::dsp::IIR::Filter<float> gapLossFilter;
@@ -221,12 +250,14 @@ private:
     double driftState = 0.0;
     juce::Random rng;
 
-    // Hiss shaping states
-    float hiss_lpf_state = 0.0f;
-    float hiss_env_state = 0.0f;
+    // Physical Hiss & Barkhausen states
+    float hiss_b0 = 0.0f;
+    float hiss_b1 = 0.0f;
+    float hiss_b2 = 0.0f;
+    float hiss_env = 0.0f;
+    float hiss_env_decay = 0.001f;
 
     // Normalized Langevin: output = 3.0 * (coth(x) - 1/x)
-    // As x -> 0, langevin(x) -> x/3, so langevinNormalized(x) -> x. Unity gain!
     float langevinNormalized(float val)
     {
         return 3.0f * langevin(val);
@@ -243,10 +274,8 @@ private:
 
     float processWowFlutter(float inputSample)
     {
-        // Nominal delay center: 5ms
         float centerDelay = static_cast<float>(fs * 0.005);
         
-        // Flutter rate: ~18Hz and ~31Hz (capstan/motor poles)
         double dPhaseF1 = juce::MathConstants<double>::twoPi * 18.2 / fs;
         double dPhaseF2 = juce::MathConstants<double>::twoPi * 31.7 / fs;
         flutterPhase1 += dPhaseF1;
@@ -254,27 +283,22 @@ private:
         if (flutterPhase1 > juce::MathConstants<double>::twoPi) flutterPhase1 -= juce::MathConstants<double>::twoPi;
         if (flutterPhase2 > juce::MathConstants<double>::twoPi) flutterPhase2 -= juce::MathConstants<double>::twoPi;
         
-        // Wow rate: ~1.2Hz (reel / tension drift)
         double dPhaseW = juce::MathConstants<double>::twoPi * 1.25 / fs;
         wowPhase += dPhaseW;
         if (wowPhase > juce::MathConstants<double>::twoPi) wowPhase -= juce::MathConstants<double>::twoPi;
         
-        // Ornstein-Uhlenbeck stochastic drift (mechanical friction randomness)
         float noise = (rng.nextFloat() * 2.0f - 1.0f);
         driftState += 0.0005 * noise - 0.002 * driftState;
         
-        // Depth scaling: up to ~1.2ms variation at max
-        float flutterMod = 0.6f * std::sin(flutterPhase1) + 0.4f * std::cos(flutterPhase2);
-        float wowMod = 0.7f * std::sin(wowPhase) + 0.3f * static_cast<float>(driftState);
+        float flutterMod = static_cast<float>(0.6 * std::sin(flutterPhase1) + 0.4 * std::cos(flutterPhase2));
+        float wowMod = static_cast<float>(0.7 * std::sin(wowPhase) + 0.3 * driftState);
         
         float totalMod = (wowMod * 0.7f + flutterMod * 0.3f) * (wow_flutter * wow_flutter);
         float delayInSamples = centerDelay + totalMod * static_cast<float>(fs * 0.0018);
         delayInSamples = juce::jlimit(2.0f, static_cast<float>(maxDelaySamples - 4), delayInSamples);
 
-        // Write sample into buffer
-        delayBuffer[writeIndex] = inputSample;
+        delayBuffer[static_cast<size_t>(writeIndex)] = inputSample;
 
-        // Read with Hermite fractional interpolation
         float readPos = static_cast<float>(writeIndex) - delayInSamples;
         if (readPos < 0.0f) readPos += static_cast<float>(maxDelaySamples);
 
@@ -285,12 +309,11 @@ private:
         int i2 = (i1 + 1) % maxDelaySamples;
         int i3 = (i1 + 2) % maxDelaySamples;
 
-        float y0 = delayBuffer[i0];
-        float y1 = delayBuffer[i1];
-        float y2 = delayBuffer[i2];
-        float y3 = delayBuffer[i3];
+        float y0 = delayBuffer[static_cast<size_t>(i0)];
+        float y1 = delayBuffer[static_cast<size_t>(i1)];
+        float y2 = delayBuffer[static_cast<size_t>(i2)];
+        float y3 = delayBuffer[static_cast<size_t>(i3)];
 
-        // 4-point, 3rd-order Hermite interpolation
         float c0 = y1;
         float c1 = 0.5f * (y2 - y0);
         float c2 = y0 - 2.5f * y1 + 2.0f * y2 - 0.5f * y3;

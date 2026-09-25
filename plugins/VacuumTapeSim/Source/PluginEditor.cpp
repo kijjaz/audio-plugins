@@ -31,6 +31,7 @@ VacuumTapeSimAudioProcessorEditor::VacuumTapeSimAudioProcessorEditor (VacuumTape
     setupSlider (asymSlider, asymLabel, "ASYMMETRY", "asymmetry", asymAttachment);
     setupSlider (outputSlider, outputLabel, "OUTPUT", "output", outputAttachment);
     setupSlider (mixSlider, mixLabel, "MIX %", "mix", mixAttachment);
+    setupSlider (hissSlider, hissLabel, "TAPE HISS", "hiss", hissAttachment);
 
     // Setup Auto Gain Button
     autoGainButton.setButtonText ("AUTO GAIN");
@@ -150,39 +151,46 @@ void VacuumTapeSimAudioProcessorEditor::resized()
     if (analysisPanel)
         analysisPanel->setBounds(50, 75, getWidth() - 100, 220);
     
-    // Layout 8 knobs in 2 rows of 4
+    // Layout 9 knobs in 3 rows of 3:
+    // Row 1: DRIVE, SAG, IPS
+    // Row 2: WOW/FLUTTER, BIAS, ASYMMETRY
+    // Row 3: TAPE HISS, MIX %, OUTPUT
     int knobSize = 85;
-    int marginX = 28;
-    int marginY = 22;
+    int marginX = 65;
+    int marginY = 16;
     
-    int startX = (getWidth() - (4 * knobSize + 3 * marginX)) / 2;
-    int startY = 475; // Below the tube and reels
+    int startX = (getWidth() - (3 * knobSize + 2 * marginX)) / 2;
+    int startY = 465;
     
     auto positionComponent = [&](juce::Component& comp, juce::Label& label, int col, int row)
     {
         int x = startX + col * (knobSize + marginX);
-        int y = startY + row * (knobSize + marginY + 22);
+        int y = startY + row * (knobSize + marginY + 20);
         
         comp.setBounds(x, y + 20, knobSize, knobSize);
-        label.setBounds(x - 5, y, knobSize + 10, 18);
+        label.setBounds(x - 10, y, knobSize + 20, 18);
     };
 
-    // Row 1 (Tape Core)
+    // Row 1: Dynamics & Speed
     positionComponent(driveSlider, driveLabel, 0, 0);
     positionComponent(sagSlider, sagLabel, 1, 0);
     positionComponent(ipsSlider, ipsLabel, 2, 0);
-    positionComponent(wowSlider, wowLabel, 3, 0);
 
-    // Row 2 (Tone, Mix, and Output)
-    positionComponent(biasSlider, biasLabel, 0, 1);
-    positionComponent(asymSlider, asymLabel, 1, 1);
-    positionComponent(outputSlider, outputLabel, 2, 1);
-    positionComponent(mixSlider, mixLabel, 3, 1);
+    // Row 2: Movement & Magnetics
+    positionComponent(wowSlider, wowLabel, 0, 1);
+    positionComponent(biasSlider, biasLabel, 1, 1);
+    positionComponent(asymSlider, asymLabel, 2, 1);
+
+    // Row 3: Color, Blend & Master
+    positionComponent(hissSlider, hissLabel, 0, 2);
+    positionComponent(mixSlider, mixLabel, 1, 2);
+    positionComponent(outputSlider, outputLabel, 2, 2);
     
     // Controls strip below reels
-    int sideControlsY = 425;
-    autoGainButton.setBounds(startX, sideControlsY, 130, 28);
+    int sideControlsY = 415;
+    autoGainButton.setBounds(startX - 20, sideControlsY, 130, 28);
     
-    eqLabel.setBounds(startX + 4 * (knobSize + marginX) - marginX - 110, sideControlsY - 18, 110, 18);
-    eqBox.setBounds(startX + 4 * (knobSize + marginX) - marginX - 110, sideControlsY, 110, 28);
+    int eqRightX = startX + 2 * (knobSize + marginX) + knobSize + 20 - 110;
+    eqLabel.setBounds(eqRightX, sideControlsY - 18, 110, 18);
+    eqBox.setBounds(eqRightX, sideControlsY, 110, 28);
 }

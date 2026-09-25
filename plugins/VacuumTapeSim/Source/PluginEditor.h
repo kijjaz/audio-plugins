@@ -33,6 +33,7 @@ private:
     juce::Slider asymSlider;
     juce::Slider outputSlider;
     juce::Slider mixSlider;
+    juce::Slider hissSlider;
 
     // Toggle & Combo Box
     juce::ToggleButton autoGainButton;
@@ -50,6 +51,7 @@ private:
     juce::Label eqLabel;
     juce::Label outputLabel;
     juce::Label mixLabel;
+    juce::Label hissLabel;
 
     // Attachments
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -64,6 +66,7 @@ private:
     std::unique_ptr<SliderAttachment> asymAttachment;
     std::unique_ptr<SliderAttachment> outputAttachment;
     std::unique_ptr<SliderAttachment> mixAttachment;
+    std::unique_ptr<SliderAttachment> hissAttachment;
     std::unique_ptr<ButtonAttachment> autoGainAttachment;
     std::unique_ptr<ComboBoxAttachment> eqAttachment;
 

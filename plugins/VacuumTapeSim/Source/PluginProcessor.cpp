@@ -33,10 +33,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout VacuumTapeSimAudioProcessor:
     params.push_back(std::make_unique<juce::AudioParameterFloat>("asymmetry", "Asymmetry", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f));
     params.push_back(std::make_unique<juce::AudioParameterChoice>("eq_mode", "EQ Curve", juce::StringArray{"NAB", "CCIR"}, 0));
     
-    // Parameters for gain staging and mixing
     params.push_back(std::make_unique<juce::AudioParameterBool>("auto_gain", "Auto Gain", true));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("output", "Output", juce::NormalisableRange<float>(-18.0f, 18.0f, 0.1f), 0.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("mix", "Dry / Wet", juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f), 100.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("hiss", "Tape Hiss", juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f));
 
     return { params.begin(), params.end() };
 }
@@ -44,16 +44,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout VacuumTapeSimAudioProcessor:
 void VacuumTapeSimAudioProcessor::initPresets()
 {
     // Preset definition:
-    // name, drive, sag, ips, wow_flutter, bias, asymmetry, eq_mode (0:NAB, 1:CCIR), auto_gain, output, mix
+    // name, drive, sag, ips, wow_flutter, bias, asymmetry, eq_mode (0:NAB, 1:CCIR), auto_gain, output, mix, hiss
     presets = {
-        { "Default Clean 15 IPS",    1.0f, 0.40f, 15.0f, 0.00f,  0.0f, 0.00f, 0, true,   0.0f, 100.0f },
-        { "Mastering Warmth (30 IPS)", 0.8f, 0.20f, 30.0f, 0.00f,  0.2f, 0.00f, 1, true,   0.0f, 100.0f },
-        { "Vintage 7.5 IPS Dark",    1.5f, 0.50f,  7.5f, 0.12f, -0.3f, 0.05f, 0, true,   0.0f, 100.0f },
-        { "Drum Bus Fat Sag",        2.8f, 0.75f, 15.0f, 0.02f,  0.1f, 0.10f, 0, true,  -1.0f,  85.0f },
-        { "Hot Tube Overdrive",      5.5f, 0.85f, 15.0f, 0.05f,  0.0f, 0.25f, 0, true,  -2.5f, 100.0f },
-        { "Wobbly Cassette Lo-Fi",   1.8f, 0.60f,  7.5f, 0.55f, -0.6f, 0.15f, 0, true,   0.0f, 100.0f },
-        { "Analog Tape Flanger",     1.2f, 0.30f, 15.0f, 0.85f,  0.0f, 0.00f, 1, false,  0.0f,  50.0f },
-        { "Subtle Parallel Glow",    3.2f, 0.65f, 30.0f, 0.03f,  0.3f, 0.08f, 1, true,   0.0f,  40.0f }
+        { "Default Clean 15 IPS",    1.0f, 0.40f, 15.0f, 0.00f,  0.0f, 0.00f, 0, true,   0.0f, 100.0f, 0.00f },
+        { "Mastering Warmth (30 IPS)", 0.8f, 0.20f, 30.0f, 0.00f,  0.2f, 0.00f, 1, true,   0.0f, 100.0f, 0.00f },
+        { "Vintage 7.5 IPS Dark",    1.5f, 0.50f,  7.5f, 0.12f, -0.3f, 0.05f, 0, true,   0.0f, 100.0f, 0.25f },
+        { "Drum Bus Fat Sag",        2.8f, 0.75f, 15.0f, 0.02f,  0.1f, 0.10f, 0, true,  -1.0f,  85.0f, 0.05f },
+        { "Hot Tube Overdrive",      5.5f, 0.85f, 15.0f, 0.05f,  0.0f, 0.25f, 0, true,  -2.5f, 100.0f, 0.00f },
+        { "Wobbly Cassette Lo-Fi",   1.8f, 0.60f,  7.5f, 0.55f, -0.6f, 0.15f, 0, true,   0.0f, 100.0f, 0.45f },
+        { "Analog Tape Flanger",     1.2f, 0.30f, 15.0f, 0.85f,  0.0f, 0.00f, 1, false,  0.0f,  50.0f, 0.10f },
+        { "Subtle Parallel Glow",    3.2f, 0.65f, 30.0f, 0.03f,  0.3f, 0.08f, 1, true,   0.0f,  40.0f, 0.00f }
     };
 }
 
@@ -73,6 +73,7 @@ void VacuumTapeSimAudioProcessor::loadPreset(int index)
     if (auto* param = apvts.getParameter("auto_gain")) param->setValueNotifyingHost(p.auto_gain ? 1.0f : 0.0f);
     if (auto* param = apvts.getParameter("output")) param->setValueNotifyingHost(param->convertTo0to1(p.output));
     if (auto* param = apvts.getParameter("mix")) param->setValueNotifyingHost(param->convertTo0to1(p.mix));
+    if (auto* param = apvts.getParameter("hiss")) param->setValueNotifyingHost(param->convertTo0to1(p.hiss));
 }
 
 int VacuumTapeSimAudioProcessor::getNumPrograms() { return static_cast<int>(presets.size()); }
@@ -136,6 +137,7 @@ void VacuumTapeSimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     bool autoGain = apvts.getRawParameterValue("auto_gain")->load() > 0.5f;
     float outputDb = apvts.getRawParameterValue("output")->load();
     float mixPercent = apvts.getRawParameterValue("mix")->load();
+    float hiss = apvts.getRawParameterValue("hiss")->load();
 
     // Auto-makeup calculation
     // Since Langevin saturates as tanh-like curve, auto gain compensates for drive boost:
@@ -154,7 +156,7 @@ void VacuumTapeSimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     // Update DSP
     for (int i = 0; i < totalNumInputChannels; ++i)
     {
-        tapeDSP[i].updateParameters(drive, sag, ips, bias, asym, wow, eq);
+        tapeDSP[i].updateParameters(drive, sag, ips, bias, asym, wow, eq, hiss);
     }
 
     // Process audio

@@ -51,6 +51,7 @@ public:
         bool auto_gain;
         float output;
         float mix;
+        float hiss;
     };
 
     const std::vector<Preset>& getPresets() const { return presets; }
