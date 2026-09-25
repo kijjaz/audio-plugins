@@ -44,7 +44,8 @@ public:
         float drive;
         float sag;
         float ips;
-        float wow_flutter;
+        float wow;
+        float flutter;
         float bias;
         float asymmetry;
         int eq_mode;

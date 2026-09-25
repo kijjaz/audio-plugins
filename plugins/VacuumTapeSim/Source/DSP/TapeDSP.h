@@ -92,17 +92,18 @@ public:
         preEmphasis.prepare(spec);
         deEmphasis.prepare(spec);
         
-        updateParameters(1.0f, 0.5f, 15.0f, 0.0f, 0.0f, 0.0f, 0, 0.0f); // Default init
+        updateParameters(1.0f, 0.5f, 15.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0, 0.0f); // Default init
     }
 
-    void updateParameters(float driveParam, float sagThreshold, float ipsParam, float biasParam, float asymmetry, float wowFlutter, int eqMode, float hissAmount)
+    void updateParameters(float driveParam, float sagThreshold, float ipsParam, float biasParam, float asymmetry, float wowParam, float flutterParam, int eqMode, float hissAmount)
     {
         this->drive = driveParam;
         this->sag_threshold = sagThreshold;
         this->ips = ipsParam;
         this->bias = biasParam;
         this->asymmetry_offset = asymmetry * 0.1f;
-        this->wow_flutter = wowFlutter;
+        this->wow = wowParam;
+        this->flutter = flutterParam;
         this->eq_mode = eqMode;
         this->hiss_gain = hissAmount; // 0.0 to 1.0
         
@@ -216,7 +217,7 @@ public:
         sig = faradayFilter.processSample(sig);
         
         // 7. Wow & Flutter Modulated Delay Line
-        if (wow_flutter > 0.001f)
+        if (wow > 0.001f || flutter > 0.001f)
         {
             sig = processWowFlutter(sig);
         }
@@ -257,7 +258,8 @@ private:
     float ips = 15.0f;
     float bias = 0.0f;
     float asymmetry_offset = 0.0f;
-    float wow_flutter = 0.0f;
+    float wow = 0.0f;
+    float flutter = 0.0f;
     int eq_mode = 0;
     float hiss_gain = 0.0f;
     
@@ -313,6 +315,7 @@ private:
     {
         float centerDelay = static_cast<float>(fs * 0.005);
         
+        // Flutter: Fast mechanical scrape & capstan wobble (~18.2Hz and ~31.7Hz)
         double dPhaseF1 = juce::MathConstants<double>::twoPi * 18.2 / fs;
         double dPhaseF2 = juce::MathConstants<double>::twoPi * 31.7 / fs;
         flutterPhase1 += dPhaseF1;
@@ -320,6 +323,7 @@ private:
         if (flutterPhase1 > juce::MathConstants<double>::twoPi) flutterPhase1 -= juce::MathConstants<double>::twoPi;
         if (flutterPhase2 > juce::MathConstants<double>::twoPi) flutterPhase2 -= juce::MathConstants<double>::twoPi;
         
+        // Wow: Slow reel eccentricity & motor drift (~1.25Hz + random wander)
         double dPhaseW = juce::MathConstants<double>::twoPi * 1.25 / fs;
         wowPhase += dPhaseW;
         if (wowPhase > juce::MathConstants<double>::twoPi) wowPhase -= juce::MathConstants<double>::twoPi;
@@ -327,10 +331,11 @@ private:
         float noise = (rng.nextFloat() * 2.0f - 1.0f);
         driftState += 0.0005 * noise - 0.002 * driftState;
         
-        float flutterMod = static_cast<float>(0.6 * std::sin(flutterPhase1) + 0.4 * std::cos(flutterPhase2));
-        float wowMod = static_cast<float>(0.7 * std::sin(wowPhase) + 0.3 * driftState);
+        float flutterMod = static_cast<float>(0.6 * std::sin(flutterPhase1) + 0.4 * std::cos(flutterPhase2)) * (flutter * flutter);
+        float wowMod = static_cast<float>(0.7 * std::sin(wowPhase) + 0.3 * driftState) * (wow * wow);
         
-        float totalMod = (wowMod * 0.7f + flutterMod * 0.3f) * (wow_flutter * wow_flutter);
+        // Combined modulation signal
+        float totalMod = wowMod * 0.8f + flutterMod * 0.4f;
         lastWowOffset = totalMod;
         float delayInSamples = centerDelay + totalMod * static_cast<float>(fs * 0.0018);
         delayInSamples = juce::jlimit(2.0f, static_cast<float>(maxDelaySamples - 4), delayInSamples);

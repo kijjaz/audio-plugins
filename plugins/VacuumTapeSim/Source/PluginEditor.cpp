@@ -26,12 +26,13 @@ VacuumTapeSimAudioProcessorEditor::VacuumTapeSimAudioProcessorEditor (VacuumTape
     setupSlider (driveSlider, driveLabel, "DRIVE", "drive", driveAttachment);
     setupSlider (sagSlider, sagLabel, "SAG", "sag", sagAttachment);
     setupSlider (ipsSlider, ipsLabel, "IPS", "ips", ipsAttachment);
-    setupSlider (wowSlider, wowLabel, "WOW/FLUTTER", "wow_flutter", wowAttachment);
+    setupSlider (wowSlider, wowLabel, "WOW", "wow", wowAttachment);
+    setupSlider (flutterSlider, flutterLabel, "FLUTTER", "flutter", flutterAttachment);
     setupSlider (biasSlider, biasLabel, "BIAS", "bias", biasAttachment);
     setupSlider (asymSlider, asymLabel, "ASYMMETRY", "asymmetry", asymAttachment);
-    setupSlider (outputSlider, outputLabel, "OUTPUT", "output", outputAttachment);
-    setupSlider (mixSlider, mixLabel, "MIX %", "mix", mixAttachment);
     setupSlider (hissSlider, hissLabel, "TAPE HISS", "hiss", hissAttachment);
+    setupSlider (mixSlider, mixLabel, "MIX %", "mix", mixAttachment);
+    setupSlider (outputSlider, outputLabel, "OUTPUT", "output", outputAttachment);
 
     // Setup Auto Gain Button
     autoGainButton.setButtonText ("AUTO GAIN");
@@ -151,46 +152,45 @@ void VacuumTapeSimAudioProcessorEditor::resized()
     if (analysisPanel)
         analysisPanel->setBounds(50, 75, getWidth() - 100, 220);
     
-    // Layout 9 knobs in 3 rows of 3:
-    // Row 1: DRIVE, SAG, IPS
-    // Row 2: WOW/FLUTTER, BIAS, ASYMMETRY
-    // Row 3: TAPE HISS, MIX %, OUTPUT
-    int knobSize = 85;
-    int marginX = 65;
-    int marginY = 16;
+    // Layout 10 knobs in 2 rows of 5:
+    // Row 1: DRIVE, SAG, IPS, WOW, FLUTTER
+    // Row 2: BIAS, ASYMMETRY, TAPE HISS, MIX %, OUTPUT
+    int knobSize = 78;
+    int marginX = 28;
+    int marginY = 18;
     
-    int startX = (getWidth() - (3 * knobSize + 2 * marginX)) / 2;
-    int startY = 465;
+    int totalRowWidth = 5 * knobSize + 4 * marginX; // 5 * 78 + 4 * 28 = 390 + 112 = 502px
+    int startX = (getWidth() - totalRowWidth) / 2;
+    int startY = 490;
     
     auto positionComponent = [&](juce::Component& comp, juce::Label& label, int col, int row)
     {
         int x = startX + col * (knobSize + marginX);
-        int y = startY + row * (knobSize + marginY + 20);
+        int y = startY + row * (knobSize + marginY + 22);
         
         comp.setBounds(x, y + 20, knobSize, knobSize);
         label.setBounds(x - 10, y, knobSize + 20, 18);
     };
 
-    // Row 1: Dynamics & Speed
+    // Row 1: Dynamics, Speed & Modulations
     positionComponent(driveSlider, driveLabel, 0, 0);
     positionComponent(sagSlider, sagLabel, 1, 0);
     positionComponent(ipsSlider, ipsLabel, 2, 0);
+    positionComponent(wowSlider, wowLabel, 3, 0);
+    positionComponent(flutterSlider, flutterLabel, 4, 0);
 
-    // Row 2: Movement & Magnetics
-    positionComponent(wowSlider, wowLabel, 0, 1);
-    positionComponent(biasSlider, biasLabel, 1, 1);
-    positionComponent(asymSlider, asymLabel, 2, 1);
-
-    // Row 3: Color, Blend & Master
-    positionComponent(hissSlider, hissLabel, 0, 2);
-    positionComponent(mixSlider, mixLabel, 1, 2);
-    positionComponent(outputSlider, outputLabel, 2, 2);
+    // Row 2: Magnetics, Color & Output
+    positionComponent(biasSlider, biasLabel, 0, 1);
+    positionComponent(asymSlider, asymLabel, 1, 1);
+    positionComponent(hissSlider, hissLabel, 2, 1);
+    positionComponent(mixSlider, mixLabel, 3, 1);
+    positionComponent(outputSlider, outputLabel, 4, 1);
     
-    // Controls strip below reels
-    int sideControlsY = 415;
-    autoGainButton.setBounds(startX - 20, sideControlsY, 130, 28);
+    // Controls strip between tubes/reels and knobs
+    int sideControlsY = 445;
+    autoGainButton.setBounds(startX, sideControlsY, 130, 28);
     
-    int eqRightX = startX + 2 * (knobSize + marginX) + knobSize + 20 - 110;
+    int eqRightX = startX + totalRowWidth - 110;
     eqLabel.setBounds(eqRightX, sideControlsY - 18, 110, 18);
     eqBox.setBounds(eqRightX, sideControlsY, 110, 28);
 }

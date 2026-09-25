@@ -29,6 +29,7 @@ private:
     juce::Slider sagSlider;
     juce::Slider ipsSlider;
     juce::Slider wowSlider;
+    juce::Slider flutterSlider;
     juce::Slider biasSlider;
     juce::Slider asymSlider;
     juce::Slider outputSlider;
@@ -46,6 +47,7 @@ private:
     juce::Label sagLabel;
     juce::Label ipsLabel;
     juce::Label wowLabel;
+    juce::Label flutterLabel;
     juce::Label biasLabel;
     juce::Label asymLabel;
     juce::Label eqLabel;
@@ -62,6 +64,7 @@ private:
     std::unique_ptr<SliderAttachment> sagAttachment;
     std::unique_ptr<SliderAttachment> ipsAttachment;
     std::unique_ptr<SliderAttachment> wowAttachment;
+    std::unique_ptr<SliderAttachment> flutterAttachment;
     std::unique_ptr<SliderAttachment> biasAttachment;
     std::unique_ptr<SliderAttachment> asymAttachment;
     std::unique_ptr<SliderAttachment> outputAttachment;
