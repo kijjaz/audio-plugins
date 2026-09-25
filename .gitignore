@@ -1,0 +1,31 @@
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# CMake / Build
+build/
+build_gw/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+*_artefacts/
+
+# VS Code
+.vscode/
+
+# Audio
+*.wav
+*.aiff
+
+# VST3
+*.vst3
+*.component
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/

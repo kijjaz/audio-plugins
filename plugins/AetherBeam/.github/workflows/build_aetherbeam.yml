@@ -1,0 +1,145 @@
+name: Build AetherBeam Reverb (Multi-Platform)
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  # ==========================================
+  # 1. macOS (VST3 + AU + Standalone, Universal)
+  # ==========================================
+  build-macos:
+    name: macOS (Universal arm64+x86_64)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: |
+          # If AetherBeam is in repo root or subfolder
+          SOURCE_DIR=$([ -f CMakeLists.txt ] && echo "." || echo "AetherBeam")
+          cmake -S "$SOURCE_DIR" -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Ad-Hoc Sign Binaries
+        run: |
+          xattr -cr build/AetherBeam_artefacts/Release/VST3/"AetherBeam Reverb.vst3" || true
+          codesign --force --deep -s - build/AetherBeam_artefacts/Release/VST3/"AetherBeam Reverb.vst3" || true
+          xattr -cr build/AetherBeam_artefacts/Release/AU/"AetherBeam Reverb.component" || true
+          codesign --force --deep -s - build/AetherBeam_artefacts/Release/AU/"AetherBeam Reverb.component" || true
+
+      - name: Compress macOS Artifacts
+        run: |
+          cd build/AetherBeam_artefacts/Release
+          zip -r AetherBeam-macOS-Universal.zip VST3 AU Standalone
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AetherBeam-macOS-Universal
+          path: build/AetherBeam_artefacts/Release/AetherBeam-macOS-Universal.zip
+
+  # ==========================================
+  # 2. Windows (VST3 + Standalone, x64)
+  # ==========================================
+  build-windows:
+    name: Windows (x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: |
+          $srcDir = if (Test-Path "CMakeLists.txt") { "." } else { "AetherBeam" }
+          cmake -S $srcDir -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Compress Windows Artifacts
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "build/AetherBeam_artefacts/Release/VST3/AetherBeam Reverb.vst3", "build/AetherBeam_artefacts/Release/Standalone/AetherBeam Reverb.exe" -DestinationPath "AetherBeam-Windows-x64.zip"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AetherBeam-Windows-x64
+          path: AetherBeam-Windows-x64.zip
+
+  # ==========================================
+  # 3. Linux (VST3 + Standalone, x86_64)
+  # ==========================================
+  build-linux:
+    name: Linux (x86_64)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install JUCE Linux Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev \
+            libjack-jackd2-dev \
+            ladspa-sdk \
+            libcurl4-openssl-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxext-dev \
+            libxinerama-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            mesa-common-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev
+
+      - name: Configure CMake
+        run: |
+          SOURCE_DIR=$([ -f CMakeLists.txt ] && echo "." || echo "AetherBeam")
+          cmake -S "$SOURCE_DIR" -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Compress Linux Artifacts
+        run: |
+          cd build/AetherBeam_artefacts/Release
+          tar -czvf AetherBeam-Linux-x86_64.tar.gz VST3 Standalone
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AetherBeam-Linux-x86_64
+          path: build/AetherBeam_artefacts/Release/AetherBeam-Linux-x86_64.tar.gz
+
+  # ==========================================
+  # 4. Automatic Release on Git Tag
+  # ==========================================
+  release:
+    name: Publish Release on Git Tag
+    needs: [build-macos, build-windows, build-linux]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            AetherBeam-macOS-Universal/AetherBeam-macOS-Universal.zip
+            AetherBeam-Windows-x64/AetherBeam-Windows-x64.zip
+            AetherBeam-Linux-x86_64/AetherBeam-Linux-x86_64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

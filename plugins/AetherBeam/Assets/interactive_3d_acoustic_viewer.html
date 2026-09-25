@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Real Space Acoustic Viewer | Beam Tracing & Binaural IRs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Authentic Spatial Dataset -->
+    <script src="space_data.js"></script>
+
+    <style>
+        :root {
+            --bg: #07090e;
+            --panel-bg: rgba(15, 23, 42, 0.82);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --accent-gold: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --accent-rose: #f43f5e;
+            --accent-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #viewport-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Glassmorphic UI Overlays */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            position: absolute;
+        }
+
+        /* Top Header */
+        header {
+            top: 20px;
+            left: 24px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, var(--accent-gold), #d97706);
+            color: #000;
+            font-weight: 800;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* Left Space & Position Selector */
+        #control-panel {
+            top: 100px;
+            left: 24px;
+            width: 340px;
+            padding: 20px;
+            max-height: calc(100vh - 124px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        /* Select styling */
+        select {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.85);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        select:hover, select:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Position Buttons */
+        .position-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pos-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pos-btn:hover {
+            background: rgba(51, 65, 85, 0.8);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(2px);
+        }
+
+        .pos-btn.active {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.25), rgba(59, 130, 246, 0.15));
+            border-color: var(--accent-cyan);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .pos-btn .path-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+
+        /* Metrics Display */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-title {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .metric-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-top: 2px;
+        }
+
+        /* Audio Player Bar */
+        #audio-panel {
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            width: min(720px, calc(100vw - 48px));
+        }
+
+        .play-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+            flex-shrink: 0;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        .audio-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .audio-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .audio-format {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-gold);
+        }
+
+        /* View Mode Controls (Top Right) */
+        #view-controls {
+            top: 20px;
+            right: 24px;
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn:hover, .view-btn.active {
+            background: rgba(6, 182, 212, 0.2);
+            color: #fff;
+            border-color: var(--accent-cyan);
+        }
+
+        /* Legend (Bottom Right) */
+        #legend {
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 18px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .line-swatch {
+            width: 18px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="viewport-container"></div>
+
+    <!-- Header -->
+    <header class="glass-panel">
+        <span class="brand-badge">96 kHz WAM</span>
+        <div>
+            <h1>Authentic 3D Acoustic Space Visualizer</h1>
+            <div class="subtitle">Beam-Traced Binaural Impulse Responses in Real Architectural Scans</div>
+        </div>
+    </header>
+
+    <!-- Controls Panel -->
+    <div id="control-panel" class="glass-panel">
+        <div>
+            <div class="section-label">Select Authentic Real Space</div>
+            <select id="space-select">
+                <option value="sibenik_cathedral">St. James Cathedral, Šibenik (UNESCO)</option>
+                <option value="sponza_palace">Sponza Palace Atrium, Dubrovnik</option>
+            </select>
+        </div>
+
+        <div>
+            <div class="section-label">Architectural Positions</div>
+            <div class="position-list" id="position-buttons"></div>
+        </div>
+
+        <div>
+            <div class="section-label">Acoustic Telemetry</div>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <span class="metric-title">RT60 Decay</span>
+                    <span class="metric-val" id="metric-rt60">4.80 s</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-title">Active Paths</span>
+                    <span class="metric-val" id="metric-paths">46</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-title">Triangles</span>
+                    <span class="metric-val" id="metric-triangles">6,631</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-title">Direct Distance</span>
+                    <span class="metric-val" id="metric-distance">16.0 m</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-label">Visual Display Options</div>
+            <div style="display: flex; gap: 8px;">
+                <button class="view-btn active" id="toggle-wireframe">Wireframe</button>
+                <button class="view-btn active" id="toggle-rays">Sound Rays</button>
+                <button class="view-btn" id="toggle-animate">Pulse Animation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera View Controls -->
+    <div id="view-controls" class="glass-panel">
+        <button class="view-btn active" onclick="setCameraView('iso')">Isometric</button>
+        <button class="view-btn" onclick="setCameraView('top')">Top View</button>
+        <button class="view-btn" onclick="setCameraView('nave')">Nave Walk</button>
+        <button class="view-btn" onclick="setCameraView('listener')">Listener Eye</button>
+    </div>
+
+    <!-- Audio Player Bar -->
+    <div id="audio-panel" class="glass-panel">
+        <button class="play-btn" id="audio-play-btn" title="Play Binaural Impulse Response">▶</button>
+        <div class="audio-info">
+            <div class="audio-name" id="audio-title">Binaural IR: High Altar Sanctuary to Center Nave Pews</div>
+            <div class="audio-format">96.0 kHz • 24-bit PCM Stereo • Woodworth Head HRTF</div>
+        </div>
+        <audio id="ir-audio" preload="auto"></audio>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend" class="glass-panel">
+        <div class="legend-item">
+            <div class="dot" style="background: var(--accent-rose); box-shadow: 0 0 8px var(--accent-rose);"></div>
+            <span>Sound Source (Omni)</span>
+        </div>
+        <div class="legend-item">
+            <div class="dot" style="background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan);"></div>
+            <span>Listener Head (Binaural)</span>
+        </div>
+        <div class="legend-item">
+            <div class="line-swatch" style="background: var(--accent-blue);"></div>
+            <span>Direct Sound (Order 0)</span>
+        </div>
+        <div class="legend-item">
+            <div class="line-swatch" style="background: var(--accent-gold);"></div>
+            <span>1st-Order Specular Reflection</span>
+        </div>
+    </div>
+
+    <script>
+        // -------------------------------------------------------------
+        // Three.js Scene Setup & Initialization
+        // -------------------------------------------------------------
+        const container = document.getElementById('viewport-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x07090e);
+        scene.fog = new THREE.FogExp2(0x07090e, 0.012);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(24, -28, 22);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.maxDistance = 120;
+        controls.minDistance = 2;
+        controls.target.set(0, 18, 5);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0xfff0d4, 0.85);
+        dirLight1.position.set(15, 20, 30);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0x93c5fd, 0.45);
+        dirLight2.position.set(-15, -10, 10);
+        scene.add(dirLight2);
+
+        // Floor Grid
+        const gridHelper = new THREE.GridHelper(80, 80, 0x334155, 0x1e293b);
+        gridHelper.rotation.x = Math.PI / 2;
+        scene.add(gridHelper);
+
+        // State Containers
+        let currentSpaceKey = 'sibenik_cathedral';
+        let currentPositionIndex = 0;
+        let spaceMeshGroup = new THREE.Group();
+        let pathsGroup = new THREE.Group();
+        let markersGroup = new THREE.Group();
+        let pulseParticles = [];
+        let animatePulses = false;
+
+        scene.add(spaceMeshGroup);
+        scene.add(pathsGroup);
+        scene.add(markersGroup);
+
+        // -------------------------------------------------------------
+        // Mesh Building from SPACES_DATA
+        // -------------------------------------------------------------
+        function loadSpaceMesh(spaceKey) {
+            spaceMeshGroup.clear();
+            const space = SPACES_DATA[spaceKey];
+            if (!space) return;
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(space.vertices), 3));
+            geometry.setIndex(space.indices);
+            geometry.computeVertexNormals();
+
+            // 1. Translucent Architectural Surface
+            const meshMaterial = new THREE.MeshStandardMaterial({
+                color: 0x94a3b8,
+                roughness: 0.85,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.22,
+                side: THREE.DoubleSide
+            });
+            const mesh = new THREE.Mesh(geometry, meshMaterial);
+            spaceMeshGroup.add(mesh);
+
+            // 2. Crisp Architectural Wireframe
+            const wireframeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x475569,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.45
+            });
+            const wireframeMesh = new THREE.Mesh(geometry, wireframeMaterial);
+            wireframeMesh.name = "wireframe";
+            spaceMeshGroup.add(wireframeMesh);
+
+            // Update UI metrics
+            document.getElementById('metric-rt60').textContent = space.rt60.toFixed(2) + ' s';
+            document.getElementById('metric-triangles').textContent = (space.indices.length / 3).toLocaleString();
+
+            populatePositionButtons(spaceKey);
+            selectPosition(0);
+        }
+
+        // -------------------------------------------------------------
+        // Position & Acoustic Path Rendering
+        // -------------------------------------------------------------
+        function populatePositionButtons(spaceKey) {
+            const container = document.getElementById('position-buttons');
+            container.innerHTML = '';
+            const space = SPACES_DATA[spaceKey];
+
+            space.positions.forEach((pos, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `pos-btn ${idx === 0 ? 'active' : ''}`;
+                btn.innerHTML = `
+                    <span>${pos.name}</span>
+                    <span class="path-badge">${pos.paths.length} rays</span>
+                `;
+                btn.onclick = () => selectPosition(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectPosition(posIdx) {
+            currentPositionIndex = posIdx;
+            const space = SPACES_DATA[currentSpaceKey];
+            const pos = space.positions[posIdx];
+
+            // Update Button Highlights
+            const buttons = document.querySelectorAll('.pos-btn');
+            buttons.forEach((b, i) => b.classList.toggle('active', i === posIdx));
+
+            // Update Telemetry
+            document.getElementById('metric-paths').textContent = pos.paths.length;
+            const directDist = Math.hypot(
+                pos.listener[0] - pos.source[0],
+                pos.listener[1] - pos.source[1],
+                pos.listener[2] - pos.source[2]
+            );
+            document.getElementById('metric-distance').textContent = directDist.toFixed(1) + ' m';
+
+            // Update Audio File
+            const audioElem = document.getElementById('ir-audio');
+            const playBtn = document.getElementById('audio-play-btn');
+            audioElem.src = pos.wav_file;
+            document.getElementById('audio-title').textContent = `Binaural IR: ${pos.name}`;
+            playBtn.textContent = '▶';
+
+            renderAcousticMarkers(pos);
+            renderAcousticRays(pos);
+        }
+
+        function renderAcousticMarkers(pos) {
+            markersGroup.clear();
+
+            // Sound Source (Emissive Sphere)
+            const srcGeo = new THREE.SphereGeometry(0.35, 24, 24);
+            const srcMat = new THREE.MeshStandardMaterial({
+                color: 0xf43f5e,
+                emissive: 0xf43f5e,
+                emissiveIntensity: 0.8
+            });
+            const srcMesh = new THREE.Mesh(srcGeo, srcMat);
+            srcMesh.position.set(...pos.source);
+            markersGroup.add(srcMesh);
+
+            // Listener Head (Binaural Head Marker)
+            const lisGeo = new THREE.SphereGeometry(0.35, 24, 24);
+            const lisMat = new THREE.MeshStandardMaterial({
+                color: 0x06b6d4,
+                emissive: 0x06b6d4,
+                emissiveIntensity: 0.8
+            });
+            const lisMesh = new THREE.Mesh(lisGeo, lisMat);
+            lisMesh.position.set(...pos.listener);
+            markersGroup.add(lisMesh);
+
+            // Listener Orientation Arrow
+            const arrowDir = new THREE.Vector3(Math.sin(pos.yaw || 0), Math.cos(pos.yaw || 0), 0);
+            const arrowHelper = new THREE.ArrowHelper(arrowDir, new THREE.Vector3(...pos.listener), 1.2, 0x06b6d4, 0.4, 0.2);
+            markersGroup.add(arrowHelper);
+        }
+
+        function renderAcousticRays(pos) {
+            pathsGroup.clear();
+            pulseParticles = [];
+
+            pos.paths.forEach((path, idx) => {
+                const points = path.points.map(p => new THREE.Vector3(...p));
+                const curveGeo = new THREE.BufferGeometry().setFromPoints(points);
+
+                const isDirect = path.order === 0;
+                const lineColor = isDirect ? 0x3b82f6 : 0xf59e0b;
+                const lineMat = new THREE.LineBasicMaterial({
+                    color: lineColor,
+                    linewidth: isDirect ? 3 : 1.5,
+                    transparent: true,
+                    opacity: isDirect ? 0.95 : 0.65
+                });
+
+                const line = new THREE.Line(curveGeo, lineMat);
+                pathsGroup.add(line);
+
+                // Reflection bounce markers
+                if (points.length > 2) {
+                    for (let i = 1; i < points.length - 1; i++) {
+                        const bGeo = new THREE.SphereGeometry(0.16, 12, 12);
+                        const bMat = new THREE.MeshBasicMaterial({ color: 0xd97706 });
+                        const bMesh = new THREE.Mesh(bGeo, bMat);
+                        bMesh.position.copy(points[i]);
+                        pathsGroup.add(bMesh);
+                    }
+                }
+
+                // Animation pulse particle
+                if (points.length >= 2) {
+                    const pGeo = new THREE.SphereGeometry(0.12, 8, 8);
+                    const pMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                    const pMesh = new THREE.Mesh(pGeo, pMat);
+                    pMesh.position.copy(points[0]);
+                    pathsGroup.add(pMesh);
+
+                    pulseParticles.push({
+                        mesh: pMesh,
+                        points: points,
+                        progress: (idx * 0.05) % 1.0,
+                        speed: 0.45 / Math.max(1, path.distance)
+                    });
+                }
+            });
+        }
+
+        // -------------------------------------------------------------
+        // Camera View Presets
+        // -------------------------------------------------------------
+        function setCameraView(preset) {
+            document.querySelectorAll('#view-controls .view-btn').forEach(b => b.classList.remove('active'));
+            if (event) event.target.classList.add('active');
+
+            const space = SPACES_DATA[currentSpaceKey];
+            const pos = space.positions[currentPositionIndex];
+
+            if (preset === 'iso') {
+                camera.position.set(24, -28, 22);
+                controls.target.set(0, 18, 5);
+            } else if (preset === 'top') {
+                camera.position.set(0, 18, 55);
+                controls.target.set(0, 18, 0);
+            } else if (preset === 'nave') {
+                camera.position.set(0, 3, 2.5);
+                controls.target.set(0, 35, 3.5);
+            } else if (preset === 'listener') {
+                const lis = pos.listener;
+                camera.position.set(lis[0], lis[1] - 4, lis[2] + 1.2);
+                controls.target.set(...pos.source);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // Audio Player Controls
+        // -------------------------------------------------------------
+        const audioElem = document.getElementById('ir-audio');
+        const playBtn = document.getElementById('audio-play-btn');
+
+        playBtn.onclick = () => {
+            if (audioElem.paused) {
+                audioElem.play().then(() => {
+                    playBtn.textContent = '⏸';
+                }).catch(err => console.log("Audio play error:", err));
+            } else {
+                audioElem.pause();
+                playBtn.textContent = '▶';
+            }
+        };
+
+        audioElem.onended = () => {
+            playBtn.textContent = '▶';
+        };
+
+        // -------------------------------------------------------------
+        // UI Toggles
+        // -------------------------------------------------------------
+        document.getElementById('space-select').onchange = (e) => {
+            currentSpaceKey = e.target.value;
+            loadSpaceMesh(currentSpaceKey);
+        };
+
+        document.getElementById('toggle-wireframe').onclick = (e) => {
+            const wire = spaceMeshGroup.getObjectByName('wireframe');
+            if (wire) {
+                wire.visible = !wire.visible;
+                e.target.classList.toggle('active', wire.visible);
+            }
+        };
+
+        document.getElementById('toggle-rays').onclick = (e) => {
+            pathsGroup.visible = !pathsGroup.visible;
+            e.target.classList.toggle('active', pathsGroup.visible);
+        };
+
+        document.getElementById('toggle-animate').onclick = (e) => {
+            animatePulses = !animatePulses;
+            e.target.classList.toggle('active', animatePulses);
+        };
+
+        // -------------------------------------------------------------
+        // Animation Loop
+        // -------------------------------------------------------------
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            controls.update();
+
+            // Animate acoustic pulse particles
+            if (animatePulses && pathsGroup.visible) {
+                pulseParticles.forEach(p => {
+                    p.progress = (p.progress + p.speed * delta * 25.0) % 1.0;
+                    // Interpolate along line segments
+                    const pts = p.points;
+                    const totalSegments = pts.length - 1;
+                    const segIdx = Math.min(Math.floor(p.progress * totalSegments), totalSegments - 1);
+                    const segFrac = (p.progress * totalSegments) - segIdx;
+                    p.mesh.position.lerpVectors(pts[segIdx], pts[segIdx + 1], segFrac);
+                    p.mesh.visible = true;
+                });
+            } else {
+                pulseParticles.forEach(p => p.mesh.visible = false);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Initialize with Sibenik Cathedral
+        loadSpaceMesh(currentSpaceKey);
+        animate();
+    </script>
+</body>
+</html>

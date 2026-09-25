@@ -1,0 +1,38 @@
+<svg width="200" height="400" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="400" fill="#151515" stroke="#333" stroke-width="2" />
+  
+  <!-- Strip Label -->
+  <rect x="0" y="360" width="200" height="40" fill="#222" />
+  <text x="100" y="385" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="18" font-weight="bold" fill="gold">KICK (BD)</text>
+
+  <!-- Primary Knobs -->
+  <g transform="translate(100, 60)">
+    <circle r="35" fill="#111" stroke="#B8860B" stroke-width="3" />
+    <line x1="0" y1="-35" x2="0" y2="-20" stroke="#B8860B" stroke-width="3" transform="rotate(-45)" />
+    <text y="55" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="12" fill="#888">TUNE</text>
+  </g>
+
+  <g transform="translate(100, 160)">
+    <circle r="35" fill="#111" stroke="#B8860B" stroke-width="3" />
+    <line x1="0" y1="-35" x2="0" y2="-20" stroke="#B8860B" stroke-width="3" transform="rotate(30)" />
+    <text y="55" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="12" fill="#888">DECAY</text>
+  </g>
+
+  <!-- Level Knob (Larget) -->
+  <g transform="translate(100, 270)">
+    <circle r="45" fill="#111" stroke="#B8860B" stroke-width="4" />
+    <line x1="0" y1="-45" x2="0" y2="-25" stroke="#B8860B" stroke-width="4" transform="rotate(10)" />
+    <text y="65" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="14" font-weight="bold" fill="white">LEVEL</text>
+  </g>
+
+  <!-- Velocity Sensitivity Knobs (Small) -->
+  <g transform="translate(50, 335)">
+    <circle r="15" fill="#111" stroke="#888" stroke-width="1.5" />
+    <text y="28" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="8" fill="#666">VEL->TONE</text>
+  </g>
+  <g transform="translate(150, 335)">
+    <circle r="15" fill="#111" stroke="#888" stroke-width="1.5" />
+    <text y="28" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="8" fill="#666">VEL->DECAY</text>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+{
+    "name": "gravity-well",
+    "version": "1.0.0",
+    "description": "N-Body Modulation Synthesizer",
+    "main": "index.js",
+    "type": "module"
+}

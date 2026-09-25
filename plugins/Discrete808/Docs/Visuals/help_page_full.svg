@@ -1,0 +1,75 @@
+<svg width="800" height="1200" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Overlay -->
+  <rect width="800" height="1200" fill="rgba(0,0,0,0.95)" />
+  <rect x="10" y="10" width="780" height="1180" fill="none" stroke="#B8860B" stroke-width="2" />
+
+  <!-- Title -->
+  <text x="400" y="60" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="28" font-weight="bold" fill="#B8860B">DISCRETE 808 - ENGINEERING MANUAL</text>
+
+  <!-- System Architecture Section -->
+  <g transform="translate(50, 120)">
+    <rect width="700" height="200" fill="#111" stroke="#333" />
+    <text x="20" y="30" font-family="Monaco, monospace" font-size="14" fill="gold">--- SYSTEM ARCHITECTURE ---</text>
+    <text x="20" y="60" font-family="Monaco, monospace" font-size="13" fill="white" xml:space="preserve">
+[MIDI In] -> [GM Decoder] -> [Trigger Matrix]
+                                  |
+ [Accent] ------------------------+
+                                  v
+                          [12x Voices]
+                          (Analog Kit)
+                                  |
+                                  v
+                          [Master Stage]
+    </text>
+  </g>
+
+  <!-- Kick Synthesis Section -->
+  <g transform="translate(50, 350)">
+    <rect width="700" height="180" fill="#111" stroke="#333" />
+    <text x="20" y="30" font-family="Monaco, monospace" font-size="14" fill="gold">--- KICK SYNTHESIS ---</text>
+    <text x="20" y="60" font-family="Monaco, monospace" font-size="13" fill="white" xml:space="preserve">
+[Trig] -> [Pulse Gen] -> [Pitch Env]
+              |              |
+              v              v
+         [Bridged-T Resonator]
+                 |
+                 v
+         [OpAmp] -> [Diode] -> [VCA]
+    </text>
+  </g>
+
+  <!-- Snare Synthesis Section -->
+  <g transform="translate(50, 560)">
+    <rect width="700" height="160" fill="#111" stroke="#333" />
+    <text x="20" y="30" font-family="Monaco, monospace" font-size="14" fill="gold">--- SNARE SYNTHESIS ---</text>
+    <text x="20" y="60" font-family="Monaco, monospace" font-size="13" fill="white" xml:space="preserve">
+              [Pitch Env]
+                  |
+[Trig] -> [Resonator 1] ---+
+      |                    |--> [Sum] -> [Out]
+      +-> [Noise] -> [BPF] -+
+    </text>
+  </g>
+
+  <!-- MIDI Map Section -->
+  <g transform="translate(50, 750)">
+    <rect width="700" height="250" fill="#111" stroke="#333" />
+    <text x="20" y="30" font-family="Monaco, monospace" font-size="14" fill="gold">--- MIDI MAPPING (Ableton) ---</text>
+    <text x="20" y="60" font-family="Monaco, monospace" font-size="13" fill="#AAA" xml:space="preserve">
+KICK      : 36 (C1)     HI TOM    : 48 (C2)
+RIMSHOT   : 37 (C#1)    HI TOM 2  : 50 (D2)
+SNARE     : 38 (D1)     CL HAT    : 42 (F#1)
+SNARE 2   : 40 (E1)     CL HAT 2  : 44 (G#1)
+CLAP      : 39 (D#1)    OP HAT    : 46 (A#1)
+LO TOM    : 41 (F1)     CYMBAL    : 49 (C#2)
+LO TOM 2  : 43 (G1)     CYMBAL 2  : 51 (D#2)
+MID TOM   : 45 (A1)     CYMBAL 3  : 52 (E2)
+MID TOM 2 : 47 (B1)     COWBELL   : 56 (G#2)
+MARACAS   : 70 (A#3)
+    </text>
+  </g>
+
+  <!-- Button simulated -->
+  <rect x="340" y="1100" width="120" height="40" rx="5" fill="#222" stroke="#B8860B" />
+  <text x="400" y="1125" text-anchor="middle" font-family="Helvetica Neue, sans-serif" font-size="12" font-weight="bold" fill="#B8860B">EXIT MANUAL</text>
+</svg>

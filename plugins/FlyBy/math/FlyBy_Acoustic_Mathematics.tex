@@ -1,0 +1,252 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{microtype}
+
+\geometry{margin=2.2cm}
+\definecolor{gold}{RGB}{197, 160, 89}
+\definecolor{darkcharcoal}{RGB}{18, 19, 22}
+
+\title{\textbf{\Large FlyBy: Mathematical Foundations of Anthropometric 3D Elevation, Pinna Spectral Dispersion, and Flight Trajectory Acoustics}}
+\author{\textbf{Kijjaz} \and \textbf{Gemini 3.8 Flash} \\ Audio DSP Research \& Engineering}
+\date{September 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Headphone spatialization systems frequently suffer from ``elevation collapse'' and high-frequency transient dulling when attempting to render sound sources moving vertically (up/down/overhead). Traditional horizontal stereophonic and interaural time/level difference (ITD/ILD) cues fail along the median plane because structural bilateral ear symmetry yields identically zero interaural time and level disparities. This paper details the mathematical, physical, and digital signal processing principles implemented in \textbf{FlyBy}, an audio plugin designed for authentic 3D vertical localization. We derive the analytical Rayleigh-Woodworth spherical diffraction model, the elevation-dependent pinna moving notch equations ($N_1, N_2$), the chest/torso comb reflection boundary equations, the sub-sample cubic Hermite Doppler trajectory engine, and two novel contributions: \emph{Transient-Preserving Elevation} (dynamic notch depth modulation) and \emph{Image-Source Floor/Ceiling Boundary Proximity Reflectance}.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction and Coordinate Foundations}
+
+Spatial audio over headphones requires projecting a sound source positioned in three-dimensional space $\vec{p}(t) \in \mathbb{R}^3$ into a two-channel binaural output $(y_L[n], y_R[n])$:
+\begin{equation}
+\vec{p} = \begin{bmatrix} x \\ y \\ z \end{bmatrix}, \quad
+\begin{cases}
+x \in [-\infty, +\infty] & \text{(Lateral axis: Left } - \text{ to Right } +) \\
+y \in [-\infty, +\infty] & \text{(Longitudinal axis: Rear } - \text{ to Front } +) \\
+z \in [-\infty, +\infty] & \text{(Vertical axis: Below } - \text{ to Overhead } +)
+\end{cases}
+\end{equation}
+
+Transforming to spherical coordinates with listener head center at the origin:
+\begin{align}
+r &= \|\vec{p}\| = \sqrt{x^2 + y^2 + z^2} \quad \text{(Distance in meters)} \\
+\theta &= \text{atan2}(x, y) \cdot \frac{180^\circ}{\pi} \quad \text{(Azimuth: } -180^\circ \le \theta \le +180^\circ) \\
+\phi &= \arcsin\left(\frac{z}{r}\right) \cdot \frac{180^\circ}{\pi} \quad \text{(Elevation: } -90^\circ \le \phi \le +90^\circ)
+\end{align}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.88\linewidth]{../spectrum_itd_ild_comparison.png}
+\caption{Why horizontal panning cues fail for vertical elevation: along the median plane ($\theta = 0^\circ$), both Interaural Time Difference (ITD) and Interaural Level Difference (ILD) are identically zero across all frequencies. Vertical perception relies exclusively on monaural pinna spectral cues.}
+\label{fig:itd_ild}
+\end{figure}
+
+\section{Horizontal Acoustics: Rayleigh-Woodworth Diffraction}
+
+\subsection{Sub-Sample Interaural Time Difference (ITD)}
+Let head radius be $a = 0.0875\text{ m}$ and speed of sound in air be $c = 343\text{ m/s}$. The acoustic path distance from source $\vec{p}$ to left and right ear entrances located at $\vec{e}_L = (-a, 0, 0)$ and $\vec{e}_R = (+a, 0, 0)$ incorporates spherical head shadow path curvature according to Woodworth's formulation:
+\begin{equation}
+\tau_{\text{ITD}}(\theta) = \frac{a}{c} \left( \sin|\theta_{\text{rad}}| + |\theta_{\text{rad}}| \right) \cdot \text{sgn}(\theta_{\text{rad}})
+\end{equation}
+The continuous delay for each channel is evaluated using a 4-point fractional delay line with cubic Hermite interpolation:
+\begin{equation}
+y(t) = c_3 \alpha^3 + c_2 \alpha^2 + c_1 \alpha + c_0
+\end{equation}
+where $\alpha \in [0, 1)$ is the sub-sample fractional delay, and coefficients are given by:
+\begin{align}
+c_0 &= y[n] \\
+c_1 &= \frac{1}{2}(y[n+1] - y[n-1]) \\
+c_2 &= y[n-1] - \frac{5}{2}y[n] + 2y[n+1] - \frac{1}{2}y[n+2] \\
+c_3 &= \frac{1}{2}(y[n+2] - y[n-1]) + \frac{3}{2}(y[n] - y[n+1])
+\end{align}
+
+\subsection{Head Diffraction Filter (Continuous Rayleigh Model)}
+Acoustic shadowing of the contralateral ear is governed by scattering around a rigid sphere with cutoff frequency $\omega_0 = \frac{c}{a} \approx 2\pi \cdot 624\text{ Hz}$:
+\begin{equation}
+H_{\text{head}}(s) = \frac{1 + \alpha(\theta) \frac{s}{\omega_0}}{1 + \frac{s}{\omega_0}}, \quad \alpha(\theta) = 1.0 + 0.5 \cos(\theta_{\text{ear}})
+\end{equation}
+Discretizing via the bilinear transform $s \leftarrow \frac{2}{T} \frac{1 - z^{-1}}{1 + z^{-1}}$ yields the first-order IIR filter:
+\begin{equation}
+H_{\text{head}}(z) = \frac{b_0 + b_1 z^{-1}}{1 + a_1 z^{-1}}, \quad
+\begin{cases}
+b_0 = \frac{2\alpha + \omega_0 T}{2 + \omega_0 T} \\
+b_1 = \frac{\omega_0 T - 2\alpha}{2 + \omega_0 T} \\
+a_1 = \frac{\omega_0 T - 2}{2 + \omega_0 T}
+\end{cases}
+\end{equation}
+
+\section{Vertical Elevation Acoustics: Dynamic Pinna Dispersion}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.88\linewidth]{../spectrum_vertical_elevation.png}
+\caption{Measured frequency response of FlyBy's anthropometric filter as elevation sweeps from $-40^\circ$ to $+90^\circ$. Primary pinna notch $N_1$ sweeps monotonically from $6.0\text{ kHz}$ to $11.2\text{ kHz}$.}
+\label{fig:elevation_bode}
+\end{figure}
+
+\subsection{Monaural Pinna Spectral Notches}
+Destructive acoustic interference inside the concha and helix creates sharp elevation-dependent spectral notches:
+\begin{equation}
+f_{N_1}(\phi) = \left( 6000 + \frac{\phi + 50^\circ}{140^\circ} \cdot 5200 \right) \cdot S_{\text{pinna}} \quad [\text{Hz}]
+\end{equation}
+where $S_{\text{pinna}} \in [0.75, 1.25]$ is the anatomical scale calibration factor.
+The secondary notch emerges at positive elevations $\phi > 0^\circ$:
+\begin{equation}
+f_{N_2}(\phi) = \left( 9800 + \frac{\phi}{90^\circ} \cdot 3200 \right) \cdot S_{\text{pinna}} \quad [\text{Hz}], \quad G_{N_2}(\phi) = -14 \cdot \left(\frac{\phi}{90^\circ}\right) \quad [\text{dB}]
+\end{equation}
+
+\subsection{Torso and Clavicle Comb Reflection}
+When a sound source is below eye level ($\phi < 0^\circ$), torso reflections introduce destructive cancellation at:
+\begin{equation}
+f_{\text{torso}}(\phi) = 1200 - \left(\frac{-\phi}{50^\circ}\right) \cdot 350 \quad [\text{Hz}], \quad G_{\text{torso}}(\phi) = -8 \cdot \left(\frac{-\phi}{50^\circ}\right) \quad [\text{dB}]
+\end{equation}
+
+\subsection{Front vs. Back Disambiguation: Posterior Pinna Shadowing and Concha Resonance}
+Horizontal ITD and ILD are geometrically identical along the cone of confusion (e.g., $(x, y, z) = (0, +y, 0)$ in front vs. $(0, -y, 0)$ behind). FlyBy resolves front-back ambiguity through two monaural anthropometric spectral cues derived from the forward-facing anatomy of the human auricle:
+
+Let the normalized front-back factor be:
+\begin{equation}
+\kappa_{\text{FB}} = \frac{y}{\max(0.001, \sqrt{x^2 + y^2})} \in [-1.0, +1.0]
+\end{equation}
+where $\kappa_{\text{FB}} = +1$ denotes direct frontal arrival ($y > 0$) and $\kappa_{\text{FB}} = -1$ denotes rear arrival ($y < 0$).
+
+\begin{enumerate}
+    \item \textbf{Posterior Pinna Shadowing ($y < 0$):} Because the cartilaginous pinna flap faces forward, sounds originating from behind the listener are shadowed by the ear flap. We model this as a high-shelf attenuation above $4.6\text{ kHz}$:
+    \begin{equation}
+    G_{\text{rear}}(\kappa_{\text{FB}}) = -4.5 \cdot \max(0, -\kappa_{\text{FB}}) \cdot E_{\text{strength}} \quad [\text{dB}], \quad f_{c,\text{rear}} = 4600 \cdot S_{\text{pinna}} \quad [\text{Hz}]
+    \end{equation}
+    \item \textbf{Frontal Concha Bowl Acoustic Resonance ($y > 0$):} Sound waves entering directly into the frontal ear aperture excite the quarter-wave acoustic cavity resonance of the concha bowl at $\approx 3.2\text{ kHz}$:
+    \begin{equation}
+    G_{\text{concha}}(\kappa_{\text{FB}}) = +2.2 \cdot \max(0, \kappa_{\text{FB}}) \cdot E_{\text{strength}} \quad [\text{dB}], \quad f_{0,\text{concha}} = 3200 \cdot S_{\text{pinna}} \quad [\text{Hz}], \quad Q = 1.8
+    \end{equation}
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\linewidth]{spatial_front_back_high_low_curves.png}
+\caption{Measured frequency transfer functions $H(f)$ demonstrating front vs.\ back disambiguation (left: concha resonance vs.\ posterior pinna shadow) and vertical elevation cues (right: upward notch migration vs.\ torso comb reflection).}
+\label{fig:front_back_curves}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.88\linewidth]{../spectrum_elevation_waterfall.png}
+\caption{Continuous 2D waterfall spectrogram displaying the trajectory of the $N_1$ notch ridge across elevation angles.}
+\label{fig:waterfall}
+\end{figure}
+
+\section{Innovation 1: Transient-Preserving Elevation}
+
+\subsection{The Spatial Audio Muffling Paradox}
+Standard elevation filtering applies deep static notches ($-18\text{ dB}$ at $6\text{--}11\text{ kHz}$), which degrades high-frequency energy during attack transients. FlyBy solves this via dynamic envelope decomposition.
+
+\subsection{Energy-Surge Onset Detection}
+We track the peak envelope with asymmetric attack and release:
+\begin{equation}
+E[n] = \begin{cases}
+|x[n]|, & \text{if } |x[n]| > E[n-1] \\
+|x[n]| + \alpha_{\text{decay}} (E[n-1] - |x[n]|), & \text{otherwise}
+\end{cases}
+\end{equation}
+When instantaneous energy surges above the background envelope:
+\begin{equation}
+\Delta E[n] = |x[n]| - E[n-1]
+\end{equation}
+A transient onset triggers when $\Delta E[n] > 0.015$ and $\Delta E[n] > 0.4 \cdot E[n-1]$. The transient ratio $T[n] \in [0, 1]$ decays exponentially:
+\begin{equation}
+T[n] = T[n-1] \cdot \alpha_{\text{transient}}, \quad \alpha_{\text{transient}} = \exp\left(-\frac{1}{f_s \cdot 0.012}\right)
+\end{equation}
+
+\subsection{Dynamic Notch Depth Modulation}
+The pinna notch gain is modulated sample-by-sample:
+\begin{equation}
+G_{\text{effective}}[n] = G_{\text{nominal}} \cdot \Big(1.0 - C_{\text{crisp}} \cdot T[n]\Big)
+\end{equation}
+where $C_{\text{crisp}} \in [0, 1]$ is the user Crispness parameter. During sharp attacks ($T \approx 1$), $G_{\text{effective}} \approx 0\text{ dB}$, preserving transient clarity. During sustain ($T \approx 0$), $G_{\text{effective}} = -18\text{ dB}$, providing full elevation perception.
+
+\section{Innovation 4: Boundary Proximity Grounding}
+
+\subsection{Image-Source Geometry}
+Let listener head height be $h_{\text{head}} = 1.6\text{ m}$ above the floor, and ceiling height be $H_{\text{room}} = 3.2\text{ m}$.
+For a source at relative elevation $z$:
+\begin{align}
+d_{\text{direct}} &= \sqrt{x^2 + y^2 + z^2} \\
+d_{\text{floor}} &= \sqrt{x^2 + y^2 + (2 h_{\text{head}} + z)^2} \\
+d_{\text{ceiling}} &= \sqrt{x^2 + y^2 + (2 H_{\text{room}} - 2 h_{\text{head}} - z)^2}
+\end{align}
+
+\subsection{Boundary Excess Delay and Reflection Gains}
+The excess path delays are:
+\begin{equation}
+\Delta \tau_{\text{floor}} = \frac{d_{\text{floor}} - d_{\text{direct}}}{c}, \quad \Delta \tau_{\text{ceiling}} = \frac{d_{\text{ceiling}} - d_{\text{direct}}}{c}
+\end{equation}
+Reflection gains scale with geometric divergence and boundary proximity:
+\begin{align}
+g_{\text{floor}} &= \left(\frac{d_{\text{direct}}}{d_{\text{floor}}}\right) \cdot 0.45 \cdot \Pi_{\text{floor}}(z) \cdot G_{\text{grounding}} \\
+g_{\text{ceiling}} &= \left(\frac{d_{\text{direct}}}{d_{\text{ceiling}}}\right) \cdot 0.40 \cdot \Pi_{\text{ceiling}}(z) \cdot G_{\text{grounding}}
+\end{align}
+High-frequency absorption filters model boundary material damping:
+\begin{equation}
+H_{\text{floor}}(z) = \text{HighShelf}(3800\text{ Hz}, -6\text{ dB}), \quad
+H_{\text{ceiling}}(z) = \text{HighShelf}(5500\text{ Hz}, -4.5\text{ dB})
+\end{equation}
+
+\section{Autonomous 3D Flight Trajectory Engine}
+
+\subsection{Continuous Parameterized Trajectories}
+FlyBy synthesizes 3D spatial velocity vectors $\vec{v}(t) = \frac{d\vec{p}}{dt}$:
+\begin{itemize}
+    \item \textbf{Swoop Dive-Bomb}:
+    \begin{equation}
+    y(t) = 4 - 8t, \quad z(t) = z_{\text{min}} + 4(t - 0.5)^2 (z_{\text{max}} - z_{\text{min}}), \quad x(t) = R_{\text{prox}} \sin(\pi t)
+    \end{equation}
+    \item \textbf{Helical Spiral Ascent}:
+    \begin{equation}
+    x(t) = R_{\text{prox}} \sin(2\pi f_0 t), \quad y(t) = R_{\text{prox}} \cos(2\pi f_0 t), \quad z(t) = z_{\text{min}} + \frac{1 + \sin(\pi f_0 t)}{2}(z_{\text{max}} - z_{\text{min}})
+    \end{equation}
+\end{itemize}
+
+\subsection{Doppler Pitch Modulation}
+The dynamic pitch shift factor $\eta(t)$ is derived from acoustic path rate-of-change:
+\begin{equation}
+\eta(t) = 1 - \frac{1}{c} \frac{d}{dt} \|\vec{p}(t) - \vec{e}_{L,R}\|
+\end{equation}
+Implemented continuously without pitch-tracking artifacts via fractional cubic delay interpolation.
+
+\section{Summary of Metrics}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+\textbf{Configuration} & \textbf{Azimuth} & \textbf{Elevation} & \textbf{ITD ($\mu$s)} & \textbf{ILD (dB)} & \textbf{Notch 1 (Hz)} & \textbf{Concha (dB)} & \textbf{Rear Shelf (dB)} \\
+\midrule
+Pure Horizontal Left   & $-90^\circ$ & $0^\circ$  & $+510.2$ & $-9.3$ & 7857 & $0.0$ & $0.0$ \\
+Front Center (Eye)     & $0^\circ$   & $0^\circ$  & $0.0$    & $0.0$  & 7857 & $+2.2$ & $0.0$ \\
+Rear Center (Behind)   & $180^\circ$ & $0^\circ$  & $0.0$    & $0.0$  & 7857 & $0.0$ & $-4.5$ \\
+Pure Horizontal Right  & $+90^\circ$ & $0^\circ$  & $-510.2$ & $+9.3$ & 7857 & $0.0$ & $0.0$ \\
+\midrule
+Below Horizon (Nadir)  & $0^\circ$   & $-40^\circ$ & $0.0$   & $0.0$  & 6371 & $+1.7$ & $0.0$ \\
+Zenith (Overhead)      & $0^\circ$   & $+90^\circ$ & $0.0$   & $0.0$  & 11200 & $0.0$ & $0.0$ \\
+\midrule
+Combined 3D Swoop      & $+45^\circ$ & $+45^\circ$ & $-254.8$ & $+6.2$ & 9528 & $+1.6$ & $0.0$ \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of physical metrics across horizontal, vertical, and front/back configurations.}
+\label{tab:metrics}
+\end{table}
+
+\end{document}

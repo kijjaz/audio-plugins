@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAM Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "@webaudiomodules/sdk": "/node_modules/@webaudiomodules/sdk/dist/index.js"
+            }
+        }
+    </script>
+</head>
+
+<body class="dark-theme">
+    <div id="app">
+        <header>
+            <h1>WAM Studio <span class="badge">v1.0</span></h1>
+            <div id="transport">
+                <button id="btn-init" class="btn-glow">Initialize Engine</button>
+                <div class="transport-controls hidden" id="transport-controls">
+                    <button id="btn-record" class="btn-action">● Record</button>
+                    <button id="btn-stop" class="btn-action" disabled>■ Stop</button>
+                    <button id="btn-export" class="btn-secondary" disabled>↓ Export WAV</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="plugin-slots">
+                <div class="slot-header">
+                    <h2>Plugin Chain</h2>
+                    <button id="btn-add-plugin" class="btn-small">+ Add Plugin</button>
+                </div>
+                <div id="slots-container">
+                    <!-- Plugins will be injected here -->
+                    <div class="empty-notif">No plugins loaded. Click + to add.</div>
+                </div>
+            </section>
+
+            <section id="gui-container">
+                <div class="gui-header">
+                    <h2>Plugin Interface</h2>
+                    <div id="active-plugin-name">None</div>
+                </div>
+                <div id="wam-gui">
+                    <!-- Plugin GUI will be injected here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div id="midi-status">MIDI: Disconnected</div>
+            <div id="cpu-load">CPU: 0%</div>
+        </footer>
+    </div>
+
+    <!-- UI Modal for adding plugins -->
+    <div id="plugin-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Add WAM Plugin</h3>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="url">From URL</button>
+                <button class="tab-btn" data-tab="code">Live JS</button>
+                <button class="tab-btn" data-tab="faust">Faust DSP</button>
+            </div>
+
+            <div id="tab-url" class="tab-content">
+                <div class="input-group">
+                    <label>Plugin index.js URL</label>
+                    <input type="text" id="plugin-url" value="/plugins/cable-lift/index.js">
+                </div>
+            </div>
+
+            <div id="tab-code" class="tab-content hidden">
+                <div class="input-group">
+                    <label>JavaScript Plugin Code (ESM)</label>
+                    <textarea id="plugin-code" spellcheck="false">
+export default class LivePlugin extends WebAudioModule {
+    async createAudioNode() {
+        const processorCode = `
+            class LiveProcessor extends AudioWorkletProcessor {
+                process(inputs, outputs) {
+                    const input = inputs[0];
+                    const output = outputs[0];
+                    for (let ch = 0; ch < output.length; ch++) {
+                        for (let i = 0; i < output[ch].length; i++) {
+                            output[ch][i] = (input[ch] ? input[ch][i] : 0) * 0.5; // Gain 0.5
+                        }
+                    }
+                    return true;
+                }
+            }
+            registerProcessor('LiveProcessor', LiveProcessor);
+        `;
+        const blob = new Blob([processorCode], { type: 'text/javascript' });
+        const url = URL.createObjectURL(blob);
+        await this.audioContext.audioWorklet.addModule(url);
+        
+        const node = new AudioWorkletNode(this.audioContext, 'LiveProcessor');
+        node.moduleName = 'Live Gain Plugin';
+        return node;
+    }
+    async createGui() {
+        const div = document.createElement('div');
+        div.innerHTML = '<div style="color:lime">Live Compiled Gain Plugin Active!</div>';
+        return { domElement: div };
+    }
+}
+                    </textarea>
+                </div>
+            </div>
+
+            <div id="tab-faust" class="tab-content hidden">
+                <div class="input-group">
+                    <label>Faust DSP Code</label>
+                    <textarea id="faust-code" spellcheck="false">
+import("stdfaust.lib");
+process = no.noise * 0.1;
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="btn-load-confirm" class="btn-action">Load</button>
+                <button id="btn-modal-close" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
