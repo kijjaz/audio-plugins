@@ -16,6 +16,10 @@ public:
 
     // Public state for UI
     double v_state = 1.0;
+    std::atomic<float> liveInputPeak { 0.0f };
+    std::atomic<float> liveOutputPeak { 0.0f };
+    std::atomic<float> liveSaturationTHD { 0.0f };
+    std::atomic<float> liveWowDisplacement { 0.0f };
 
     float getMagnitudeAtFrequency(double frequency)
     {
@@ -38,6 +42,11 @@ public:
         float gr = static_cast<float>(20.0 * std::log10(std::max(0.001, v_state)));
         return gr;
     }
+
+    float getLiveInputPeak() const { return liveInputPeak.load(); }
+    float getLiveOutputPeak() const { return liveOutputPeak.load(); }
+    float getLiveTHD() const { return liveSaturationTHD.load(); }
+    float getLiveWow() const { return liveWowDisplacement.load(); }
 
     void prepare(double sampleRate, int samplesPerBlock)
     {
@@ -127,6 +136,9 @@ public:
 
     float processSample(float x)
     {
+        float inAbs = std::abs(x);
+        meterInPeak = std::max(inAbs, meterInPeak * 0.999f);
+
         // 1. Vacuum Tube Voltage Sag (RMS + Dual-Stage Recovery)
         float x_sq = x * x;
         e1 = e1 + alpha_env * (x_sq - e1);
@@ -159,7 +171,12 @@ public:
         
         float h = 0.5f;
         float driven = drive * (sig + asymmetry_offset) - h * langevin(beta_hysteresis * dx * 0.001f);
-        sig = langevinNormalized(driven);
+        float satOut = langevinNormalized(driven);
+
+        // Saturation nonlinear delta (difference between input drive and compressed output)
+        float nonlinearDiff = std::abs(satOut - (sig * drive));
+        meterTHD = meterTHD * 0.998f + nonlinearDiff * 0.002f;
+        sig = satOut;
         
         // 4. Physical Tape Hiss & Barkhausen Modulation Noise
         if (hiss_gain > 0.0001f)
@@ -202,6 +219,19 @@ public:
         if (wow_flutter > 0.001f)
         {
             sig = processWowFlutter(sig);
+        }
+
+        float outAbs = std::abs(sig);
+        meterOutPeak = std::max(outAbs, meterOutPeak * 0.999f);
+
+        // Periodically update atomic telemetry for GUI (every ~128 samples)
+        if (++telemetryDecimate >= 128)
+        {
+            telemetryDecimate = 0;
+            liveInputPeak.store(meterInPeak);
+            liveOutputPeak.store(meterOutPeak);
+            liveSaturationTHD.store(meterTHD);
+            liveWowDisplacement.store(lastWowOffset);
         }
         
         return sig;
@@ -257,6 +287,13 @@ private:
     float hiss_env = 0.0f;
     float hiss_env_decay = 0.001f;
 
+    // Telemetry internal tracking
+    float meterInPeak = 0.0f;
+    float meterOutPeak = 0.0f;
+    float meterTHD = 0.0f;
+    float lastWowOffset = 0.0f;
+    int telemetryDecimate = 0;
+
     // Normalized Langevin: output = 3.0 * (coth(x) - 1/x)
     float langevinNormalized(float val)
     {
@@ -294,6 +331,7 @@ private:
         float wowMod = static_cast<float>(0.7 * std::sin(wowPhase) + 0.3 * driftState);
         
         float totalMod = (wowMod * 0.7f + flutterMod * 0.3f) * (wow_flutter * wow_flutter);
+        lastWowOffset = totalMod;
         float delayInSamples = centerDelay + totalMod * static_cast<float>(fs * 0.0018);
         delayInSamples = juce::jlimit(2.0f, static_cast<float>(maxDelaySamples - 4), delayInSamples);
 
