@@ -3,6 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "PluginProcessor.h"
 #include "UI/CarbonGoldLookAndFeel.h"
+#include "UI/AnalysisPanelComponent.h"
 
 class VacuumTapeSimAudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Timer
 {
@@ -20,6 +21,8 @@ private:
 
     float tapeRotation = 0.0f;
     float currentGlow = 0.0f;
+    
+    std::unique_ptr<vts::AnalysisPanelComponent> analysisPanel;
 
     // Sliders
     juce::Slider driveSlider;

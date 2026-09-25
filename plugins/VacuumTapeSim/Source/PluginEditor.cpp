@@ -39,8 +39,11 @@ VacuumTapeSimAudioProcessorEditor::VacuumTapeSimAudioProcessorEditor (VacuumTape
     addAndMakeVisible (eqLabel);
     
     eqAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.apvts, "eq_mode", eqBox);
+    
+    analysisPanel = std::make_unique<vts::AnalysisPanelComponent>(&audioProcessor.tapeDSP[0]);
+    addAndMakeVisible(analysisPanel.get());
 
-    setSize (800, 500);
+    setSize (900, 800);
     startTimerHz(30); // 30 FPS animation
 }
 
@@ -68,13 +71,13 @@ void VacuumTapeSimAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawLine(0, 60, getWidth(), 60, 2.0f);
     
     // Draw Tape Reels
-    juce::Rectangle<float> leftReel (50, 100, 150, 150);
-    juce::Rectangle<float> rightReel (getWidth() - 200, 100, 150, 150);
+    juce::Rectangle<float> leftReel (50, 350, 150, 150);
+    juce::Rectangle<float> rightReel (getWidth() - 200, 350, 150, 150);
     vts::CarbonGoldLookAndFeel::drawTapeReel(g, leftReel, tapeRotation);
     vts::CarbonGoldLookAndFeel::drawTapeReel(g, rightReel, tapeRotation);
     
     // Draw Vacuum Tube (Center Top)
-    juce::Rectangle<float> tubeBounds (getWidth() / 2 - 40, 70, 80, 140);
+    juce::Rectangle<float> tubeBounds (getWidth() / 2 - 40, 320, 80, 140);
     vts::CarbonGoldLookAndFeel::drawVacuumTube(g, tubeBounds, currentGlow);
 }
 
@@ -93,6 +96,8 @@ void VacuumTapeSimAudioProcessorEditor::timerCallback()
     currentGlow = (drive * 0.1f) + (1.0f - v_state); // v_state drops when sagging
     if (currentGlow > 1.0f) currentGlow = 1.0f;
     if (currentGlow < 0.0f) currentGlow = 0.0f;
+    
+    if (analysisPanel) analysisPanel->repaint();
 
     repaint();
 }
@@ -102,13 +107,16 @@ void VacuumTapeSimAudioProcessorEditor::resized()
     auto area = getLocalBounds();
     area.removeFromTop(60); // Header area
     
+    if (analysisPanel)
+        analysisPanel->setBounds(50, 70, getWidth() - 100, 230);
+    
     // Create a 2x4 grid layout below the visual assets
     int knobSize = 90;
     int marginX = 20;
     int marginY = 30;
     
     int startX = (getWidth() - (4 * knobSize + 3 * marginX)) / 2;
-    int startY = 250; // Below the tube and reels
+    int startY = 520; // Below the tube and reels
     
     auto positionComponent = [&](juce::Component& comp, juce::Label& label, int col, int row)
     {

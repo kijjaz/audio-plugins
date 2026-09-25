@@ -16,28 +16,6 @@ public:
     // Public state for UI
     double v_state = 1.0;
 
-    float getMagnitudeAtFrequency(double frequency)
-    {
-        if (gapLossFilter.coefficients == nullptr) return 1.0f;
-        float mag = 1.0f;
-        mag *= gapLossFilter.coefficients->getMagnitudeForFrequency(frequency, fs);
-        mag *= headBumpFilter.coefficients->getMagnitudeForFrequency(frequency, fs);
-        mag *= faradayFilter.coefficients->getMagnitudeForFrequency(frequency, fs);
-        return mag;
-    }
-
-    float getTransferFunction(float x)
-    {
-        float driven = drive * (x + asymmetry_offset);
-        return langevin(driven);
-    }
-
-    float getCurrentSagGR()
-    {
-        float gr = 20.0f * std::log10(std::max(0.001, v_state));
-        return gr;
-    }
-
     void prepare(double sampleRate, int samplesPerBlock)
     {
         fs = sampleRate;
