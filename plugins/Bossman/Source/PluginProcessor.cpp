@@ -25,6 +25,17 @@ Fender59AudioProcessor::createParameterLayout() {
   layout.add(std::make_unique<juce::AudioParameterChoice>(
       "ampModel", "Amp Circuit Model", models, 0));
 
+  juce::StringArray cabs = {
+      "4x10 Jensen P10R (Fender Open)",
+      "2x12 Jensen C12N (Twin Open)",
+      "4x12 Greenback (Plexi Closed)",
+      "4x12 Vintage 30 (Mesa Closed)",
+      "2x12 Alnico Blue (Vox Chime)",
+      "Bypass (Direct Out)"
+  };
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      "cabModel", "Cabinet Simulation", cabs, 0));
+
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "drive", "Drive", 0.0f, 60.0f, 20.0f)); // dB gain
   layout.add(std::make_unique<juce::AudioParameterFloat>("bass", "Bass", 0.0f,
@@ -51,8 +62,8 @@ void Fender59AudioProcessor::prepareToPlay(double sampleRate,
 
   // Stereo Cabinets
   spec.numChannels = 1;
-  cabinetL.prepare(spec, Cabinet::Type::Left);
-  cabinetR.prepare(spec, Cabinet::Type::Right);
+  cabinetL.prepare(spec, Cabinet::Channel::Left);
+  cabinetR.prepare(spec, Cabinet::Channel::Right);
 }
 
 void Fender59AudioProcessor::releaseResources() {}
@@ -67,6 +78,7 @@ void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
   // 1. Update Parameters
   int modelIdx = static_cast<int>(*apvts.getRawParameterValue("ampModel"));
+  int cabIdx = static_cast<int>(*apvts.getRawParameterValue("cabModel"));
   float driveDb = *apvts.getRawParameterValue("drive");
   float bass = *apvts.getRawParameterValue("bass");
   float mid = *apvts.getRawParameterValue("mid");
@@ -74,6 +86,10 @@ void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   float vol = *apvts.getRawParameterValue("volume");
 
   toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 5, modelIdx)));
+  auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 5, cabIdx));
+  cabinetL.setModel(selectedCab);
+  cabinetR.setModel(selectedCab);
+
   inputTube.setDrive(driveDb);
   toneStack.setKnobs(bass, mid, treble);
 
