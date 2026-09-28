@@ -10,6 +10,32 @@ IronStackAudioProcessor::IronStackAudioProcessor()
 
 IronStackAudioProcessor::~IronStackAudioProcessor() {}
 
+bool IronStackAudioProcessor::isBusesLayoutSupported(
+    const BusesLayout &layouts) const {
+  const auto &mainInput = layouts.getMainInputChannelSet();
+  const auto &mainOutput = layouts.getMainOutputChannelSet();
+
+  // Valid input channel counts: Mono (1) or Stereo (2)
+  if (mainInput != juce::AudioChannelSet::mono() &&
+      mainInput != juce::AudioChannelSet::stereo())
+    return false;
+
+  // Valid output channel counts: Mono (1) or Stereo (2)
+  if (mainOutput != juce::AudioChannelSet::mono() &&
+      mainOutput != juce::AudioChannelSet::stereo())
+    return false;
+
+  // Supports:
+  // 1. Mono In -> Mono Out
+  // 2. Mono In -> Stereo Out
+  // 3. Stereo In -> Stereo Out
+  if (mainInput == juce::AudioChannelSet::stereo() &&
+      mainOutput == juce::AudioChannelSet::mono())
+    return false; // Stereo in -> Mono out is typically disallowed unless downmixed
+
+  return true;
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout
 IronStackAudioProcessor::createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -65,13 +91,17 @@ void IronStackAudioProcessor::prepareToPlay(double sampleRate,
   juce::dsp::ProcessSpec spec;
   spec.sampleRate = sampleRate;
   spec.maximumBlockSize = samplesPerBlock;
-  spec.numChannels = 1; // Mono processing for Preamp/ToneStack
+  spec.numChannels = 1;
 
-  inputTube.prepare(spec);
-  toneStack.prepare(spec);
+  // Prepare Left / Mono Chain
+  inputTubeL.prepare(spec);
+  toneStackL.prepare(spec);
+
+  // Prepare Right Chain (for Stereo In -> Stereo Out)
+  inputTubeR.prepare(spec);
+  toneStackR.prepare(spec);
 
   // Stereo Cabinets
-  spec.numChannels = 1;
   cabinetL.prepare(spec, Cabinet::Channel::Left);
   cabinetR.prepare(spec, Cabinet::Channel::Right);
 }
@@ -82,9 +112,12 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                                           juce::MidiBuffer &midiMessages) {
   juce::ScopedNoDenormals noDenormals;
 
-  // Mono Input
-  auto *channelData = buffer.getWritePointer(0);
   int numSamples = buffer.getNumSamples();
+  int numInChannels = getTotalNumInputChannels();
+  int numOutChannels = getTotalNumOutputChannels();
+
+  if (numSamples == 0 || numOutChannels == 0)
+    return;
 
   // 1. Update Parameters
   int modelIdx = static_cast<int>(*apvts.getRawParameterValue("ampModel"));
@@ -96,7 +129,8 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   float vol = *apvts.getRawParameterValue("volume");
 
   auto selectedModel = static_cast<ToneStack::Model>(juce::jlimit(0, 9, modelIdx));
-  toneStack.setModel(selectedModel);
+  toneStackL.setModel(selectedModel);
+  toneStackR.setModel(selectedModel);
 
   // Set preamp tube staging voicing: Bass head vs Guitar lead
   bool isBassHead = (selectedModel == ToneStack::Model::FenderBassman ||
@@ -104,52 +138,68 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                      selectedModel == ToneStack::Model::AmpegB15N ||
                      selectedModel == ToneStack::Model::AmpegB100R ||
                      selectedModel == ToneStack::Model::MarshallSuperBass);
-  inputTube.setAmpType(isBassHead ? TubeStage::AmpType::BassHead : TubeStage::AmpType::LeadGuitar);
+  auto ampType = isBassHead ? TubeStage::AmpType::BassHead : TubeStage::AmpType::LeadGuitar;
+  inputTubeL.setAmpType(ampType);
+  inputTubeR.setAmpType(ampType);
 
   auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 11, cabIdx));
   cabinetL.setModel(selectedCab);
   cabinetR.setModel(selectedCab);
 
-  inputTube.setDrive(driveDb);
-  toneStack.setKnobs(bass, mid, treble);
+  inputTubeL.setDrive(driveDb);
+  inputTubeR.setDrive(driveDb);
+
+  toneStackL.setKnobs(bass, mid, treble);
+  toneStackR.setKnobs(bass, mid, treble);
 
   // Level compensation factor so every amp head setting delivers uniform volume at the same gain setting
-  float headComp = toneStack.getLevelCompensation();
+  float headComp = toneStackL.getLevelCompensation();
+  constexpr float kRefCompensation = 1.2415f;
+  float totalGain = headComp * kRefCompensation * vol;
 
-  // 2. Process Mono Chain (In-place on Ch 0)
-  for (int i = 0; i < numSamples; ++i) {
-    float x = channelData[i];
+  // 2. Process Audio Buses
+  // Case A: Stereo In -> Stereo Out
+  if (numInChannels >= 2 && numOutChannels >= 2) {
+    auto *left = buffer.getWritePointer(0);
+    auto *right = buffer.getWritePointer(1);
 
-    // Preamp
-    x = inputTube.processSample(x);
+    for (int i = 0; i < numSamples; ++i) {
+      // Left channel preamp + tone stack + cabinet
+      float xL = inputTubeL.processSample(left[i]);
+      xL = toneStackL.processSample(xL);
+      left[i] = cabinetL.processSample(xL) * totalGain;
 
-    // Tone Stack with balanced inter-model loudness normalization
-    x = toneStack.processSample(x) * headComp;
-
-    channelData[i] = x;
+      // Right channel preamp + tone stack + cabinet (independent stereo imaging)
+      float xR = inputTubeR.processSample(right[i]);
+      xR = toneStackR.processSample(xR);
+      right[i] = cabinetR.processSample(xR) * totalGain;
+    }
   }
-
-  // 3. Stereo Split & Cabinet Sim
-  // Copy Mono logic to Right channel if it exists
-  if (getTotalNumOutputChannels() > 1) {
+  // Case B: Mono In -> Stereo Out
+  else if (numInChannels == 1 && numOutChannels >= 2) {
     auto *left = buffer.getWritePointer(0);
     auto *right = buffer.getWritePointer(1);
 
     for (int i = 0; i < numSamples; ++i) {
       float mono = left[i];
 
-      // Calibrated Output Compensation:
-      // Standard studio reference (-18 dBFS RMS input) delivers -18 dBFS RMS output
-      // when Volume is at 12 o'clock (0.50 middle setting) with default tone stack and drive.
-      constexpr float kRefCompensation = 1.2415f;
-      left[i] = cabinetL.processSample(mono) * kRefCompensation * vol;
-      right[i] = cabinetR.processSample(mono) * kRefCompensation * vol;
+      // Preamp & Tone Stack on Mono input
+      float x = inputTubeL.processSample(mono);
+      x = toneStackL.processSample(x);
+
+      // Stereo split into dual cabinet simulation
+      left[i] = cabinetL.processSample(x) * totalGain;
+      right[i] = cabinetR.processSample(x) * totalGain;
     }
-  } else {
-    // Mono output fallback
-    constexpr float kRefCompensation = 1.2415f;
+  }
+  // Case C: Mono In -> Mono Out
+  else {
+    auto *channelData = buffer.getWritePointer(0);
     for (int i = 0; i < numSamples; ++i) {
-      channelData[i] = cabinetL.processSample(channelData[i]) * kRefCompensation * vol;
+      float x = channelData[i];
+      x = inputTubeL.processSample(x);
+      x = toneStackL.processSample(x);
+      channelData[i] = cabinetL.processSample(x) * totalGain;
     }
   }
 }

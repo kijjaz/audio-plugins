@@ -14,6 +14,8 @@ public:
   void releaseResources() override;
   void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
 
+  bool isBusesLayoutSupported(const BusesLayout &layouts) const override;
+
   juce::AudioProcessorEditor *createEditor() override;
   bool hasEditor() const override { return true; }
 
@@ -33,26 +35,25 @@ public:
   void setStateInformation(const void *data, int sizeInBytes) override;
 
   juce::AudioProcessorValueTreeState apvts;
-  const ToneStack& getToneStack() const noexcept { return toneStack; }
+  const ToneStack& getToneStack() const noexcept { return toneStackL; }
   const Cabinet& getCabinet() const noexcept { return cabinetL; }
-  const TubeStage& getTubeStage() const noexcept { return inputTube; }
+  const TubeStage& getTubeStage() const noexcept { return inputTubeL; }
 
 private:
   juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-  // DSP Chains (Mono -> Stereo Sim)
-  // Input Stage (Mono)
-  TubeStage inputTube;
+  // DSP Chains (Supports Mono -> Mono, Mono -> Stereo, and Stereo -> Stereo)
+  // Left / Mono Preamp & Tone Stack
+  TubeStage inputTubeL;
+  ToneStack toneStackL;
 
-  // Tone Stack (Mono)
-  ToneStack toneStack;
+  // Right Preamp & Tone Stack (active in true Stereo -> Stereo mode)
+  TubeStage inputTubeR;
+  ToneStack toneStackR;
 
-  // Output Stage (Stereo)
+  // Cabinet Simulations (Left & Right)
   Cabinet cabinetL;
   Cabinet cabinetR;
-
-  // Oversampling (Optional, maybe later)
-  // juce::dsp::Oversampling<float> oversampler;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IronStackAudioProcessor)
 };
