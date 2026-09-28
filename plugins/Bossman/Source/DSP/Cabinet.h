@@ -61,24 +61,24 @@ public:
         currentModel = m;
         switch (currentModel) {
             case Model::Jensen_4x10:
-                // Fender 4x10 Jensen P10R: Fast bass rolloff at 115Hz, scooped 420Hz, crisp 3.8kHz presence
-                profile = { "4x10 Jensen P10R", 110.0f, 115.0f, 2.8f, 1.8f, 420.0f, -4.5f, 1.4f, 3800.0f, 4.5f, 3.5f, 5200.0f, -6.0f, 1.2f, 4800.0f, 1.0f };
+                // Fender Bassman Neo 4x10 (Tone3000 Calibrated): HP 40Hz, Thump 149.5Hz (+12dB, Q=0.50), Mid 900Hz, Presence 3373Hz (+7.7dB), LP 4000Hz
+                profile = { "4x10 Jensen P10R (Tone3000)", 40.0f, 149.5f, 12.0f, 0.50f, 900.0f, 3.5f, 4.00f, 3373.0f, 7.7f, 1.46f, 3650.6f, -12.0f, 4.00f, 4000.0f, 1.0f };
                 break;
             case Model::Jensen_2x12:
-                // Fender 2x12 Jensen C12N: Deep low punch at 85Hz, wider scoop, airy glass at 4.2kHz
-                profile = { "2x12 Jensen C12N", 80.0f, 92.0f, 3.5f, 1.6f, 380.0f, -5.5f, 1.2f, 4200.0f, 5.0f, 3.0f, 5800.0f, -4.0f, 1.5f, 5200.0f, 1.05f };
+                // Fender Twin Reverb 2x12 Jensen C12N (Tone3000 Calibrated): HP 40Hz, Thump 180Hz (+12dB, Q=0.50), Mid 443Hz, Presence 2750Hz (+12.4dB), LP 5139Hz
+                profile = { "2x12 Jensen C12N (Tone3000)", 40.0f, 180.0f, 12.0f, 0.50f, 443.4f, 6.0f, 0.50f, 2749.6f, 12.4f, 1.15f, 4248.9f, -12.0f, 4.00f, 5139.1f, 1.0f };
                 break;
             case Model::Greenback_4x12:
-                // Marshall 4x12 Greenback: Dense woody mids at 550Hz, thick 110Hz thump, creamy rolled-off 3.2kHz peak
-                profile = { "4x12 Greenback", 75.0f, 110.0f, 4.2f, 2.0f, 550.0f, 2.0f, 1.1f, 3200.0f, 3.8f, 2.5f, 4500.0f, -8.0f, 1.0f, 4400.0f, 0.95f };
+                // Marshall 1960A JCM800 4x12 (Tone3000 Calibrated): HP 40Hz, Thump 161Hz (+12dB, Q=0.50), Mid 689Hz, Presence 3073Hz (+15dB), LP 6153Hz
+                profile = { "4x12 Greenback (Tone3000)", 40.0f, 161.0f, 12.0f, 0.50f, 688.7f, 6.0f, 0.50f, 3073.0f, 15.0f, 2.19f, 4879.2f, 10.0f, 4.00f, 6152.9f, 0.95f };
                 break;
             case Model::Vintage30_4x12:
-                // Mesa 4x12 Vintage 30: Massive 100Hz tight thump, aggressive 3.5kHz cone bite (+6dB spike), steep 4.8kHz rolloff
-                profile = { "4x12 Vintage 30", 70.0f, 105.0f, 5.0f, 2.2f, 480.0f, -2.5f, 1.3f, 3500.0f, 6.5f, 3.8f, 4800.0f, -10.0f, 1.1f, 4700.0f, 0.90f };
+                // Mesa Boogie Rectifier 4x12 V30 (Tone3000 Calibrated): HP 40Hz, Thump 78.4Hz (+12dB, Q=0.71), Mid 900Hz, Presence 3800Hz (+3.9dB), LP 4915Hz
+                profile = { "4x12 Vintage 30 (Tone3000)", 40.0f, 78.4f, 12.0f, 0.71f, 900.0f, 6.0f, 2.25f, 3800.0f, 3.9f, 0.89f, 6000.0f, -12.0f, 0.50f, 4915.0f, 0.95f };
                 break;
             case Model::AlnicoBlue_2x12:
-                // Vox 2x12 Alnico Blue: Singing vocal upper midrange at 2.8kHz, sparkling bell chime at 4.5kHz
-                profile = { "2x12 Alnico Blue", 85.0f, 100.0f, 2.5f, 1.5f, 650.0f, 1.5f, 1.3f, 2800.0f, 4.0f, 2.8f, 4500.0f, 3.5f, 2.2f, 5500.0f, 1.0f };
+                // 1966 Fender Bassman 2x12 Jensen C12NA (Tone3000 Calibrated): HP 56.6Hz, Thump 121.3Hz (+12dB, Q=0.50), Mid 724Hz, Presence 2632Hz (+2.7dB), LP 4521Hz
+                profile = { "1966 Bassman 2x12 (Tone3000)", 56.6f, 121.3f, 12.0f, 0.50f, 723.8f, 6.0f, 2.71f, 2631.5f, 2.7f, 0.50f, 4125.1f, -3.8f, 2.33f, 4521.0f, 1.0f };
                 break;
             case Model::Bypass:
                 profile = { "Bypass (Direct)", 20.0f, 100.0f, 0.0f, 1.0f, 1000.0f, 0.0f, 1.0f, 3000.0f, 0.0f, 1.0f, 5000.0f, 0.0f, 1.0f, 20000.0f, 1.0f };
@@ -103,6 +103,50 @@ public:
     }
 
     const AcousticProfile& getProfile() const noexcept { return profile; }
+
+    float evaluateMagnitudeDb(float freqHz) const noexcept {
+        if (currentModel == Model::Bypass)
+            return 0.0f;
+
+        // Compute cascaded biquad response at freqHz
+        double w = 2.0 * M_PI * freqHz / sampleRate;
+        std::complex<double> z1 = std::polar(1.0, -w);
+        std::complex<double> z2 = std::polar(1.0, -2.0 * w);
+
+        // Note: compute each stage from profile parameters
+        double w0_thump = 2.0 * M_PI * profile.thumpFreq / sampleRate;
+        double a_thump = std::sin(w0_thump) / (2.0 * profile.thumpQ);
+        double A_thump = std::pow(10.0, profile.thumpGainDb / 40.0);
+        std::complex<double> h_thump = ( (1.0 + a_thump*A_thump) - 2.0*std::cos(w0_thump)*z1 + (1.0 - a_thump*A_thump)*z2 ) /
+                                      ( (1.0 + a_thump/A_thump) - 2.0*std::cos(w0_thump)*z1 + (1.0 - a_thump/A_thump)*z2 );
+
+        double w0_mid = 2.0 * M_PI * profile.midFreq / sampleRate;
+        double a_mid = std::sin(w0_mid) / (2.0 * profile.midQ);
+        double A_mid = std::pow(10.0, profile.midGainDb / 40.0);
+        std::complex<double> h_mid = ( (1.0 + a_mid*A_mid) - 2.0*std::cos(w0_mid)*z1 + (1.0 - a_mid*A_mid)*z2 ) /
+                                    ( (1.0 + a_mid/A_mid) - 2.0*std::cos(w0_mid)*z1 + (1.0 - a_mid/A_mid)*z2 );
+
+        double w0_pres = 2.0 * M_PI * profile.presenceFreq / sampleRate;
+        double a_pres = std::sin(w0_pres) / (2.0 * profile.presenceQ);
+        double A_pres = std::pow(10.0, profile.presenceGainDb / 40.0);
+        std::complex<double> h_pres = ( (1.0 + a_pres*A_pres) - 2.0*std::cos(w0_pres)*z1 + (1.0 - a_pres*A_pres)*z2 ) /
+                                     ( (1.0 + a_pres/A_pres) - 2.0*std::cos(w0_pres)*z1 + (1.0 - a_pres/A_pres)*z2 );
+
+        // Highpass
+        double w0_hp = 2.0 * M_PI * profile.hpFreq / sampleRate;
+        double a_hp = std::sin(w0_hp) / (2.0 * 0.7071);
+        std::complex<double> h_hp = ( (1.0 + std::cos(w0_hp))*0.5 - (1.0 + std::cos(w0_hp))*z1 + (1.0 + std::cos(w0_hp))*0.5*z2 ) /
+                                   ( (1.0 + a_hp) - 2.0*std::cos(w0_hp)*z1 + (1.0 - a_hp)*z2 );
+
+        // Lowpass 4th order
+        double w0_lp = 2.0 * M_PI * profile.lpFreq / sampleRate;
+        double a_lp = std::sin(w0_lp) / (2.0 * 0.8);
+        std::complex<double> h_lp1 = ( (1.0 - std::cos(w0_lp))*0.5 + (1.0 - std::cos(w0_lp))*z1 + (1.0 - std::cos(w0_lp))*0.5*z2 ) /
+                                    ( (1.0 + a_lp) - 2.0*std::cos(w0_lp)*z1 + (1.0 - a_lp)*z2 );
+
+        double total_mag = std::abs(h_thump * h_mid * h_pres * h_hp * h_lp1 * h_lp1) * profile.gainTrim;
+        return static_cast<float>(20.0 * std::log10(std::max(total_mag, 1e-5)));
+    }
 
 private:
     void updateFilters() {

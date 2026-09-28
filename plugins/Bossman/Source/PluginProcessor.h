@@ -33,6 +33,9 @@ public:
   void setStateInformation(const void *data, int sizeInBytes) override;
 
   juce::AudioProcessorValueTreeState apvts;
+  const ToneStack& getToneStack() const noexcept { return toneStack; }
+  const Cabinet& getCabinet() const noexcept { return cabinetL; }
+  const TubeStage& getTubeStage() const noexcept { return inputTube; }
 
 private:
   juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

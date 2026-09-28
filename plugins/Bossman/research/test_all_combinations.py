@@ -29,44 +29,44 @@ cream = "#f4f5f7"
 # Cabinet Acoustic Parameters matching C++ Cabinet.h
 CABINETS = {
     "Jensen_4x10": {
-        "name": "4x10 Jensen P10R (Open)",
-        "hp": 110.0, "thump_f": 115.0, "thump_g": 2.8, "thump_q": 1.8,
-        "mid_f": 420.0, "mid_g": -4.5, "mid_q": 1.4,
-        "pres_f": 3800.0, "pres_g": 4.5, "pres_q": 3.5,
-        "shim_f": 5200.0, "shim_g": -6.0, "shim_q": 1.2,
-        "lp": 4800.0, "color": "#d4af37"
+        "name": "4x10 Bassman Neo (Tone3000)",
+        "hp": 40.0, "thump_f": 149.5, "thump_g": 12.0, "thump_q": 0.50,
+        "mid_f": 900.0, "mid_g": 3.5, "mid_q": 4.00,
+        "pres_f": 3373.0, "pres_g": 7.7, "pres_q": 1.46,
+        "shim_f": 3650.6, "shim_g": -12.0, "shim_q": 4.00,
+        "lp": 4000.0, "color": "#d4af37"
     },
     "Jensen_2x12": {
-        "name": "2x12 Jensen C12N (Open)",
-        "hp": 80.0, "thump_f": 92.0, "thump_g": 3.5, "thump_q": 1.6,
-        "mid_f": 380.0, "mid_g": -5.5, "mid_q": 1.2,
-        "pres_f": 4200.0, "pres_g": 5.0, "pres_q": 3.0,
-        "shim_f": 5800.0, "shim_g": -4.0, "shim_q": 1.5,
-        "lp": 5200.0, "color": "#3498db"
+        "name": "2x12 Twin C12N (Tone3000)",
+        "hp": 40.0, "thump_f": 180.0, "thump_g": 12.0, "thump_q": 0.50,
+        "mid_f": 443.4, "mid_g": 6.0, "mid_q": 0.50,
+        "pres_f": 2749.6, "pres_g": 12.4, "pres_q": 1.15,
+        "shim_f": 4248.9, "shim_g": -12.0, "shim_q": 4.00,
+        "lp": 5139.1, "color": "#3498db"
     },
     "Greenback_4x12": {
-        "name": "4x12 Greenback (Closed)",
-        "hp": 75.0, "thump_f": 110.0, "thump_g": 4.2, "thump_q": 2.0,
-        "mid_f": 550.0, "mid_g": 2.0, "mid_q": 1.1,
-        "pres_f": 3200.0, "pres_g": 3.8, "pres_q": 2.5,
-        "shim_f": 4500.0, "shim_g": -8.0, "shim_q": 1.0,
-        "lp": 4400.0, "color": "#e74c3c"
+        "name": "4x12 Marshall 1960A (Tone3000)",
+        "hp": 40.0, "thump_f": 161.0, "thump_g": 12.0, "thump_q": 0.50,
+        "mid_f": 688.7, "mid_g": 6.0, "mid_q": 0.50,
+        "pres_f": 3073.0, "pres_g": 15.0, "pres_q": 2.19,
+        "shim_f": 4879.2, "shim_g": 10.0, "shim_q": 4.00,
+        "lp": 6152.9, "color": "#e74c3c"
     },
     "Vintage30_4x12": {
-        "name": "4x12 Vintage 30 (Closed)",
-        "hp": 70.0, "thump_f": 105.0, "thump_g": 5.0, "thump_q": 2.2,
-        "mid_f": 480.0, "mid_g": -2.5, "mid_q": 1.3,
-        "pres_f": 3500.0, "pres_g": 6.5, "pres_q": 3.8,
-        "shim_f": 4800.0, "shim_g": -10.0, "shim_q": 1.1,
-        "lp": 4700.0, "color": "#9b59b6"
+        "name": "4x12 Mesa Recto V30 (Tone3000)",
+        "hp": 40.0, "thump_f": 78.4, "thump_g": 12.0, "thump_q": 0.71,
+        "mid_f": 900.0, "mid_g": 6.0, "mid_q": 2.25,
+        "pres_f": 3800.0, "pres_g": 3.9, "pres_q": 0.89,
+        "shim_f": 6000.0, "shim_g": -12.0, "shim_q": 0.50,
+        "lp": 4915.0, "color": "#9b59b6"
     },
     "AlnicoBlue_2x12": {
-        "name": "2x12 Alnico Blue (Semi)",
-        "hp": 85.0, "thump_f": 100.0, "thump_g": 2.5, "thump_q": 1.5,
-        "mid_f": 650.0, "mid_g": 1.5, "mid_q": 1.3,
-        "pres_f": 2800.0, "pres_g": 4.0, "pres_q": 2.8,
-        "shim_f": 4500.0, "shim_g": 3.5, "shim_q": 2.2,
-        "lp": 5500.0, "color": "#2ecc71"
+        "name": "2x12 '66 Bassman C12NA (Tone3000)",
+        "hp": 56.6, "thump_f": 121.3, "thump_g": 12.0, "thump_q": 0.50,
+        "mid_f": 723.8, "mid_g": 6.0, "mid_q": 2.71,
+        "pres_f": 2631.5, "pres_g": 2.7, "pres_q": 0.50,
+        "shim_f": 4125.1, "shim_g": -3.8, "shim_q": 2.33,
+        "lp": 4521.0, "color": "#2ecc71"
     },
     "Bypass": {
         "name": "Bypass (Direct Out)",

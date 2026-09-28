@@ -26,11 +26,11 @@ Fender59AudioProcessor::createParameterLayout() {
       "ampModel", "Amp Circuit Model", models, 0));
 
   juce::StringArray cabs = {
-      "4x10 Jensen P10R (Fender Open)",
-      "2x12 Jensen C12N (Twin Open)",
-      "4x12 Greenback (Plexi Closed)",
-      "4x12 Vintage 30 (Mesa Closed)",
-      "2x12 Alnico Blue (Vox Chime)",
+      "4x10 Bassman Neo (Tone3000)",
+      "2x12 Twin C12N (Tone3000)",
+      "4x12 Marshall 1960A (Tone3000)",
+      "4x12 Mesa Recto V30 (Tone3000)",
+      "2x12 '66 Bassman C12NA (Tone3000)",
       "Bypass (Direct Out)"
   };
   layout.add(std::make_unique<juce::AudioParameterChoice>(
@@ -132,7 +132,7 @@ void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 }
 
 juce::AudioProcessorEditor *Fender59AudioProcessor::createEditor() {
-  return new juce::GenericAudioProcessorEditor(*this);
+  return new Fender59Editor(*this);
 }
 
 void Fender59AudioProcessor::getStateInformation(juce::MemoryBlock &destData) {

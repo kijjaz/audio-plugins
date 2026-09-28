@@ -40,6 +40,8 @@ target_sources(Bossman
         Source/PluginProcessor.h
         Source/PluginEditor.cpp
         Source/PluginEditor.h
+        Source/UI/BossmanLookAndFeel.h
+        Source/UI/ToneVisualizerComponent.h
         # DSP Headers (Header-only for now)
         Source/DSP/ToneStack.h
         Source/DSP/TubeStage.h

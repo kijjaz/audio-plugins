@@ -15,9 +15,12 @@ CMakeFiles/
 # VS Code
 .vscode/
 
-# Audio
+# Audio & Assets
 *.wav
 *.aiff
+*.zip
+*.nam
+plugins/Bossman/Tone/
 
 # VST3
 *.vst3

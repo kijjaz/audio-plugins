@@ -54,6 +54,9 @@ public:
         return y;
     }
 
+    float getBiasDc() const noexcept { return biasDc; }
+    float getDriveMultiplier() const noexcept { return drive; }
+
     /**
      * Direct mathematical transfer function f(x) for static distortion shape tests
      */
