@@ -152,10 +152,24 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   toneStackL.setKnobs(bass, mid, treble);
   toneStackR.setKnobs(bass, mid, treble);
 
-  // Level compensation factor so every amp head setting delivers uniform volume at the same gain setting
+  // Calibrated Reference Level Compensation:
+  // Designed so that standard studio reference (-18 dBFS RMS input) delivers -18 dBFS RMS output
+  // when Volume is at 12 o'clock (0.50 default setting) with default tone stack and drive.
   float headComp = toneStackL.getLevelCompensation();
-  constexpr float kRefCompensation = 1.2415f;
-  float totalGain = headComp * kRefCompensation * vol;
+  constexpr float kRefCompensation = 0.0811f;
+
+  // Audio taper curve for master volume:
+  // vol = 0.50 (12 o'clock default) -> 1.0 (0 dB unity gain)
+  // vol = 0.00 -> 0.0 (-inf dB)
+  // vol = 1.00 -> 3.98 (+12 dB boost)
+  float masterGainLinear = 0.0f;
+  if (vol > 0.001f) {
+    float volDb = (vol <= 0.5f) 
+      ? (-48.0f * (1.0f - vol / 0.5f))           // 0.0 to 0.5 maps to -48 dB .. 0 dB
+      : (12.0f * ((vol - 0.5f) / 0.5f));          // 0.5 to 1.0 maps to 0 dB .. +12 dB
+    masterGainLinear = std::pow(10.0f, volDb / 20.0f);
+  }
+  float totalGain = headComp * kRefCompensation * masterGainLinear;
 
   // 2. Process Audio Buses
   // Case A: Stereo In -> Stereo Out
