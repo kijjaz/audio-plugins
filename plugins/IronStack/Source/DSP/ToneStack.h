@@ -34,6 +34,7 @@ public:
         double C2;  // Bass cap
         double C3;  // Mid cap
         double bassTaperExp; // Taper exponent for bass pot
+        float levelComp;     // Insertion loss compensation factor to balance volume across models
     };
 
     ToneStack() {
@@ -58,40 +59,44 @@ public:
         currentModel = m;
         switch (currentModel) {
             case Model::FenderBassman:
-                activeProfile = { "Fender '59 Bassman", 250e3, 1e6, 25e3, 56e3, 250e-12, 20e-9, 20e-9, 2.32 };
+                activeProfile = { "Fender '59 Bassman", 250e3, 1e6, 25e3, 56e3, 250e-12, 20e-9, 20e-9, 2.32, 1.000f };
                 break;
             case Model::FenderBassmanAA864:
                 // '65 Blackface Bassman AA864: 100k slope, 100nF deep bass cap, 47nF mid cap
-                activeProfile = { "Fender '65 Bassman AA864", 250e3, 250e3, 25e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0 };
+                activeProfile = { "Fender '65 Bassman AA864", 250e3, 250e3, 25e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0, 2.106f };
                 break;
             case Model::AmpegB15N:
-                activeProfile = { "Ampeg B-15N Portaflex", 470e3, 1e6, 10e3, 100e3, 330e-12, 470e-12, 3300e-12, 1.0 };
+                activeProfile = { "Ampeg B-15N Portaflex", 470e3, 1e6, 10e3, 100e3, 330e-12, 470e-12, 3300e-12, 1.0, 3.614f };
                 break;
             case Model::AmpegB100R:
                 // Ampeg B-100R Rocket Bass: 50k pots, 33k slope, 4.7nF treble, 33nF bass, 47nF mid (Ultra Mid active contour)
-                activeProfile = { "Ampeg B-100R Rocket Bass", 50e3, 50e3, 50e3, 33e3, 4700e-12, 33e-9, 47e-9, 1.5 };
+                activeProfile = { "Ampeg B-100R Rocket Bass", 50e3, 50e3, 50e3, 33e3, 4700e-12, 33e-9, 47e-9, 1.5, 0.995f };
                 break;
             case Model::MarshallSuperBass:
                 // Marshall JMP 1992 Super Bass 100: 56k slope, 250pF treble, 22nF bass, 22nF mid, 25k mid pot
-                activeProfile = { "Marshall Super Bass 100", 250e3, 1e6, 25e3, 56e3, 250e-12, 22e-9, 22e-9, 2.32 };
+                activeProfile = { "Marshall Super Bass 100", 250e3, 1e6, 25e3, 56e3, 250e-12, 22e-9, 22e-9, 2.32, 1.025f };
                 break;
             case Model::FenderTwinReverb:
-                activeProfile = { "Fender Twin Reverb", 250e3, 250e3, 10e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0 };
+                activeProfile = { "Fender Twin Reverb", 250e3, 250e3, 10e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0, 2.296f };
                 break;
             case Model::MarshallJCM800:
-                activeProfile = { "Marshall JCM800", 220e3, 1e6, 22e3, 33e3, 470e-12, 22e-9, 22e-9, 2.32 };
+                activeProfile = { "Marshall JCM800", 220e3, 1e6, 22e3, 33e3, 470e-12, 22e-9, 22e-9, 2.32, 0.873f };
                 break;
             case Model::VoxAC30:
-                activeProfile = { "Vox AC30 Top Boost", 1e6, 1e6, 10e3, 100e3, 47e-12, 22e-9, 10e-9, 2.0 };
+                activeProfile = { "Vox AC30 Top Boost", 1e6, 1e6, 10e3, 100e3, 47e-12, 22e-9, 10e-9, 2.0, 1.028f };
                 break;
             case Model::MesaDualRectifier:
-                activeProfile = { "Mesa Dual Rectifier", 250e3, 1e6, 50e3, 47e3, 680e-12, 20e-9, 20e-9, 2.32 };
+                activeProfile = { "Mesa Dual Rectifier", 250e3, 1e6, 50e3, 47e3, 680e-12, 20e-9, 20e-9, 2.32, 0.909f };
                 break;
             case Model::SoldanoSLO100:
-                activeProfile = { "Soldano SLO-100", 250e3, 1e6, 25e3, 47e3, 470e-12, 20e-9, 20e-9, 2.32 };
+                activeProfile = { "Soldano SLO-100", 250e3, 1e6, 25e3, 47e3, 470e-12, 20e-9, 20e-9, 2.32, 0.941f };
                 break;
         }
         updateCoefficients();
+    }
+
+    float getLevelCompensation() const noexcept {
+        return activeProfile.levelComp;
     }
 
     void setKnobs(float bassVal, float midVal, float trebleVal, bool normalized01 = false) {

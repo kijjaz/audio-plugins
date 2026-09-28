@@ -95,13 +95,26 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   float treble = *apvts.getRawParameterValue("treble");
   float vol = *apvts.getRawParameterValue("volume");
 
-  toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 9, modelIdx)));
+  auto selectedModel = static_cast<ToneStack::Model>(juce::jlimit(0, 9, modelIdx));
+  toneStack.setModel(selectedModel);
+
+  // Set preamp tube staging voicing: Bass head vs Guitar lead
+  bool isBassHead = (selectedModel == ToneStack::Model::FenderBassman ||
+                     selectedModel == ToneStack::Model::FenderBassmanAA864 ||
+                     selectedModel == ToneStack::Model::AmpegB15N ||
+                     selectedModel == ToneStack::Model::AmpegB100R ||
+                     selectedModel == ToneStack::Model::MarshallSuperBass);
+  inputTube.setAmpType(isBassHead ? TubeStage::AmpType::BassHead : TubeStage::AmpType::LeadGuitar);
+
   auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 11, cabIdx));
   cabinetL.setModel(selectedCab);
   cabinetR.setModel(selectedCab);
 
   inputTube.setDrive(driveDb);
   toneStack.setKnobs(bass, mid, treble);
+
+  // Level compensation factor so every amp head setting delivers uniform volume at the same gain setting
+  float headComp = toneStack.getLevelCompensation();
 
   // 2. Process Mono Chain (In-place on Ch 0)
   for (int i = 0; i < numSamples; ++i) {
@@ -110,8 +123,8 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     // Preamp
     x = inputTube.processSample(x);
 
-    // Tone Stack
-    x = toneStack.processSample(x);
+    // Tone Stack with balanced inter-model loudness normalization
+    x = toneStack.processSample(x) * headComp;
 
     channelData[i] = x;
   }
@@ -126,7 +139,7 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
       float mono = left[i];
 
       // Calibrated Output Compensation:
-      // Calibrated so that standard studio reference (-18 dBFS RMS input) delivers -18 dBFS RMS output
+      // Standard studio reference (-18 dBFS RMS input) delivers -18 dBFS RMS output
       // when Volume is at 12 o'clock (0.50 middle setting) with default tone stack and drive.
       constexpr float kRefCompensation = 1.2415f;
       left[i] = cabinetL.processSample(mono) * kRefCompensation * vol;
