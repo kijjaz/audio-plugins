@@ -1,0 +1,60 @@
+name: Build Bossman
+
+on:
+  push:
+    paths:
+      - 'plugins/Bossman/**'
+      - '.github/workflows/bossman.yml'
+  pull_request:
+    paths:
+      - 'plugins/Bossman/**'
+      - '.github/workflows/bossman.yml'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/Bossman -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bossman-Windows-VST3
+        path: build/Bossman_artefacts/Release/VST3/Bossman.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3/AU
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/Bossman -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bossman-macOS-VST3
+        path: build/Bossman_artefacts/Release/VST3/Bossman.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bossman-macOS-AU
+        path: build/Bossman_artefacts/Release/AU/Bossman.component
+        if-no-files-found: error
