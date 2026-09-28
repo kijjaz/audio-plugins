@@ -6,7 +6,13 @@ project(IronStack VERSION 1.0.0 LANGUAGES CXX C)
 # --- Standard ---
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+    set(PLUGIN_FORMATS VST3 AU)
+else()
+    set(PLUGIN_FORMATS VST3)
+endif()
 
 # --- Dependencies: JUCE ---
 include(FetchContent)
@@ -25,11 +31,11 @@ juce_add_plugin(IronStack
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-    COPY_PLUGIN_AFTER_BUILD FALSE # We sign manually via script
+    COPY_PLUGIN_AFTER_BUILD FALSE # We sign manually via script on macOS
     PLUGIN_MANUFACTURER_CODE "Kijj"
     PLUGIN_CODE "IrSt"
     VST3_AUTO_MANIFEST FALSE
-    FORMATS VST3 AU
+    FORMATS ${PLUGIN_FORMATS}
     PRODUCT_NAME "IronStack"
 )
 
@@ -72,15 +78,19 @@ set_target_properties(IronStack PROPERTIES
     JUCE_VST3_MANIFEST_FILE "OFF"
 )
 
-# --- Post-Build Signing (Universal Script) ---
-# VST3
-add_custom_command(TARGET IronStack_VST3 POST_BUILD
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:IronStack_VST3>/../../"
-    COMMENT "Signing IronStack VST3..."
-)
+# --- Post-Build Signing (Apple Only) ---
+if(APPLE)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh")
+        add_custom_command(TARGET IronStack_VST3 POST_BUILD
+            COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:IronStack_VST3>/../../"
+            COMMENT "Signing IronStack VST3..."
+        )
 
-# AU
-add_custom_command(TARGET IronStack_AU POST_BUILD
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:IronStack_AU>/../../"
-    COMMENT "Signing IronStack AU..."
-)
+        if(TARGET IronStack_AU)
+            add_custom_command(TARGET IronStack_AU POST_BUILD
+                COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:IronStack_AU>/../../"
+                COMMENT "Signing IronStack AU..."
+            )
+        endif()
+    endif()
+endif()
