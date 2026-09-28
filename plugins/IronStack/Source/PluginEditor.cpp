@@ -50,11 +50,11 @@ IronStackEditor::IronStackEditor(IronStackAudioProcessor &p)
                           const juce::String& paramId,
                           std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>& attachment) {
     knob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    knob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 55, 18);
+    knob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 56, 18);
     addAndMakeVisible(knob);
 
     label.setText(text, juce::dontSendNotification);
-    label.setFont(juce::Font(11.0f, juce::Font::bold));
+    label.setFont(juce::Font("Georgia", 11.5f, juce::Font::bold));
     label.setJustificationType(juce::Justification::centred);
     label.setColour(juce::Label::textColourId, ironstack::IronStackLookAndFeel::goldAccent);
     label.setInterceptsMouseClicks(false, false);
@@ -70,8 +70,8 @@ IronStackEditor::IronStackEditor(IronStackAudioProcessor &p)
   setupKnob(trebleKnob, trebleLabel, "TREBLE", "treble", trebleAttachment);
   setupKnob(volumeKnob, volumeLabel, "VOLUME", "volume", volumeAttachment);
 
-  // Pro Console size
-  setSize(680, 480);
+  // Pro Console size: comfortable width to host logo + 2 wide selectors + badge without collision
+  setSize(760, 500);
   startTimerHz(30); // 30 FPS visual feedback
 }
 
@@ -89,7 +89,7 @@ void IronStackEditor::timerCallback() {
   visualizer.updateCurves(audioProcessor.getToneStack(), audioProcessor.getCabinet());
 
   // Repaint tube filament area
-  repaint(getLocalBounds().removeFromTop(160));
+  repaint(getLocalBounds().removeFromTop(240));
 }
 
 void IronStackEditor::paint(juce::Graphics &g) {
@@ -97,48 +97,50 @@ void IronStackEditor::paint(juce::Graphics &g) {
   g.fillAll(ironstack::IronStackLookAndFeel::carbonDark);
 
   // 2. Subtle Tweed Gold Trim & Header Stripe
-  auto topBanner = getLocalBounds().removeFromTop(54).toFloat();
+  auto topBanner = getLocalBounds().removeFromTop(56).toFloat();
   juce::ColourGradient bannerGrad(ironstack::IronStackLookAndFeel::carbonPanel, topBanner.getX(), topBanner.getY(),
                                   ironstack::IronStackLookAndFeel::carbonDark, topBanner.getX(), topBanner.getBottom(), false);
   g.setGradientFill(bannerGrad);
   g.fillRect(topBanner);
 
   g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.6f));
-  g.drawHorizontalLine(54, 0.0f, (float)getWidth());
+  g.drawHorizontalLine(56, 0.0f, (float)getWidth());
 
   // 3. Archival Vintage Logo & Typography
   g.setColour(ironstack::IronStackLookAndFeel::goldHighlight);
   g.setFont(juce::Font("Georgia", 22.0f, juce::Font::bold));
-  g.drawText("IRONSTACK", 24, 8, 200, 24, juce::Justification::left, false);
+  g.drawText("IRONSTACK", 24, 8, 170, 24, juce::Justification::left, false);
 
   g.setColour(ironstack::IronStackLookAndFeel::tweedGold);
-  g.setFont(juce::Font("Georgia", 11.0f, juce::Font::italic));
-  g.drawText("ANALOG AMP & TONE SUITE  *  BILINEAR NODAL DSP", 26, 32, 380, 16, juce::Justification::left, false);
+  g.setFont(juce::Font("Georgia", 9.5f, juce::Font::italic));
+  g.drawText("ANALOG AMP & TONE SUITE", 25, 33, 170, 16, juce::Justification::left, false);
 
   // Calibration badge
+  auto badgeBounds = juce::Rectangle<float>((float)getWidth() - 110.0f, 14.0f, 92.0f, 28.0f);
   g.setColour(ironstack::IronStackLookAndFeel::carbonMatte);
-  g.fillRoundedRectangle((float)getWidth() - 170.0f, 14.0f, 146.0f, 24.0f, 4.0f);
-  g.setColour(ironstack::IronStackLookAndFeel::goldAccent);
-  g.drawRoundedRectangle((float)getWidth() - 170.0f, 14.0f, 146.0f, 24.0f, 4.0f, 1.0f);
-  g.setFont(juce::Font(10.0f, juce::Font::bold));
-  g.drawText("CALIBRATED -18 dBFS", getWidth() - 170, 14, 146, 24, juce::Justification::centred, false);
+  g.fillRoundedRectangle(badgeBounds, 4.0f);
+  g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.5f));
+  g.drawRoundedRectangle(badgeBounds, 4.0f, 1.0f);
+  g.setFont(juce::Font("Georgia", 11.0f, juce::Font::bold));
+  g.setColour(ironstack::IronStackLookAndFeel::goldHighlight);
+  g.drawText("-18 dBFS", badgeBounds.toNearestInt(), juce::Justification::centred, false);
 
   // 4. Kinetic 12AX7 Preamp Vacuum Tube Centerpiece
-  auto tubeArea = juce::Rectangle<float>(24.0f, 68.0f, 120.0f, 160.0f);
+  auto tubeArea = juce::Rectangle<float>(20.0f, 70.0f, 128.0f, 164.0f);
   ironstack::IronStackLookAndFeel::draw12AX7Tube(g, tubeArea, tubeGlow);
 
   // Pedestal Plate under tube
   g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.7f));
   g.setFont(juce::Font(9.5f, juce::Font::bold));
-  g.drawText("12AX7 PREAMP", 24, 218, 120, 16, juce::Justification::centred, false);
+  g.drawText("12AX7 PREAMP", 20, 222, 128, 16, juce::Justification::centred, false);
 
   // 5. Section Header for Tone Stack Controls
-  auto ctrlHeaderArea = juce::Rectangle<int>(20, 248, getWidth() - 40, 24);
+  auto ctrlHeaderArea = juce::Rectangle<int>(20, 256, getWidth() - 40, 24);
   g.setColour(ironstack::IronStackLookAndFeel::textOffWhite.withAlpha(0.6f));
-  g.setFont(juce::Font(11.0f, juce::Font::bold));
+  g.setFont(juce::Font(10.5f, juce::Font::bold));
   g.drawText("PHYSICAL CIRCUIT & TONE CONTROLS", ctrlHeaderArea, juce::Justification::left, false);
   g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.25f));
-  g.drawHorizontalLine(268, 20.0f, (float)getWidth() - 20.0f);
+  g.drawHorizontalLine(276, 20.0f, (float)getWidth() - 20.0f);
 
   // 6. Corner Industrial Hex Screws
   auto drawScrew = [&g](float x, float y) {
@@ -155,19 +157,24 @@ void IronStackEditor::paint(juce::Graphics &g) {
 }
 
 void IronStackEditor::resized() {
-  // Selectors in header
-  ampSelector.setBounds(getWidth() - 460, 14, 180, 26);
-  cabSelector.setBounds(getWidth() - 270, 14, 180, 26);
+  // Selectors in header with generous widths and no overlap
+  const int badgeRightMargin = 120;
+  const int selW = 205;
+  const int selH = 28;
+  const int selY = 14;
+
+  cabSelector.setBounds(getWidth() - badgeRightMargin - selW, selY, selW, selH);
+  ampSelector.setBounds(getWidth() - badgeRightMargin - selW * 2 - 10, selY, selW, selH);
 
   // Visualizer beside Tube
-  visualizer.setBounds(160, 68, getWidth() - 184, 160);
+  visualizer.setBounds(164, 70, getWidth() - 188, 168);
 
   // Rotary Knobs in Bottom Section
-  const int knobY = 284;
+  const int knobY = 296;
   const int labelY = knobY + 98;
-  const int knobSize = 90;
+  const int knobSize = 88;
   const int numKnobs = 5;
-  const int startX = 24;
+  const int startX = 36;
   const int spacing = (getWidth() - startX * 2 - knobSize) / (numKnobs - 1);
 
   driveKnob.setBounds(startX + 0 * spacing, knobY, knobSize, knobSize);

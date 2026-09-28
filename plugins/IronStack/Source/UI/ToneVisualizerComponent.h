@@ -133,10 +133,13 @@ public:
         g.setColour(IronStackLookAndFeel::goldAccent.withAlpha(0.35f));
         g.drawRoundedRectangle(bounds, 5.0f, 1.0f);
 
-        // Legend
-        g.setFont(juce::Font(10.0f));
-        g.setColour(IronStackLookAndFeel::goldHighlight);
-        g.drawText("OUTPUT RESPONSE H(w)", bounds.reduced(8.0f), juce::Justification::topRight, false);
+        // Legend Badge
+        auto legendBox = juce::Rectangle<float>(bounds.getRight() - 146.0f, bounds.getY() + 8.0f, 138.0f, 18.0f);
+        g.setColour(IronStackLookAndFeel::carbonDark.withAlpha(0.75f));
+        g.fillRoundedRectangle(legendBox, 3.0f);
+        g.setFont(juce::Font("Georgia", 9.5f, juce::Font::bold));
+        g.setColour(IronStackLookAndFeel::goldHighlight.withAlpha(0.9f));
+        g.drawText("OUTPUT RESPONSE H(w)", legendBox.toNearestInt(), juce::Justification::centred, false);
     }
 
 private:

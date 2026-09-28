@@ -14,11 +14,21 @@ public:
         setColour(juce::Slider::rotarySliderFillColourId, goldAccent);
         setColour(juce::Slider::rotarySliderOutlineColourId, carbonDark);
         setColour(juce::Slider::thumbColourId, goldHighlight);
+        setColour(juce::Slider::textBoxTextColourId, goldHighlight);
+        setColour(juce::Slider::textBoxBackgroundColourId, carbonDark);
+        setColour(juce::Slider::textBoxOutlineColourId, goldAccent.withAlpha(0.35f));
+        setColour(juce::Slider::textBoxHighlightColourId, goldAccent.withAlpha(0.2f));
+
+        setColour(juce::TextEditor::textColourId, goldHighlight);
+        setColour(juce::TextEditor::backgroundColourId, carbonDark);
+        setColour(juce::TextEditor::outlineColourId, goldAccent.withAlpha(0.35f));
+        setColour(juce::TextEditor::focusedOutlineColourId, goldHighlight);
         
         setColour(juce::Label::textColourId, textOffWhite);
         setColour(juce::ComboBox::backgroundColourId, carbonDark);
-        setColour(juce::ComboBox::textColourId, goldAccent);
-        setColour(juce::ComboBox::outlineColourId, goldAccent.withAlpha(0.4f));
+        setColour(juce::ComboBox::textColourId, goldHighlight);
+        setColour(juce::ComboBox::outlineColourId, goldAccent.withAlpha(0.5f));
+        setColour(juce::ComboBox::arrowColourId, goldAccent);
         
         setColour(juce::PopupMenu::backgroundColourId, carbonDark);
         setColour(juce::PopupMenu::textColourId, textOffWhite);
@@ -27,6 +37,16 @@ public:
     }
 
     ~IronStackLookAndFeel() override = default;
+
+    juce::Font getComboBoxFont(juce::ComboBox&) override
+    {
+        return juce::Font("Georgia", 13.0f, juce::Font::bold);
+    }
+
+    juce::Font getPopupMenuFont() override
+    {
+        return juce::Font("Georgia", 13.0f, juce::Font::plain);
+    }
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
                           float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
@@ -83,24 +103,26 @@ public:
     {
         auto bounds = juce::Rectangle<int>(0, 0, width, height).toFloat();
         
-        // Recessed Carbon panel fill
-        g.setColour(carbonDark);
+        // Recessed Carbon panel fill with subtle gradient
+        juce::ColourGradient fillGrad(carbonMatte, bounds.getX(), bounds.getY(),
+                                      carbonDark, bounds.getX(), bounds.getBottom(), false);
+        g.setGradientFill(fillGrad);
         g.fillRoundedRectangle(bounds, 4.0f);
 
         // Gold border
-        g.setColour(goldAccent.withAlpha(0.6f));
+        g.setColour(goldAccent.withAlpha(box.hasKeyboardFocus(true) ? 0.9f : 0.5f));
         g.drawRoundedRectangle(bounds.reduced(0.5f), 4.0f, 1.0f);
 
         // Down Arrow
         juce::Path arrow;
         float ax = (float)buttonX + (float)buttonW * 0.4f;
-        float ay = (float)buttonY + (float)buttonH * 0.45f;
-        arrow.startNewSubPath(ax - 4.0f, ay - 2.0f);
+        float ay = (float)buttonY + (float)buttonH * 0.48f;
+        arrow.startNewSubPath(ax - 4.5f, ay - 2.5f);
         arrow.lineTo(ax, ay + 3.0f);
-        arrow.lineTo(ax + 4.0f, ay - 2.0f);
+        arrow.lineTo(ax + 4.5f, ay - 2.5f);
 
         g.setColour(goldAccent);
-        g.strokePath(arrow, juce::PathStrokeType(1.5f));
+        g.strokePath(arrow, juce::PathStrokeType(1.6f, juce::PathStrokeType::mitered, juce::PathStrokeType::rounded));
     }
 
     static void draw12AX7Tube(juce::Graphics& g, juce::Rectangle<float> bounds, float glowAmount)
