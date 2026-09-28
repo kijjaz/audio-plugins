@@ -53,6 +53,18 @@ CIRCUITS = {
         "C3": 47e-9,
         "color": "#16a085"
     },
+    "Marshall_Super_Bass_100": {
+        "name": "Marshall Super Bass 100 (JMP 1992)",
+        "desc": "British heavy tube bass; 56k slope, 250pF treble, 22nF bass/mid, aggressive push",
+        "R1": 250e3,
+        "R2": 1e6,
+        "R3": 25e3,
+        "R4": 56e3,
+        "C1": 250e-12,
+        "C2": 22e-9,
+        "C3": 22e-9,
+        "color": "#c0392b"
+    },
     "Fender_Twin_Reverb": {
         "name": "Fender Twin Reverb (AB763)",
         "desc": "Classic Blackface; huge low-end authority, deeper scoop at 450Hz",

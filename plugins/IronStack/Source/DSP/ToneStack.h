@@ -15,6 +15,7 @@ public:
         FenderBassman = 0,     // '59 Fender Bassman 5F6-A (Tweed reference)
         FenderBassmanAA864,    // '65 Fender Bassman AA864 (Blackface dedicated bass voicing)
         AmpegB15N,             // Ampeg B-15N Portaflex (James / Baxandall bass circuit)
+        MarshallSuperBass,     // Marshall Super Bass 100 (JMP 1992 / Lemmy & Jack Bruce bass punch)
         FenderTwinReverb,      // Fender Twin Reverb AB763 (Blackface, deep scoop at 450Hz)
         MarshallJCM800,        // Marshall JCM800 / 1959 Plexi (33k slope, punchy mids)
         VoxAC30,               // Vox AC30 Top Boost (47pF bright cap, brilliant chime)
@@ -64,6 +65,10 @@ public:
                 break;
             case Model::AmpegB15N:
                 activeProfile = { "Ampeg B-15N Portaflex", 470e3, 1e6, 10e3, 100e3, 330e-12, 470e-12, 3300e-12, 1.0 };
+                break;
+            case Model::MarshallSuperBass:
+                // Marshall JMP 1992 Super Bass 100: 56k slope, 250pF treble, 22nF bass, 22nF mid, 25k mid pot
+                activeProfile = { "Marshall Super Bass 100", 250e3, 1e6, 25e3, 56e3, 250e-12, 22e-9, 22e-9, 2.32 };
                 break;
             case Model::FenderTwinReverb:
                 activeProfile = { "Fender Twin Reverb", 250e3, 250e3, 10e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0 };
