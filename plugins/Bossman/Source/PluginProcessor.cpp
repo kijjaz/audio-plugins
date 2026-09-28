@@ -14,6 +14,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout
 Fender59AudioProcessor::createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+  juce::StringArray models = {
+      "Fender '59 Bassman",
+      "Fender Twin Reverb",
+      "Marshall JCM800",
+      "Vox AC30 Top Boost",
+      "Mesa Dual Rectifier",
+      "Soldano SLO-100"
+  };
+  layout.add(std::make_unique<juce::AudioParameterChoice>(
+      "ampModel", "Amp Circuit Model", models, 0));
+
   layout.add(std::make_unique<juce::AudioParameterFloat>(
       "drive", "Drive", 0.0f, 60.0f, 20.0f)); // dB gain
   layout.add(std::make_unique<juce::AudioParameterFloat>("bass", "Bass", 0.0f,
@@ -55,12 +66,14 @@ void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   int numSamples = buffer.getNumSamples();
 
   // 1. Update Parameters
+  int modelIdx = static_cast<int>(*apvts.getRawParameterValue("ampModel"));
   float driveDb = *apvts.getRawParameterValue("drive");
   float bass = *apvts.getRawParameterValue("bass");
   float mid = *apvts.getRawParameterValue("mid");
   float treble = *apvts.getRawParameterValue("treble");
   float vol = *apvts.getRawParameterValue("volume");
 
+  toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 5, modelIdx)));
   inputTube.setDrive(driveDb);
   toneStack.setKnobs(bass, mid, treble);
 

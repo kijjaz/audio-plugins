@@ -3,16 +3,35 @@
 #include <cmath>
 
 /**
- * Discretized '59 Fender Bassman 5F6-A Tone Stack
- * Based on: David T. Yeh and Julius O. Smith,
- * "Discretization of the '59 Fender Bassman Tone Stack", DAFx-06 (CCRMA, Stanford).
- *
- * Implemented using exact continuous-time nodal polynomials and Bilinear Transform
- * in Transposed Direct Form II (TDF-II) for numerical robustness.
+ * Multi-Model Tone Stack Engine
+ * Supports 6 iconic amplifier circuits using the exact closed-form
+ * polynomial nodal equations and Bilinear Transform from Yeh & Smith (DAFx-06).
  */
 class ToneStack {
 public:
+    enum class Model {
+        FenderBassman = 0,    // '59 Fender Bassman 5F6-A (Tweed reference)
+        FenderTwinReverb,      // Fender Twin Reverb AB763 (Blackface, deep scoop at 400Hz)
+        MarshallJCM800,        // Marshall JCM800 / 1959 Plexi (33k slope, punchy mids)
+        VoxAC30,               // Vox AC30 Top Boost (47pF bright cap, brilliant chime)
+        MesaDualRectifier,     // Mesa Boogie Dual Rectifier (680pF presence, modern scoop)
+        SoldanoSLO100          // Soldano SLO-100 (Boutique lead balance)
+    };
+
+    struct CircuitProfile {
+        const char* name;
+        double R1;  // Treble pot
+        double R2;  // Bass pot
+        double R3;  // Mid pot
+        double R4;  // Slope resistor
+        double C1;  // Treble cap
+        double C2;  // Bass cap
+        double C3;  // Mid cap
+        double bassTaperExp; // Taper exponent for bass pot
+    };
+
     ToneStack() {
+        setModel(Model::FenderBassman);
         reset();
     }
 
@@ -28,79 +47,47 @@ public:
         d3 = 0.0;
     }
 
-    /**
-     * Set tone control knobs (range [0.0, 10.0] or [0.0, 1.0]).
-     * In the original amp:
-     * - Treble (R1 = 250k) is linear taper: t in [0, 1]
-     * - Middle (R3 = 25k) is linear taper: m in [0, 1]
-     * - Bass (R2 = 1M) is 10% audio (log) taper: l in [0, 1]
-     */
+    void setModel(Model m) {
+        currentModel = m;
+        switch (currentModel) {
+            case Model::FenderBassman:
+                activeProfile = { "Fender '59 Bassman", 250e3, 1e6, 25e3, 56e3, 250e-12, 20e-9, 20e-9, 2.32 };
+                break;
+            case Model::FenderTwinReverb:
+                activeProfile = { "Fender Twin Reverb", 250e3, 250e3, 10e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0 };
+                break;
+            case Model::MarshallJCM800:
+                activeProfile = { "Marshall JCM800", 220e3, 1e6, 22e3, 33e3, 470e-12, 22e-9, 22e-9, 2.32 };
+                break;
+            case Model::VoxAC30:
+                activeProfile = { "Vox AC30 Top Boost", 1e6, 1e6, 10e3, 100e3, 47e-12, 22e-9, 10e-9, 2.0 };
+                break;
+            case Model::MesaDualRectifier:
+                activeProfile = { "Mesa Dual Rectifier", 250e3, 1e6, 50e3, 47e3, 680e-12, 20e-9, 20e-9, 2.32 };
+                break;
+            case Model::SoldanoSLO100:
+                activeProfile = { "Soldano SLO-100", 250e3, 1e6, 25e3, 47e3, 470e-12, 20e-9, 20e-9, 2.32 };
+                break;
+        }
+        updateCoefficients();
+    }
+
     void setKnobs(float bassVal, float midVal, float trebleVal, bool normalized01 = false) {
         float rawB = normalized01 ? bassVal : (bassVal / 10.0f);
         float rawM = normalized01 ? midVal : (midVal / 10.0f);
         float rawT = normalized01 ? trebleVal : (trebleVal / 10.0f);
 
-        // Clamp to [0, 1]
         rawB = juce::jlimit(0.0f, 1.0f, rawB);
         rawM = juce::jlimit(0.0f, 1.0f, rawM);
         rawT = juce::jlimit(0.0f, 1.0f, rawT);
 
-        // Taper mappings:
-        // Treble: Linear taper
         t = static_cast<double>(rawT);
-
-        // Middle: Linear taper
-        // Avoid singular zero for m=0 in denominator boundary by setting tiny epsilon
         m = juce::jmax(1e-5, static_cast<double>(rawM));
-
-        // Bass: Audio / Logarithmic 10% taper at 50% rotation:
-        // Approximated by audio taper curve: l = (pow(10, rawB) - 1) / 9.0 or pow(rawB, 2.5)
-        l = juce::jlimit(1e-5, 1.0, static_cast<double>(std::pow(rawB, 2.321928f))); // 0.5^2.322 ≈ 0.20
+        l = juce::jlimit(1e-5, 1.0, static_cast<double>(std::pow(rawB, activeProfile.bassTaperExp)));
 
         updateCoefficients();
     }
 
-    /**
-     * Direct parameter access with explicit normalized [0, 1] tapers (t, m, l)
-     */
-    void setDirectParameters(double treble_t, double mid_m, double bass_l) {
-        t = juce::jlimit(0.0, 1.0, treble_t);
-        m = juce::jlimit(1e-5, 1.0, mid_m);
-        l = juce::jlimit(1e-5, 1.0, bass_l);
-        updateCoefficients();
-    }
-
-    /**
-     * Compute analytical continuous-time complex response H(s) at frequency f (Hz)
-     */
-    std::complex<double> evaluateAnalogResponse(double freqHz) const {
-        double omega = 2.0 * M_PI * freqHz;
-        std::complex<double> s(0.0, omega);
-        std::complex<double> s2 = s * s;
-        std::complex<double> s3 = s2 * s;
-
-        std::complex<double> num = b1 * s + b2 * s2 + b3 * s3;
-        std::complex<double> den = a0 + a1 * s + a2 * s2 + a3 * s3;
-        return num / den;
-    }
-
-    /**
-     * Compute discrete-time response H(e^jw) at frequency f (Hz)
-     */
-    std::complex<double> evaluateDigitalResponse(double freqHz) const {
-        double w = 2.0 * M_PI * freqHz / sampleRate;
-        std::complex<double> z1 = std::polar(1.0, -w);
-        std::complex<double> z2 = std::polar(1.0, -2.0 * w);
-        std::complex<double> z3 = std::polar(1.0, -3.0 * w);
-
-        std::complex<double> num = b0_d + b1_d * z1 + b2_d * z2 + b3_d * z3;
-        std::complex<double> den = 1.0 + a1_d * z1 + a2_d * z2 + a3_d * z3;
-        return num / den;
-    }
-
-    /**
-     * Process single sample using Transposed Direct Form II (TDF-II)
-     */
     inline float processSample(float input) noexcept {
         double in = static_cast<double>(input);
         double out = b0_d * in + d1;
@@ -112,16 +99,28 @@ public:
         return static_cast<float>(out);
     }
 
+    std::complex<double> evaluateAnalogResponse(double freqHz) const {
+        double omega = 2.0 * M_PI * freqHz;
+        std::complex<double> s(0.0, omega);
+        std::complex<double> s2 = s * s;
+        std::complex<double> s3 = s2 * s;
+
+        std::complex<double> num = b1 * s + b2 * s2 + b3 * s3;
+        std::complex<double> den = a0 + a1 * s + a2 * s2 + a3 * s3;
+        return num / den;
+    }
+
+    const CircuitProfile& getProfile() const noexcept { return activeProfile; }
+
 private:
     void updateCoefficients() {
-        // Physical Component Values for Fender '59 Bassman 5F6-A
-        constexpr double C1 = 0.25e-9;   // 250 pF
-        constexpr double C2 = 20.0e-9;   // 20 nF
-        constexpr double C3 = 20.0e-9;   // 20 nF
-        constexpr double R1 = 250.0e3;   // 250 kOhm (Treble pot)
-        constexpr double R2 = 1.0e6;     // 1 MOhm (Bass pot)
-        constexpr double R3 = 25.0e3;    // 25 kOhm (Mid pot)
-        constexpr double R4 = 56.0e3;    // 56 kOhm (Slope resistor)
+        const double R1 = activeProfile.R1;
+        const double R2 = activeProfile.R2;
+        const double R3 = activeProfile.R3;
+        const double R4 = activeProfile.R4;
+        const double C1 = activeProfile.C1;
+        const double C2 = activeProfile.C2;
+        const double C3 = activeProfile.C3;
 
         // Continuous-time polynomial coefficients (Yeh & Smith Eq. 1)
         a0 = 1.0;
@@ -149,7 +148,7 @@ private:
               + t*C1*C2*C3*R1*R3*R4 - t*m*C1*C2*C3*R1*R3*R4
               + t*l*C1*C2*C3*R1*R2*R4);
 
-        // Discretization via Bilinear Transform: s = c * (1 - z^-1) / (1 + z^-1)
+        // Bilinear Transform: s = c * (1 - z^-1) / (1 + z^-1)
         double c = 2.0 * sampleRate;
         double c2 = c * c;
         double c3 = c2 * c;
@@ -164,7 +163,6 @@ private:
         double A2 = -3.0*a0 + a1*c + a2*c2 - 3.0*a3*c3;
         double A3 = -a0 + a1*c - a2*c2 + a3*c3;
 
-        // Normalization by A0
         double invA0 = 1.0 / A0;
         b0_d = B0 * invA0;
         b1_d = B1 * invA0;
@@ -176,7 +174,10 @@ private:
         a3_d = A3 * invA0;
     }
 
+    Model currentModel = Model::FenderBassman;
+    CircuitProfile activeProfile;
     double sampleRate = 44100.0;
+
     double t = 0.5;
     double m = 0.5;
     double l = 0.5;
