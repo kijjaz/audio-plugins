@@ -16,6 +16,8 @@ public:
         BassmanCTS_2x15,     // 1970 Fender Bassman 2x15 (CTS Speakers)
         AmpegSVT_8x10,       // Ampeg SVT 8x10 "The Fridge" (Infinite Baffle Punch)
         Acoustic360_1x18,    // Acoustic 360 / 301 1x18 Folded Horn (Jaco Pastorius Sub-Thump)
+        Eminence_2x10_Vented,// Eminence Legend CA1059 2x10 Vented Box (Lucas 62Hz Fb Design)
+        Eminence_4x10_Vented,// Eminence Legend CA1059 4x10 Vented Box (Lucas 65Hz Fb Punch)
         HartkePro_2x12,      // Hartke PRO 2200 2x12 Aluminum Bass Cab
         Greenback_4x12,      // Marshall 1960A 4x12 (Celestion Greenback)
         Vintage30_4x12,      // Mesa Rectifier 4x12 (Celestion Vintage 30)
@@ -83,6 +85,14 @@ public:
             case Model::Acoustic360_1x18:
                 // Acoustic 360 / 301 1x18 Folded Horn (Jaco Pastorius signature): Sub-bass chamber thump 62Hz (+14dB, Q=0.85), folded horn cavity notch 520Hz (-5.5dB), throat resonance 2150Hz (+5.0dB), steep horn cutoff 3600Hz
                 profile = { "1x18 Acoustic 360 Horn", 32.0f, 62.0f, 14.0f, 0.85f, 520.0f, -5.5f, 2.00f, 2150.0f, 5.0f, 1.40f, 3200.0f, -10.0f, 3.00f, 3600.0f, 0.95f };
+                break;
+            case Model::Eminence_2x10_Vented:
+                // Eminence Legend CA1059 2x10 Vented Box (Anthony Lucas Design): Vb=3cu.ft, Fb=62Hz (QL=6.98, F3=62.4Hz), Mid 750Hz (+3.8dB), Presence 3200Hz (+7.5dB), LP 4500Hz
+                profile = { "2x10 Eminence Legend (Vented)", 35.0f, 62.0f, 11.5f, 0.70f, 750.0f, 3.8f, 2.50f, 3200.0f, 7.5f, 1.30f, 4000.0f, -8.0f, 3.00f, 4500.0f, 1.0f };
+                break;
+            case Model::Eminence_4x10_Vented:
+                // Eminence Legend CA1059 4x10 Vented Box (Anthony Lucas Design): Vb=6cu.ft, Fb=65Hz (QL=6.98, F3=63.4Hz), Mid 820Hz (+4.5dB), Presence 3400Hz (+8.2dB), LP 4600Hz
+                profile = { "4x10 Eminence Legend (Vented)", 35.0f, 65.0f, 12.5f, 0.72f, 820.0f, 4.5f, 2.00f, 3400.0f, 8.2f, 1.25f, 4100.0f, -7.5f, 2.80f, 4600.0f, 1.0f };
                 break;
             case Model::HartkePro_2x12:
                 // Hartke PRO 2200 2x12 Bass Cab (Tone3000 Calibrated): HP 40Hz, Thump 108Hz (+12dB, Q=0.57), Mid 446.8Hz, Presence 2797Hz, LP 5210Hz

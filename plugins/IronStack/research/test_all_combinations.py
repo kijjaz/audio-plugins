@@ -68,6 +68,22 @@ CABINETS = {
         "shim_f": 3200.0, "shim_g": -10.0, "shim_q": 3.00,
         "lp": 3600.0, "color": "#8e44ad"
     },
+    "Eminence_2x10_Vented": {
+        "name": "2x10 Eminence Legend Vented",
+        "hp": 35.0, "thump_f": 62.0, "thump_g": 11.5, "thump_q": 0.70,
+        "mid_f": 750.0, "mid_g": 3.8, "mid_q": 2.50,
+        "pres_f": 3200.0, "pres_g": 7.5, "pres_q": 1.30,
+        "shim_f": 4000.0, "shim_g": -8.0, "shim_q": 3.00,
+        "lp": 4500.0, "color": "#16a085"
+    },
+    "Eminence_4x10_Vented": {
+        "name": "4x10 Eminence Legend Vented",
+        "hp": 35.0, "thump_f": 65.0, "thump_g": 12.5, "thump_q": 0.72,
+        "mid_f": 820.0, "mid_g": 4.5, "mid_q": 2.00,
+        "pres_f": 3400.0, "pres_g": 8.2, "pres_q": 1.25,
+        "shim_f": 4100.0, "shim_g": -7.5, "shim_q": 2.80,
+        "lp": 4600.0, "color": "#27ae60"
+    },
     "HartkePro_2x12": {
         "name": "2x12 Hartke Pro 2200 (Tone3000)",
         "hp": 40.0, "thump_f": 108.0, "thump_g": 12.0, "thump_q": 0.57,
@@ -237,6 +253,8 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
             ["2x15 '70 Bassman CTS", "Deep Sealed Pine", "116.0 Hz", "+12.0 dB", "440 Hz (+6.0 dB)", "2423 Hz (+7.2 dB)", "4408 Hz", "Sub-bass authority, massive physical chest kick"],
             ["8x10 Ampeg SVT Fridge", "Infinite Baffle 8x10", "110.0 Hz", "+10.0 dB", "850 Hz (+4.2 dB)", "2850 Hz (+6.8 dB)", "4200 Hz", "Stadium low-mid punch, tight unported transient slam"],
             ["1x18 Acoustic 360 Horn", "Folded Rear-Horn", "62.0 Hz", "+14.0 dB", "520 Hz (-5.5 dB)", "2150 Hz (+5.0 dB)", "3600 Hz", "Massive Jaco sub-bass acoustic compression throw"],
+            ["2x10 Eminence Legend Vented", "Vented Box 3 cu.ft", "62.0 Hz", "+11.5 dB", "750 Hz (+3.8 dB)", "3200 Hz (+7.5 dB)", "4500 Hz", "Anthony Lucas vented design, deep 62Hz Helmholtz tuning"],
+            ["4x10 Eminence Legend Vented", "Vented Box 6 cu.ft", "65.0 Hz", "+12.5 dB", "820 Hz (+4.5 dB)", "3400 Hz (+8.2 dB)", "4600 Hz", "Anthony Lucas vented design, massive low punch 65Hz Fb"],
             ["2x12 Hartke Pro 2200", "Ported Dual-Chamber", "108.0 Hz", "+12.0 dB", "447 Hz (+2.5 dB)", "2797 Hz (-2.3 dB)", "5210 Hz", "Aluminum cone lightning slap transient & punch"],
             ["4x12 Marshall 1960A", "Closed-back 1960", "161.0 Hz", "+12.0 dB", "689 Hz (+6.0 dB)", "3073 Hz (+15.0 dB)", "6153 Hz", "Creamy British roar, forward aggressive bite"],
             ["4x12 Mesa Recto V30", "Closed Oversized", "78.4 Hz", "+12.0 dB", "900 Hz (+6.0 dB)", "3800 Hz (+3.9 dB)", "4915 Hz", "Tight modern percussive low thump & scooped bite"],
@@ -245,8 +263,8 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
         ]
         ctab = ax_ctab.table(cellText=cab_data, colLabels=cab_cols, loc='center', cellLoc='center')
         ctab.auto_set_font_size(False)
-        ctab.set_fontsize(7.5)
-        ctab.scale(1.0, 1.8)
+        ctab.set_fontsize(7.0)
+        ctab.scale(1.0, 1.55)
         for (r_idx, c_idx), cell in ctab.get_celld().items():
             if r_idx == 0:
                 cell.set_facecolor(charcoal)
@@ -258,25 +276,27 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
         plt.close(fig1)
 
         # ======================================================================
-        # PAGES 2, 3, 4: End-to-End Frequency Response across all 90 Combinations
-        # (9 Amp Heads x 10 Cabinets)
+        # PAGES 2, 3, 4: End-to-End Frequency Response across all 120 Combinations
+        # (10 Amp Heads x 12 Cabinets)
         # ======================================================================
-        amp_batches = [amp_keys[:3], amp_keys[3:6], amp_keys[6:9]]
+        amp_batches = [amp_keys[:3], amp_keys[3:6], amp_keys[6:]]
         for page_idx, amp_subset in enumerate(amp_batches):
             fig = plt.figure(figsize=(11, 8.5), facecolor='#ffffff')
             h_ax = fig.add_axes([0.05, 0.90, 0.90, 0.07])
             h_ax.set_facecolor(charcoal)
             h_ax.set_xticks([])
             h_ax.set_yticks([])
-            h_ax.text(0.02, 0.65, f"IRONSTACK  —  END-TO-END RIG MATRIX (PART {page_idx+1}: 10 CAB COMBINATIONS PER HEAD)", 
+            h_ax.text(0.02, 0.65, f"IRONSTACK  —  END-TO-END RIG MATRIX (PART {page_idx+1}: 12 CAB COMBINATIONS PER HEAD)", 
                       color='#ffffff', fontsize=13, fontweight='bold', va='center')
-            h_ax.text(0.02, 0.28, "Combined Tone Stack + Speaker Cabinet Responses across 10 Acoustically Modeled Enclosures", 
+            h_ax.text(0.02, 0.28, "Combined Tone Stack + Speaker Cabinet Responses across 12 Acoustically Modeled Enclosures", 
                       color=gold, fontsize=9.0, fontweight='bold', va='center')
-            h_ax.text(0.98, 0.45, "Status: VALIDATED", color='#2ecc71', fontsize=9, fontweight='bold', ha='right', va='center')
+            h_ax.text(0.98, 0.45, "Status: VALIDATED (120 Rigs)", color='#2ecc71', fontsize=9, fontweight='bold', ha='right', va='center')
 
+            n_amps = len(amp_subset)
+            slot_h = 0.78 / n_amps
             for i, amp_k in enumerate(amp_subset):
-                y_pos = 0.62 - i * 0.26
-                ax = fig.add_axes([0.08, y_pos, 0.84, 0.21])
+                y_pos = 0.88 - (i + 1) * slot_h + 0.02
+                ax = fig.add_axes([0.08, y_pos, 0.84, slot_h - 0.04])
                 ax.set_facecolor(cream)
 
                 m_amp, _ = solve_tone_stack(amp_k, t=0.5, m=0.5, l=0.5, freqs_hz=freqs)
@@ -284,18 +304,18 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
                 for cab_k in cab_keys:
                     m_cab, _ = solve_cabinet(cab_k, freqs, fs)
                     total_mag = m_amp + m_cab
-                    ax.semilogx(freqs, total_mag, label=CABINETS[cab_k]["name"], color=CABINETS[cab_k]["color"], lw=1.5)
+                    ax.semilogx(freqs, total_mag, label=CABINETS[cab_k]["name"], color=CABINETS[cab_k]["color"], lw=1.4)
 
                 amp_name = CIRCUITS[amp_k]["name"]
-                ax.set_title(f"Rig Profile: {amp_name} (T=5, M=5, B=5) paired with all 8 Cabinets", 
-                             fontsize=9.0, fontweight='bold', color=charcoal)
-                ax.set_xlabel("Frequency (Hz)", fontsize=7.5)
-                ax.set_ylabel("Gain (dB)", fontsize=7.5)
+                ax.set_title(f"Rig Profile: {amp_name} (T=5, M=5, B=5) paired with all 12 Cabinets", 
+                             fontsize=8.5, fontweight='bold', color=charcoal)
+                ax.set_xlabel("Frequency (Hz)", fontsize=7.0)
+                ax.set_ylabel("Gain (dB)", fontsize=7.0)
                 ax.set_xlim(20, 20000)
                 ax.set_ylim(-45, 10)
                 ax.grid(True, which="both", ls=":", alpha=0.5)
                 if i == 0:
-                    ax.legend(fontsize=6.8, loc="lower left", ncol=4)
+                    ax.legend(fontsize=6.2, loc="lower left", ncol=4)
 
             pdf.savefig(fig)
             plt.close(fig)

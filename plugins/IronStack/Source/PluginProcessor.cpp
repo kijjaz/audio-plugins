@@ -18,6 +18,7 @@ IronStackAudioProcessor::createParameterLayout() {
       "Fender '59 Bassman (5F6-A)",
       "Fender '65 Bassman (AA864)",
       "Ampeg B-15N Portaflex",
+      "Ampeg B-100R Rocket Bass",
       "Marshall Super Bass 100",
       "Fender Twin Reverb (AB763)",
       "Marshall JCM800 / 1959 Plexi",
@@ -34,6 +35,8 @@ IronStackAudioProcessor::createParameterLayout() {
       "2x15 '70 Bassman CTS (Tone3000)",
       "8x10 Ampeg SVT Fridge",
       "1x18 Acoustic 360 Horn",
+      "2x10 Eminence Legend (Vented)",
+      "4x10 Eminence Legend (Vented)",
       "2x12 Hartke Pro 2200 (Tone3000)",
       "4x12 Marshall 1960A (Tone3000)",
       "4x12 Mesa Recto V30 (Tone3000)",
@@ -92,8 +95,8 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   float treble = *apvts.getRawParameterValue("treble");
   float vol = *apvts.getRawParameterValue("volume");
 
-  toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 8, modelIdx)));
-  auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 9, cabIdx));
+  toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 9, modelIdx)));
+  auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 11, cabIdx));
   cabinetL.setModel(selectedCab);
   cabinetR.setModel(selectedCab);
 

@@ -125,6 +125,18 @@ CIRCUITS = {
         "C3": 3300e-12,
         "color": "#e67e22"
     },
+    "Ampeg_B100R": {
+        "name": "Ampeg B-100R Rocket Bass",
+        "desc": "Iconic solid-state/tube emulation combo with Ultra-Mid contour; 50k pots, 33k slope, 4.7nF treble",
+        "R1": 50e3,
+        "R2": 50e3,
+        "R3": 50e3,
+        "R4": 33e3,
+        "C1": 4700e-12,
+        "C2": 33e-9,
+        "C3": 47e-9,
+        "color": "#1abc9c"
+    },
     "Soldano_SLO_100": {
         "name": "Soldano SLO-100",
         "desc": "Boutique high-gain; legendary singing lead, smooth transition",
@@ -433,7 +445,7 @@ def generate_comparative_report(pdf_path="ToneStack_Comparative_Analysis.pdf"):
         h_ax.set_yticks([])
         h_ax.text(0.02, 0.65, "CLASSIC AMP TONE STACK COMPARATIVE BENCHMARK", 
                   color='#ffffff', fontsize=13, fontweight='bold', va='center')
-        h_ax.text(0.02, 0.28, "Mathematical Comparison of 6 Iconic Circuit Topologies (Fender, Marshall, Vox, Mesa, Soldano)", 
+        h_ax.text(0.02, 0.28, "Mathematical Comparison of 10 Iconic Circuit Topologies (Fender, Marshall, Ampeg, Vox, Mesa, Soldano)", 
                   color=gold, fontsize=9.0, fontweight='bold', va='center')
         h_ax.text(0.98, 0.45, "Yeh & Smith DAFx-06 Nodal Synthesis", color='#99a5a3', fontsize=9, ha='right', va='center')
 
