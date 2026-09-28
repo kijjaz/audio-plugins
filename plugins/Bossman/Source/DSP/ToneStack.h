@@ -10,8 +10,9 @@
 class ToneStack {
 public:
     enum class Model {
-        FenderBassman = 0,    // '59 Fender Bassman 5F6-A (Tweed reference)
-        FenderTwinReverb,      // Fender Twin Reverb AB763 (Blackface, deep scoop at 400Hz)
+        FenderBassman = 0,     // '59 Fender Bassman 5F6-A (Tweed reference)
+        FenderBassmanAA864,    // '65 Fender Bassman AA864 (Blackface dedicated bass voicing)
+        FenderTwinReverb,      // Fender Twin Reverb AB763 (Blackface, deep scoop at 450Hz)
         MarshallJCM800,        // Marshall JCM800 / 1959 Plexi (33k slope, punchy mids)
         VoxAC30,               // Vox AC30 Top Boost (47pF bright cap, brilliant chime)
         MesaDualRectifier,     // Mesa Boogie Dual Rectifier (680pF presence, modern scoop)
@@ -52,6 +53,10 @@ public:
         switch (currentModel) {
             case Model::FenderBassman:
                 activeProfile = { "Fender '59 Bassman", 250e3, 1e6, 25e3, 56e3, 250e-12, 20e-9, 20e-9, 2.32 };
+                break;
+            case Model::FenderBassmanAA864:
+                // '65 Blackface Bassman AA864: 100k slope, 100nF deep bass cap, 47nF mid cap
+                activeProfile = { "Fender '65 Bassman AA864", 250e3, 250e3, 25e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0 };
                 break;
             case Model::FenderTwinReverb:
                 activeProfile = { "Fender Twin Reverb", 250e3, 250e3, 10e3, 100e3, 250e-12, 100e-9, 47e-9, 2.0 };

@@ -11,11 +11,13 @@
 class Cabinet {
 public:
     enum class Model {
-        Jensen_4x10 = 0,     // Fender Bassman 4x10 Open-back Pine (Alnico P10R)
-        Jensen_2x12,         // Fender Twin Reverb 2x12 Open-back (Ceramic C12N)
-        Greenback_4x12,      // Marshall 1960A 4x12 Closed-back (Celestion G12M Greenback)
-        Vintage30_4x12,      // Mesa/Boutique 4x12 Closed-back (Celestion Vintage 30)
-        AlnicoBlue_2x12,     // Vox AC30 2x12 Semi-open (Celestion Alnico Blue)
+        Jensen_4x10 = 0,     // Fender Bassman Neo 4x10
+        Jensen_2x12,         // Fender Twin Reverb 2x12 (Jensen C12N)
+        BassmanCTS_2x15,     // 1970 Fender Bassman 2x15 (CTS Speakers)
+        HartkePro_2x12,      // Hartke PRO 2200 2x12 Aluminum Bass Cab
+        Greenback_4x12,      // Marshall 1960A 4x12 (Celestion Greenback)
+        Vintage30_4x12,      // Mesa Rectifier 4x12 (Celestion Vintage 30)
+        BassmanJensen_2x12,  // 1966 Fender Bassman 2x12 (Jensen C12NA)
         Bypass               // Direct Out (No Cabinet Filter)
     };
 
@@ -62,23 +64,31 @@ public:
         switch (currentModel) {
             case Model::Jensen_4x10:
                 // Fender Bassman Neo 4x10 (Tone3000 Calibrated): HP 40Hz, Thump 149.5Hz (+12dB, Q=0.50), Mid 900Hz, Presence 3373Hz (+7.7dB), LP 4000Hz
-                profile = { "4x10 Jensen P10R (Tone3000)", 40.0f, 149.5f, 12.0f, 0.50f, 900.0f, 3.5f, 4.00f, 3373.0f, 7.7f, 1.46f, 3650.6f, -12.0f, 4.00f, 4000.0f, 1.0f };
+                profile = { "4x10 Bassman Neo (Tone3000)", 40.0f, 149.5f, 12.0f, 0.50f, 900.0f, 3.5f, 4.00f, 3373.0f, 7.7f, 1.46f, 3650.6f, -12.0f, 4.00f, 4000.0f, 1.0f };
                 break;
             case Model::Jensen_2x12:
                 // Fender Twin Reverb 2x12 Jensen C12N (Tone3000 Calibrated): HP 40Hz, Thump 180Hz (+12dB, Q=0.50), Mid 443Hz, Presence 2750Hz (+12.4dB), LP 5139Hz
-                profile = { "2x12 Jensen C12N (Tone3000)", 40.0f, 180.0f, 12.0f, 0.50f, 443.4f, 6.0f, 0.50f, 2749.6f, 12.4f, 1.15f, 4248.9f, -12.0f, 4.00f, 5139.1f, 1.0f };
+                profile = { "2x12 Twin C12N (Tone3000)", 40.0f, 180.0f, 12.0f, 0.50f, 443.4f, 6.0f, 0.50f, 2749.6f, 12.4f, 1.15f, 4248.9f, -12.0f, 4.00f, 5139.1f, 1.0f };
+                break;
+            case Model::BassmanCTS_2x15:
+                // 1970 Fender Bassman 2x15 CTS (Tone3000 Calibrated): HP 40Hz, Thump 116Hz (+12dB, Q=0.50), Mid 440.4Hz (+6dB), Presence 2423Hz (+7.2dB), LP 4408Hz
+                profile = { "2x15 '70 Bassman CTS (Tone3000)", 40.0f, 116.0f, 12.0f, 0.50f, 440.4f, 6.0f, 1.64f, 2422.7f, 7.2f, 0.85f, 4241.8f, -11.4f, 1.72f, 4407.8f, 1.0f };
+                break;
+            case Model::HartkePro_2x12:
+                // Hartke PRO 2200 2x12 Bass Cab (Tone3000 Calibrated): HP 40Hz, Thump 108Hz (+12dB, Q=0.57), Mid 446.8Hz, Presence 2797Hz, LP 5210Hz
+                profile = { "2x12 Hartke Pro 2200 (Tone3000)", 40.0f, 108.0f, 12.0f, 0.57f, 446.8f, 2.5f, 4.00f, 2796.5f, -2.3f, 5.00f, 4213.1f, -8.3f, 4.00f, 5210.2f, 1.0f };
                 break;
             case Model::Greenback_4x12:
                 // Marshall 1960A JCM800 4x12 (Tone3000 Calibrated): HP 40Hz, Thump 161Hz (+12dB, Q=0.50), Mid 689Hz, Presence 3073Hz (+15dB), LP 6153Hz
-                profile = { "4x12 Greenback (Tone3000)", 40.0f, 161.0f, 12.0f, 0.50f, 688.7f, 6.0f, 0.50f, 3073.0f, 15.0f, 2.19f, 4879.2f, 10.0f, 4.00f, 6152.9f, 0.95f };
+                profile = { "4x12 Marshall 1960A (Tone3000)", 40.0f, 161.0f, 12.0f, 0.50f, 688.7f, 6.0f, 0.50f, 3073.0f, 15.0f, 2.19f, 4879.2f, 10.0f, 4.00f, 6152.9f, 0.95f };
                 break;
             case Model::Vintage30_4x12:
                 // Mesa Boogie Rectifier 4x12 V30 (Tone3000 Calibrated): HP 40Hz, Thump 78.4Hz (+12dB, Q=0.71), Mid 900Hz, Presence 3800Hz (+3.9dB), LP 4915Hz
-                profile = { "4x12 Vintage 30 (Tone3000)", 40.0f, 78.4f, 12.0f, 0.71f, 900.0f, 6.0f, 2.25f, 3800.0f, 3.9f, 0.89f, 6000.0f, -12.0f, 0.50f, 4915.0f, 0.95f };
+                profile = { "4x12 Mesa Recto V30 (Tone3000)", 40.0f, 78.4f, 12.0f, 0.71f, 900.0f, 6.0f, 2.25f, 3800.0f, 3.9f, 0.89f, 6000.0f, -12.0f, 0.50f, 4915.0f, 0.95f };
                 break;
-            case Model::AlnicoBlue_2x12:
+            case Model::BassmanJensen_2x12:
                 // 1966 Fender Bassman 2x12 Jensen C12NA (Tone3000 Calibrated): HP 56.6Hz, Thump 121.3Hz (+12dB, Q=0.50), Mid 724Hz, Presence 2632Hz (+2.7dB), LP 4521Hz
-                profile = { "1966 Bassman 2x12 (Tone3000)", 56.6f, 121.3f, 12.0f, 0.50f, 723.8f, 6.0f, 2.71f, 2631.5f, 2.7f, 0.50f, 4125.1f, -3.8f, 2.33f, 4521.0f, 1.0f };
+                profile = { "2x12 '66 Bassman C12NA (Tone3000)", 56.6f, 121.3f, 12.0f, 0.50f, 723.8f, 6.0f, 2.71f, 2631.5f, 2.7f, 0.50f, 4125.1f, -3.8f, 2.33f, 4521.0f, 1.0f };
                 break;
             case Model::Bypass:
                 profile = { "Bypass (Direct)", 20.0f, 100.0f, 0.0f, 1.0f, 1000.0f, 0.0f, 1.0f, 3000.0f, 0.0f, 1.0f, 5000.0f, 0.0f, 1.0f, 20000.0f, 1.0f };

@@ -41,6 +41,18 @@ CIRCUITS = {
         "C3": 20e-9,  # 20 nF
         "color": "#d4af37"
     },
+    "Fender_65_Bassman_AA864": {
+        "name": "'65 Fender Bassman (AA864)",
+        "desc": "Blackface Bassman; 100nF deep bass cap, 47nF mid cap, 100k slope",
+        "R1": 250e3,
+        "R2": 250e3,
+        "R3": 25e3,
+        "R4": 100e3,
+        "C1": 250e-12,
+        "C2": 100e-9,
+        "C3": 47e-9,
+        "color": "#16a085"
+    },
     "Fender_Twin_Reverb": {
         "name": "Fender Twin Reverb (AB763)",
         "desc": "Classic Blackface; huge low-end authority, deeper scoop at 450Hz",

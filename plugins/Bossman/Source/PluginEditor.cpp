@@ -11,6 +11,7 @@ Fender59Editor::Fender59Editor(Fender59AudioProcessor &p)
   // 2. Selectors (Amp & Cab)
   juce::StringArray models = {
       "Fender '59 Bassman (5F6-A)",
+      "Fender '65 Bassman (AA864)",
       "Fender Twin Reverb (AB763)",
       "Marshall JCM800 / 1959 Plexi",
       "Vox AC30 Top Boost",
@@ -25,6 +26,8 @@ Fender59Editor::Fender59Editor(Fender59AudioProcessor &p)
   juce::StringArray cabs = {
       "4x10 Bassman Neo (Tone3000)",
       "2x12 Twin C12N (Tone3000)",
+      "2x15 '70 Bassman CTS (Tone3000)",
+      "2x12 Hartke Pro 2200 (Tone3000)",
       "4x12 Marshall 1960A (Tone3000)",
       "4x12 Mesa Recto V30 (Tone3000)",
       "2x12 '66 Bassman C12NA (Tone3000)",

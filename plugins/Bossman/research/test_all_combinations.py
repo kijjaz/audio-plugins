@@ -44,6 +44,22 @@ CABINETS = {
         "shim_f": 4248.9, "shim_g": -12.0, "shim_q": 4.00,
         "lp": 5139.1, "color": "#3498db"
     },
+    "BassmanCTS_2x15": {
+        "name": "2x15 '70 Bassman CTS (Tone3000)",
+        "hp": 40.0, "thump_f": 116.0, "thump_g": 12.0, "thump_q": 0.50,
+        "mid_f": 440.4, "mid_g": 6.0, "mid_q": 1.64,
+        "pres_f": 2422.7, "pres_g": 7.2, "pres_q": 0.85,
+        "shim_f": 4241.8, "shim_g": -11.4, "shim_q": 1.72,
+        "lp": 4407.8, "color": "#1abc9c"
+    },
+    "HartkePro_2x12": {
+        "name": "2x12 Hartke Pro 2200 (Tone3000)",
+        "hp": 40.0, "thump_f": 108.0, "thump_g": 12.0, "thump_q": 0.57,
+        "mid_f": 446.8, "mid_g": 2.5, "mid_q": 4.00,
+        "pres_f": 2796.5, "pres_g": -2.3, "pres_q": 5.00,
+        "shim_f": 4213.1, "shim_g": -8.3, "shim_q": 4.00,
+        "lp": 5210.2, "color": "#f39c12"
+    },
     "Greenback_4x12": {
         "name": "4x12 Marshall 1960A (Tone3000)",
         "hp": 40.0, "thump_f": 161.0, "thump_g": 12.0, "thump_q": 0.50,
