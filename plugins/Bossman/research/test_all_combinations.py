@@ -214,14 +214,16 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
         ax_ctab = fig1.add_axes([0.05, 0.08, 0.90, 0.35])
         ax_ctab.axis('tight')
         ax_ctab.axis('off')
-        cab_cols = ["Cabinet Model", "Enclosure Type", "Cone Thump Freq", "Thump Boost", "Mid Contour", "Presence Peak", "Voice Coil Rolloff", "Sonic Role"]
+        cab_cols = ["Cabinet Model", "Enclosure Type", "Cone Thump Freq", "Thump Boost", "Mid Contour", "Presence Peak", "Inductance Rolloff", "Sonic Role"]
         cab_data = [
-            ["4x10 Jensen P10R", "Open-back Pine", "115 Hz", "+2.8 dB", "420 Hz (-4.5 dB)", "3800 Hz (+4.5 dB)", "4800 Hz (-24dB/oct)", "Tight, chimey Tweed snap"],
-            ["2x12 Jensen C12N", "Open-back Birch", "92 Hz", "+3.5 dB", "380 Hz (-5.5 dB)", "4200 Hz (+5.0 dB)", "5200 Hz (-24dB/oct)", "Deep Blackface lows, glass highs"],
-            ["4x12 Greenback", "Closed-back 1960", "110 Hz", "+4.2 dB", "550 Hz (+2.0 dB)", "3200 Hz (+3.8 dB)", "4400 Hz (-24dB/oct)", "Creamy British roar, woody mids"],
-            ["4x12 Vintage 30", "Closed Oversized", "105 Hz", "+5.0 dB", "480 Hz (-2.5 dB)", "3500 Hz (+6.5 dB)", "4700 Hz (-24dB/oct)", "Heavy metal bite, punchy low thump"],
-            ["2x12 Alnico Blue", "Semi-open AC30", "100 Hz", "+2.5 dB", "650 Hz (+1.5 dB)", "2800 Hz (+4.0 dB)", "5500 Hz (-24dB/oct)", "Bell chimes, vocal upper mids"],
-            ["Bypass", "Direct Line", "Flat", "0.0 dB", "Flat", "Flat", "20.0 kHz", "For external IR plugins"]
+            ["4x10 Bassman Neo", "Open-back Pine", "149.5 Hz", "+12.0 dB", "900 Hz (+3.5 dB)", "3373 Hz (+7.7 dB)", "4000 Hz", "Punchy fast transient bass articulation"],
+            ["2x12 Twin C12N", "Open-back Birch", "180.0 Hz", "+12.0 dB", "443 Hz (+6.0 dB)", "2750 Hz (+12.4 dB)", "5139 Hz", "Deep Blackface lows, singing glassy bell"],
+            ["2x15 '70 Bassman CTS", "Deep Sealed Pine", "116.0 Hz", "+12.0 dB", "440 Hz (+6.0 dB)", "2423 Hz (+7.2 dB)", "4408 Hz", "Sub-bass authority, massive physical chest kick"],
+            ["2x12 Hartke Pro 2200", "Ported Dual-Chamber", "108.0 Hz", "+12.0 dB", "447 Hz (+2.5 dB)", "2797 Hz (-2.3 dB)", "5210 Hz", "Aluminum cone lightning slap transient & punch"],
+            ["4x12 Marshall 1960A", "Closed-back 1960", "161.0 Hz", "+12.0 dB", "689 Hz (+6.0 dB)", "3073 Hz (+15.0 dB)", "6153 Hz", "Creamy British roar, forward aggressive bite"],
+            ["4x12 Mesa Recto V30", "Closed Oversized", "78.4 Hz", "+12.0 dB", "900 Hz (+6.0 dB)", "3800 Hz (+3.9 dB)", "4915 Hz", "Tight modern percussive low thump & scooped bite"],
+            ["2x12 '66 Bassman C12NA", "Closed Vintage 66", "121.3 Hz", "+12.0 dB", "724 Hz (+6.0 dB)", "2632 Hz (+2.7 dB)", "4521 Hz", "Warm vintage acoustic resonance, velvety midrange"],
+            ["Bypass", "Direct Line", "Flat", "0.0 dB", "Flat", "Flat", "20.0 kHz", "For external IR loader plugins"]
         ]
         ctab = ax_ctab.table(cellText=cab_data, colLabels=cab_cols, loc='center', cellLoc='center')
         ctab.auto_set_font_size(False)
@@ -238,22 +240,22 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
         plt.close(fig1)
 
         # ======================================================================
-        # PAGES 2 & 3: End-to-End Frequency Response across all 36 Combinations
-        # (6 Amp Heads x 6 Cabinets)
+        # PAGES 2, 3, 4: End-to-End Frequency Response across all 64 Combinations
+        # (8 Amp Heads x 8 Cabinets)
         # ======================================================================
-        for page_idx, amp_subset in enumerate([amp_keys[:3], amp_keys[3:]]):
+        amp_batches = [amp_keys[:3], amp_keys[3:6], amp_keys[6:]]
+        for page_idx, amp_subset in enumerate(amp_batches):
             fig = plt.figure(figsize=(11, 8.5), facecolor='#ffffff')
             h_ax = fig.add_axes([0.05, 0.90, 0.90, 0.07])
             h_ax.set_facecolor(charcoal)
             h_ax.set_xticks([])
             h_ax.set_yticks([])
-            h_ax.text(0.02, 0.65, f"BOSSMAN  —  END-TO-END RIG MATRIX (PART {page_idx+1}: 18 COMBINATIONS)", 
+            h_ax.text(0.02, 0.65, f"BOSSMAN  —  END-TO-END RIG MATRIX (PART {page_idx+1}: 8 CAB COMBINATIONS PER HEAD)", 
                       color='#ffffff', fontsize=13, fontweight='bold', va='center')
-            h_ax.text(0.02, 0.28, "Combined Tone Stack + Speaker Cabinet Responses across 6 Classic Cabinets", 
+            h_ax.text(0.02, 0.28, "Combined Tone Stack + Speaker Cabinet Responses across 8 Tone3000 Calibrated Enclosures", 
                       color=gold, fontsize=9.0, fontweight='bold', va='center')
             h_ax.text(0.98, 0.45, "Status: VALIDATED", color='#2ecc71', fontsize=9, fontweight='bold', ha='right', va='center')
 
-            # 3 Subplots on each page (one per amp head)
             for i, amp_k in enumerate(amp_subset):
                 y_pos = 0.62 - i * 0.26
                 ax = fig.add_axes([0.08, y_pos, 0.84, 0.21])
@@ -267,7 +269,7 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
                     ax.semilogx(freqs, total_mag, label=CABINETS[cab_k]["name"], color=CABINETS[cab_k]["color"], lw=1.5)
 
                 amp_name = CIRCUITS[amp_k]["name"]
-                ax.set_title(f"Rig Profile: {amp_name} (T=5, M=5, B=5) paired with all 6 Cabinets", 
+                ax.set_title(f"Rig Profile: {amp_name} (T=5, M=5, B=5) paired with all 8 Cabinets", 
                              fontsize=9.0, fontweight='bold', color=charcoal)
                 ax.set_xlabel("Frequency (Hz)", fontsize=7.5)
                 ax.set_ylabel("Gain (dB)", fontsize=7.5)
@@ -275,7 +277,7 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
                 ax.set_ylim(-45, 10)
                 ax.grid(True, which="both", ls=":", alpha=0.5)
                 if i == 0:
-                    ax.legend(fontsize=6.8, loc="lower left", ncol=3)
+                    ax.legend(fontsize=6.8, loc="lower left", ncol=4)
 
             pdf.savefig(fig)
             plt.close(fig)

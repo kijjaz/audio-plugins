@@ -17,6 +17,7 @@ Fender59AudioProcessor::createParameterLayout() {
   juce::StringArray models = {
       "Fender '59 Bassman (5F6-A)",
       "Fender '65 Bassman (AA864)",
+      "Ampeg B-15N Portaflex",
       "Fender Twin Reverb (AB763)",
       "Marshall JCM800 / 1959 Plexi",
       "Vox AC30 Top Boost",
@@ -88,7 +89,7 @@ void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   float treble = *apvts.getRawParameterValue("treble");
   float vol = *apvts.getRawParameterValue("volume");
 
-  toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 6, modelIdx)));
+  toneStack.setModel(static_cast<ToneStack::Model>(juce::jlimit(0, 7, modelIdx)));
   auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 7, cabIdx));
   cabinetL.setModel(selectedCab);
   cabinetR.setModel(selectedCab);

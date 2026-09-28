@@ -12,6 +12,7 @@ Fender59Editor::Fender59Editor(Fender59AudioProcessor &p)
   juce::StringArray models = {
       "Fender '59 Bassman (5F6-A)",
       "Fender '65 Bassman (AA864)",
+      "Ampeg B-15N Portaflex",
       "Fender Twin Reverb (AB763)",
       "Marshall JCM800 / 1959 Plexi",
       "Vox AC30 Top Boost",
