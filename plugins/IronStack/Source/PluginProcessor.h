@@ -5,10 +5,10 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
 
-class Fender59AudioProcessor : public juce::AudioProcessor {
+class IronStackAudioProcessor : public juce::AudioProcessor {
 public:
-  Fender59AudioProcessor();
-  ~Fender59AudioProcessor() override;
+  IronStackAudioProcessor();
+  ~IronStackAudioProcessor() override;
 
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
   void releaseResources() override;
@@ -17,7 +17,7 @@ public:
   juce::AudioProcessorEditor *createEditor() override;
   bool hasEditor() const override { return true; }
 
-  const juce::String getName() const override { return "Fender59"; }
+  const juce::String getName() const override { return "IronStack"; }
   bool acceptsMidi() const override { return false; }
   bool producesMidi() const override { return false; }
   bool isMidiEffect() const override { return false; }
@@ -54,5 +54,5 @@ private:
   // Oversampling (Optional, maybe later)
   // juce::dsp::Oversampling<float> oversampler;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fender59AudioProcessor)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IronStackAudioProcessor)
 };

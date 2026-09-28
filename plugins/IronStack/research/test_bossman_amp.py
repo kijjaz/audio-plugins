@@ -481,4 +481,4 @@ def generate_benchmarks(pdf_path="Bossman_Amp_Test_Report.pdf"):
     print(f"Benchmark report generated successfully at: {pdf_path}")
 
 if __name__ == "__main__":
-    generate_benchmarks("plugins/Bossman/research/Bossman_Amp_Test_Report.pdf")
+    generate_benchmarks("plugins/IronStack/research/IronStack_Amp_Test_Report.pdf")

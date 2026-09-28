@@ -540,4 +540,4 @@ def generate_comparative_report(pdf_path="ToneStack_Comparative_Analysis.pdf"):
     print(f"Comparative report successfully created at: {pdf_path}")
 
 if __name__ == "__main__":
-    generate_comparative_report("plugins/Bossman/research/ToneStack_Comparative_Analysis.pdf")
+    generate_comparative_report("plugins/IronStack/research/ToneStack_Comparative_Analysis.pdf")

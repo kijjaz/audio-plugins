@@ -28,7 +28,14 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-### 3. [Discrete 808](plugins/Discrete808/)
+### 4. [IronStack](plugins/IronStack/)
+* **Type**: Component-Level Analog Amplifier & Multi-Cabinet Suite.
+* **Key Features**: Exact continuous nodal matrix solvers & Bilinear Transform (DAFx-06 Yeh & Smith 3rd-order FMV and 4th-order James/Baxandall networks), kinetic 12AX7 vacuum tube preamp with dynamic DC cathode bias sag, 8 iconic amplifier circuits (Bassman 5F6-A, AA864, Ampeg B-15N, Twin Reverb AB763, JCM800, AC30 Top Boost, Mesa Dual Rectifier, Soldano SLO-100), and 8 Tone3000 acoustically-calibrated cabinet impulse responses.
+* 📦 **[Download Latest IronStack Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml)**
+
+---
+
+### 5. [Discrete 808](plugins/Discrete808/)
 * **Type**: Component-Level Analog Drum Synthesis.
 * **Key Features**: Exact component-level modeling of vintage transistor circuits, bridled T-network resonators, germanium diode clipping, and voice parameter randomization.
 

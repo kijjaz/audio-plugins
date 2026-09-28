@@ -1,17 +1,17 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-Fender59AudioProcessor::Fender59AudioProcessor()
+IronStackAudioProcessor::IronStackAudioProcessor()
     : AudioProcessor(
           BusesProperties()
               .withInput("Input", juce::AudioChannelSet::mono(), true)
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts(*this, nullptr, "Parameters", createParameterLayout()) {}
 
-Fender59AudioProcessor::~Fender59AudioProcessor() {}
+IronStackAudioProcessor::~IronStackAudioProcessor() {}
 
 juce::AudioProcessorValueTreeState::ParameterLayout
-Fender59AudioProcessor::createParameterLayout() {
+IronStackAudioProcessor::createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
   juce::StringArray models = {
@@ -54,8 +54,8 @@ Fender59AudioProcessor::createParameterLayout() {
   return layout;
 }
 
-void Fender59AudioProcessor::prepareToPlay(double sampleRate,
-                                           int samplesPerBlock) {
+void IronStackAudioProcessor::prepareToPlay(double sampleRate,
+                                            int samplesPerBlock) {
   juce::dsp::ProcessSpec spec;
   spec.sampleRate = sampleRate;
   spec.maximumBlockSize = samplesPerBlock;
@@ -70,9 +70,9 @@ void Fender59AudioProcessor::prepareToPlay(double sampleRate,
   cabinetR.prepare(spec, Cabinet::Channel::Right);
 }
 
-void Fender59AudioProcessor::releaseResources() {}
+void IronStackAudioProcessor::releaseResources() {}
 
-void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
+void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                                           juce::MidiBuffer &midiMessages) {
   juce::ScopedNoDenormals noDenormals;
 
@@ -135,17 +135,17 @@ void Fender59AudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   }
 }
 
-juce::AudioProcessorEditor *Fender59AudioProcessor::createEditor() {
-  return new Fender59Editor(*this);
+juce::AudioProcessorEditor *IronStackAudioProcessor::createEditor() {
+  return new IronStackEditor(*this);
 }
 
-void Fender59AudioProcessor::getStateInformation(juce::MemoryBlock &destData) {
+void IronStackAudioProcessor::getStateInformation(juce::MemoryBlock &destData) {
   auto state = apvts.copyState();
   std::unique_ptr<juce::XmlElement> xml(state.createXml());
   copyXmlToBinary(*xml, destData);
 }
 
-void Fender59AudioProcessor::setStateInformation(const void *data,
+void IronStackAudioProcessor::setStateInformation(const void *data,
                                                  int sizeInBytes) {
   std::unique_ptr<juce::XmlElement> xmlState(
       getXmlFromBinary(data, sizeInBytes));
@@ -156,5 +156,5 @@ void Fender59AudioProcessor::setStateInformation(const void *data,
 
 // Factory
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
-  return new Fender59AudioProcessor();
+  return new IronStackAudioProcessor();
 }

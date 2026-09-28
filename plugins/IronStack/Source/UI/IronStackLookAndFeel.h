@@ -3,13 +3,13 @@
 #include <juce_graphics/juce_graphics.h>
 #include <cmath>
 
-namespace bossman
+namespace ironstack
 {
 
-class BossmanLookAndFeel : public juce::LookAndFeel_V4
+class IronStackLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    BossmanLookAndFeel()
+    IronStackLookAndFeel()
     {
         setColour(juce::Slider::rotarySliderFillColourId, goldAccent);
         setColour(juce::Slider::rotarySliderOutlineColourId, carbonDark);
@@ -26,7 +26,7 @@ public:
         setColour(juce::PopupMenu::highlightedTextColourId, goldHighlight);
     }
 
-    ~BossmanLookAndFeel() override = default;
+    ~IronStackLookAndFeel() override = default;
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
                           float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,

@@ -285,4 +285,4 @@ def generate_matrix_tests(pdf_path="Bossman_Matrix_Test_Report.pdf"):
     print(f"Matrix benchmark report generated successfully at: {pdf_path}")
 
 if __name__ == "__main__":
-    generate_matrix_tests("plugins/Bossman/research/Bossman_Matrix_Test_Report.pdf")
+    generate_matrix_tests("plugins/IronStack/research/IronStack_Matrix_Test_Report.pdf")

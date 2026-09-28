@@ -1,7 +1,7 @@
 #include "PluginEditor.h"
 #include "PluginProcessor.h"
 
-Fender59Editor::Fender59Editor(Fender59AudioProcessor &p)
+IronStackEditor::IronStackEditor(IronStackAudioProcessor &p)
     : AudioProcessorEditor(&p), audioProcessor(p) {
   setLookAndFeel(&lookAndFeel);
 
@@ -50,7 +50,7 @@ Fender59Editor::Fender59Editor(Fender59AudioProcessor &p)
     label.setText(text, juce::dontSendNotification);
     label.setFont(juce::Font(11.0f, juce::Font::bold));
     label.setJustificationType(juce::Justification::centred);
-    label.setColour(juce::Label::textColourId, bossman::BossmanLookAndFeel::goldAccent);
+    label.setColour(juce::Label::textColourId, ironstack::IronStackLookAndFeel::goldAccent);
     label.setInterceptsMouseClicks(false, false);
     addAndMakeVisible(label);
 
@@ -69,11 +69,11 @@ Fender59Editor::Fender59Editor(Fender59AudioProcessor &p)
   startTimerHz(30); // 30 FPS visual feedback
 }
 
-Fender59Editor::~Fender59Editor() {
+IronStackEditor::~IronStackEditor() {
   setLookAndFeel(nullptr);
 }
 
-void Fender59Editor::timerCallback() {
+void IronStackEditor::timerCallback() {
   // Update kinetic tube filament glow from preamp DC bias and drive
   float bias = std::abs(audioProcessor.getTubeStage().getBiasDc());
   float targetGlow = juce::jlimit(0.15f, 1.0f, 0.20f + bias * 1.5f + (float)driveKnob.getValue() / 70.0f);
@@ -86,52 +86,52 @@ void Fender59Editor::timerCallback() {
   repaint(getLocalBounds().removeFromTop(160));
 }
 
-void Fender59Editor::paint(juce::Graphics &g) {
+void IronStackEditor::paint(juce::Graphics &g) {
   // 1. Matte Carbon Textured Chassis Base
-  g.fillAll(bossman::BossmanLookAndFeel::carbonDark);
+  g.fillAll(ironstack::IronStackLookAndFeel::carbonDark);
 
   // 2. Subtle Tweed Gold Trim & Header Stripe
   auto topBanner = getLocalBounds().removeFromTop(54).toFloat();
-  juce::ColourGradient bannerGrad(bossman::BossmanLookAndFeel::carbonPanel, topBanner.getX(), topBanner.getY(),
-                                  bossman::BossmanLookAndFeel::carbonDark, topBanner.getX(), topBanner.getBottom(), false);
+  juce::ColourGradient bannerGrad(ironstack::IronStackLookAndFeel::carbonPanel, topBanner.getX(), topBanner.getY(),
+                                  ironstack::IronStackLookAndFeel::carbonDark, topBanner.getX(), topBanner.getBottom(), false);
   g.setGradientFill(bannerGrad);
   g.fillRect(topBanner);
 
-  g.setColour(bossman::BossmanLookAndFeel::goldAccent.withAlpha(0.6f));
+  g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.6f));
   g.drawHorizontalLine(54, 0.0f, (float)getWidth());
 
   // 3. Archival Vintage Logo & Typography
-  g.setColour(bossman::BossmanLookAndFeel::goldHighlight);
+  g.setColour(ironstack::IronStackLookAndFeel::goldHighlight);
   g.setFont(juce::Font("Georgia", 22.0f, juce::Font::bold));
-  g.drawText("BOSSMAN", 24, 8, 200, 24, juce::Justification::left, false);
+  g.drawText("IRONSTACK", 24, 8, 200, 24, juce::Justification::left, false);
 
-  g.setColour(bossman::BossmanLookAndFeel::tweedGold);
+  g.setColour(ironstack::IronStackLookAndFeel::tweedGold);
   g.setFont(juce::Font("Georgia", 11.0f, juce::Font::italic));
-  g.drawText("'59 TONE SUITE  *  BILINEAR NODAL DSP", 26, 32, 280, 16, juce::Justification::left, false);
+  g.drawText("ANALOG AMP & TONE SUITE  *  BILINEAR NODAL DSP", 26, 32, 380, 16, juce::Justification::left, false);
 
   // Calibration badge
-  g.setColour(bossman::BossmanLookAndFeel::carbonMatte);
+  g.setColour(ironstack::IronStackLookAndFeel::carbonMatte);
   g.fillRoundedRectangle((float)getWidth() - 170.0f, 14.0f, 146.0f, 24.0f, 4.0f);
-  g.setColour(bossman::BossmanLookAndFeel::goldAccent);
+  g.setColour(ironstack::IronStackLookAndFeel::goldAccent);
   g.drawRoundedRectangle((float)getWidth() - 170.0f, 14.0f, 146.0f, 24.0f, 4.0f, 1.0f);
   g.setFont(juce::Font(10.0f, juce::Font::bold));
   g.drawText("CALIBRATED -18 dBFS", getWidth() - 170, 14, 146, 24, juce::Justification::centred, false);
 
   // 4. Kinetic 12AX7 Preamp Vacuum Tube Centerpiece
   auto tubeArea = juce::Rectangle<float>(24.0f, 68.0f, 120.0f, 160.0f);
-  bossman::BossmanLookAndFeel::draw12AX7Tube(g, tubeArea, tubeGlow);
+  ironstack::IronStackLookAndFeel::draw12AX7Tube(g, tubeArea, tubeGlow);
 
   // Pedestal Plate under tube
-  g.setColour(bossman::BossmanLookAndFeel::goldAccent.withAlpha(0.7f));
+  g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.7f));
   g.setFont(juce::Font(9.5f, juce::Font::bold));
   g.drawText("12AX7 PREAMP", 24, 218, 120, 16, juce::Justification::centred, false);
 
   // 5. Section Header for Tone Stack Controls
   auto ctrlHeaderArea = juce::Rectangle<int>(20, 248, getWidth() - 40, 24);
-  g.setColour(bossman::BossmanLookAndFeel::textOffWhite.withAlpha(0.6f));
+  g.setColour(ironstack::IronStackLookAndFeel::textOffWhite.withAlpha(0.6f));
   g.setFont(juce::Font(11.0f, juce::Font::bold));
   g.drawText("PHYSICAL CIRCUIT & TONE CONTROLS", ctrlHeaderArea, juce::Justification::left, false);
-  g.setColour(bossman::BossmanLookAndFeel::goldAccent.withAlpha(0.25f));
+  g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.25f));
   g.drawHorizontalLine(268, 20.0f, (float)getWidth() - 20.0f);
 
   // 6. Corner Industrial Hex Screws
@@ -148,7 +148,7 @@ void Fender59Editor::paint(juce::Graphics &g) {
   drawScrew((float)getWidth() - 10, (float)getHeight() - 10);
 }
 
-void Fender59Editor::resized() {
+void IronStackEditor::resized() {
   // Selectors in header
   ampSelector.setBounds(getWidth() - 460, 14, 180, 26);
   cabSelector.setBounds(getWidth() - 270, 14, 180, 26);

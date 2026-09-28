@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 # Project Name
-project(Bossman VERSION 1.0.0 LANGUAGES CXX C)
+project(IronStack VERSION 1.0.0 LANGUAGES CXX C)
 
 # --- Standard ---
 set(CMAKE_CXX_STANDARD 17)
@@ -18,7 +18,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(juce)
 
 # --- Plugin Definition ---
-juce_add_plugin(Bossman
+juce_add_plugin(IronStack
     COMPANY_NAME "Kijjaz"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
@@ -27,20 +27,20 @@ juce_add_plugin(Bossman
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     COPY_PLUGIN_AFTER_BUILD FALSE # We sign manually via script
     PLUGIN_MANUFACTURER_CODE "Kijj"
-    PLUGIN_CODE "FB59"
+    PLUGIN_CODE "IrSt"
     VST3_AUTO_MANIFEST FALSE
     FORMATS VST3 AU
-    PRODUCT_NAME "Bossman"
+    PRODUCT_NAME "IronStack"
 )
 
 # --- Sources ---
-target_sources(Bossman
+target_sources(IronStack
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginProcessor.h
         Source/PluginEditor.cpp
         Source/PluginEditor.h
-        Source/UI/BossmanLookAndFeel.h
+        Source/UI/IronStackLookAndFeel.h
         Source/UI/ToneVisualizerComponent.h
         # DSP Headers (Header-only for now)
         Source/DSP/ToneStack.h
@@ -49,7 +49,7 @@ target_sources(Bossman
 )
 
 # --- Linking ---
-target_link_libraries(Bossman
+target_link_libraries(IronStack
     PRIVATE
         juce::juce_audio_utils
         juce::juce_audio_processors
@@ -58,7 +58,7 @@ target_link_libraries(Bossman
 )
 
 # --- Compile Definitions ---
-target_compile_definitions(Bossman
+target_compile_definitions(IronStack
     PUBLIC
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
@@ -66,7 +66,7 @@ target_compile_definitions(Bossman
 )
 
 # --- RPATH ---
-set_target_properties(Bossman PROPERTIES
+set_target_properties(IronStack PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
     INSTALL_RPATH "@loader_path"
     JUCE_VST3_MANIFEST_FILE "OFF"
@@ -74,13 +74,13 @@ set_target_properties(Bossman PROPERTIES
 
 # --- Post-Build Signing (Universal Script) ---
 # VST3
-add_custom_command(TARGET Bossman_VST3 POST_BUILD
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:Bossman_VST3>/../../"
-    COMMENT "Signing Bossman VST3..."
+add_custom_command(TARGET IronStack_VST3 POST_BUILD
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:IronStack_VST3>/../../"
+    COMMENT "Signing IronStack VST3..."
 )
 
 # AU
-add_custom_command(TARGET Bossman_AU POST_BUILD
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:Bossman_AU>/../../"
-    COMMENT "Signing Bossman AU..."
+add_custom_command(TARGET IronStack_AU POST_BUILD
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/sign_plugin.sh" "$<TARGET_FILE_DIR:IronStack_AU>/../../"
+    COMMENT "Signing IronStack AU..."
 )

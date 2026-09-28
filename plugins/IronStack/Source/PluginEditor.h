@@ -1,13 +1,13 @@
 #pragma once
 #include "PluginProcessor.h"
-#include "UI/BossmanLookAndFeel.h"
+#include "UI/IronStackLookAndFeel.h"
 #include "UI/ToneVisualizerComponent.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class Fender59Editor : public juce::AudioProcessorEditor, private juce::Timer {
+class IronStackEditor : public juce::AudioProcessorEditor, private juce::Timer {
 public:
-  explicit Fender59Editor(Fender59AudioProcessor &);
-  ~Fender59Editor() override;
+  explicit IronStackEditor(IronStackAudioProcessor &);
+  ~IronStackEditor() override;
 
   void paint(juce::Graphics &) override;
   void resized() override;
@@ -15,11 +15,11 @@ public:
 private:
   void timerCallback() override;
 
-  Fender59AudioProcessor &audioProcessor;
-  bossman::BossmanLookAndFeel lookAndFeel;
+  IronStackAudioProcessor &audioProcessor;
+  ironstack::IronStackLookAndFeel lookAndFeel;
 
   // Visualizer Display
-  bossman::ToneVisualizerComponent visualizer;
+  ironstack::ToneVisualizerComponent visualizer;
 
   // Header Dropdowns
   juce::ComboBox ampSelector;
@@ -49,5 +49,5 @@ private:
   // Kinetic Tube Glow State
   float tubeGlow = 0.25f;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fender59Editor)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IronStackEditor)
 };

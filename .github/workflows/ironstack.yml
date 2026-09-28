@@ -1,14 +1,14 @@
-name: Build Bossman
+name: Build IronStack
 
 on:
   push:
     paths:
-      - 'plugins/Bossman/**'
-      - '.github/workflows/bossman.yml'
+      - 'plugins/IronStack/**'
+      - '.github/workflows/ironstack.yml'
   pull_request:
     paths:
-      - 'plugins/Bossman/**'
-      - '.github/workflows/bossman.yml'
+      - 'plugins/IronStack/**'
+      - '.github/workflows/ironstack.yml'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Configure CMake
-      run: cmake -S plugins/Bossman -B build -DCMAKE_BUILD_TYPE=Release
+      run: cmake -S plugins/IronStack -B build -DCMAKE_BUILD_TYPE=Release
       
     - name: Build
       run: cmake --build build --config Release --parallel
@@ -28,8 +28,8 @@ jobs:
     - name: Upload VST3 Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Bossman-Windows-VST3
-        path: build/Bossman_artefacts/Release/VST3/Bossman.vst3
+        name: IronStack-Windows-VST3
+        path: build/IronStack_artefacts/Release/VST3/IronStack.vst3
         if-no-files-found: error
 
   build-macos:
@@ -40,7 +40,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Configure CMake
-      run: cmake -S plugins/Bossman -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      run: cmake -S plugins/IronStack -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
       
     - name: Build
       run: cmake --build build --config Release --parallel
@@ -48,13 +48,13 @@ jobs:
     - name: Upload VST3 Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Bossman-macOS-VST3
-        path: build/Bossman_artefacts/Release/VST3/Bossman.vst3
+        name: IronStack-macOS-VST3
+        path: build/IronStack_artefacts/Release/VST3/IronStack.vst3
         if-no-files-found: error
 
     - name: Upload AU Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Bossman-macOS-AU
-        path: build/Bossman_artefacts/Release/AU/Bossman.component
+        name: IronStack-macOS-AU
+        path: build/IronStack_artefacts/Release/AU/IronStack.component
         if-no-files-found: error

@@ -3,10 +3,10 @@
 #include <juce_graphics/juce_graphics.h>
 #include "../DSP/ToneStack.h"
 #include "../DSP/Cabinet.h"
-#include "BossmanLookAndFeel.h"
+#include "IronStackLookAndFeel.h"
 #include <vector>
 
-namespace bossman
+namespace ironstack
 {
 
 class ToneVisualizerComponent : public juce::Component
@@ -79,7 +79,7 @@ public:
 
         // 0 dB Baseline (subtle gold)
         float zeroY = bounds.getY() + (1.0f - (0.0f - minDb) / (maxDb - minDb)) * bounds.getHeight();
-        g.setColour(BossmanLookAndFeel::goldAccent.withAlpha(0.25f));
+        g.setColour(IronStackLookAndFeel::goldAccent.withAlpha(0.25f));
         g.drawHorizontalLine(juce::roundToInt(zeroY), bounds.getX(), bounds.getRight());
 
         // Draw Curves
@@ -97,7 +97,7 @@ public:
             pTone.startNewSubPath(toPoint(toneCurve[0]));
             for (size_t i = 1; i < toneCurve.size(); ++i)
                 pTone.lineTo(toPoint(toneCurve[i]));
-            g.setColour(BossmanLookAndFeel::tweedGold.withAlpha(0.40f));
+            g.setColour(IronStackLookAndFeel::tweedGold.withAlpha(0.40f));
             g.strokePath(pTone, juce::PathStrokeType(1.2f));
 
             // 2. Cabinet Curve (Thin Charcoal Blue)
@@ -119,23 +119,23 @@ public:
             fillPath.lineTo(bounds.getRight(), bounds.getBottom());
             fillPath.lineTo(bounds.getX(), bounds.getBottom());
             fillPath.closeSubPath();
-            juce::ColourGradient fillGrad(BossmanLookAndFeel::goldAccent.withAlpha(0.12f), bounds.getCentreX(), bounds.getY(),
+            juce::ColourGradient fillGrad(IronStackLookAndFeel::goldAccent.withAlpha(0.12f), bounds.getCentreX(), bounds.getY(),
                                           juce::Colours::transparentBlack, bounds.getCentreX(), bounds.getBottom(), false);
             g.setGradientFill(fillGrad);
             g.fillPath(fillPath);
 
             // Glow Stroke
-            g.setColour(BossmanLookAndFeel::goldHighlight);
+            g.setColour(IronStackLookAndFeel::goldHighlight);
             g.strokePath(pCombined, juce::PathStrokeType(2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         }
 
         // Border & Glass Reflection
-        g.setColour(BossmanLookAndFeel::goldAccent.withAlpha(0.35f));
+        g.setColour(IronStackLookAndFeel::goldAccent.withAlpha(0.35f));
         g.drawRoundedRectangle(bounds, 5.0f, 1.0f);
 
         // Legend
         g.setFont(juce::Font(10.0f));
-        g.setColour(BossmanLookAndFeel::goldHighlight);
+        g.setColour(IronStackLookAndFeel::goldHighlight);
         g.drawText("OUTPUT RESPONSE H(w)", bounds.reduced(8.0f), juce::Justification::topRight, false);
     }
 
@@ -148,4 +148,4 @@ private:
     const float maxDb = 15.0f;
 };
 
-} // namespace bossman
+} // namespace ironstack
