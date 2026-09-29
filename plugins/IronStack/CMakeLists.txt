@@ -66,6 +66,7 @@ target_link_libraries(IronStack
 # --- Compile Definitions ---
 target_compile_definitions(IronStack
     PUBLIC
+        _USE_MATH_DEFINES
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
