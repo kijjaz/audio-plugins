@@ -43,24 +43,39 @@ public:
     void setAmpType(AmpType type) {
         currentType = type;
         if (currentType == AmpType::BassHead) {
-            // Bass amps: Higher headroom scale (1.8x), smoother sag recovery (natural tube bloom)
-            headroomScale = 1.85f;
-            maxSagDepth = 0.45f;
+            // Bass amps: Higher headroom scale (1.85x), smoother sag recovery
+            baseHeadroomScale = 1.85f;
+            baseSagDepth = 0.45f;
             sagAttack = 0.0025f;
             sagRelease = 0.00035f;
         } else {
             // Guitar lead amps: Closer to standard 12AX7 staging
-            headroomScale = 1.0f;
-            maxSagDepth = 0.25f;
+            baseHeadroomScale = 1.0f;
+            baseSagDepth = 0.25f;
             sagAttack = 0.005f;
             sagRelease = 0.001f;
         }
+        updateCoefficients();
     }
 
     void setDrive(float driveDb) {
-        // Map drive dB into input gain with smooth tapering
         driveDbParam = driveDb;
         rawDrive = std::pow(10.0f, driveDb / 20.0f);
+    }
+
+    void setTight(float tight0to10) {
+        // tight = 0.0 -> loose vintage 22 Hz
+        // tight = 10.0 -> ultra-tight modern 140 Hz
+        tightParam = juce::jlimit(0.0f, 10.0f, tight0to10);
+        updateCoefficients();
+    }
+
+    void setSag(float sag0to10) {
+        // sag = 0.0 -> stiff/punchy solid rail
+        // sag = 5.0 -> vintage tube rectifier sag
+        // sag = 10.0 -> deep spongy tube bloom
+        sagParam = juce::jlimit(0.0f, 10.0f, sag0to10);
+        updateCoefficients();
     }
 
     /**
@@ -138,10 +153,19 @@ public:
     }
 
 private:
-    void updateSubFilterCoeff() {
-        // Simple 1-pole highpass coefficient for fc ≈ 32 Hz
-        float fc = 32.0f;
+    void updateCoefficients() {
+        // Continuous Tight highpass cutoff sweep from 20 Hz (loose) to 135 Hz (laser-tight)
+        float fc = 20.0f + (tightParam / 10.0f) * 115.0f;
         subFilterCoeff = 1.0f - std::exp(-2.0f * 3.14159265358979323846f * fc / static_cast<float>(sampleRate));
+
+        // Dynamic Sag Depth: scale base sag depth by sagParam (0.0 to 10.0, default 5.0)
+        float sagFactor = sagParam / 5.0f;
+        maxSagDepth = baseSagDepth * sagFactor;
+        headroomScale = baseHeadroomScale;
+    }
+
+    void updateSubFilterCoeff() {
+        updateCoefficients();
     }
 
     double sampleRate = 44100.0;
@@ -149,6 +173,11 @@ private:
 
     float driveDbParam = 0.0f;
     float rawDrive = 1.0f;
+    float tightParam = 2.0f; // Default subtle tightness
+    float sagParam = 5.0f;   // Default natural tube bloom
+
+    float baseHeadroomScale = 1.85f;
+    float baseSagDepth = 0.45f;
     float headroomScale = 1.85f;
     float maxSagDepth = 0.45f;
     float sagAttack = 0.0025f;

@@ -105,6 +105,11 @@ public:
         return activeProfile.levelComp;
     }
 
+    void setBright(bool enabled) {
+        brightCapEnabled = enabled;
+        updateCoefficients();
+    }
+
     void setKnobs(float bassVal, float midVal, float trebleVal, bool normalized01 = false) {
         float rawB = normalized01 ? bassVal : (bassVal / 10.0f);
         float rawM = normalized01 ? midVal : (midVal / 10.0f);
@@ -165,7 +170,8 @@ private:
         const double R2 = activeProfile.R2;
         const double R3 = activeProfile.R3;
         const double R4 = activeProfile.R4;
-        const double C1 = activeProfile.C1;
+        // Bright Cap simulation: Boosts high-frequency bypass capacitance across the treble pot
+        const double C1 = activeProfile.C1 * (brightCapEnabled ? 1.95 : 1.0);
         const double C2 = activeProfile.C2;
         const double C3 = activeProfile.C3;
 
@@ -482,6 +488,7 @@ private:
     double t = 0.5;
     double m = 0.5;
     double l = 0.5;
+    bool brightCapEnabled = false;
 
     // Continuous 3rd-order coefficients
     double a0 = 1.0, a1 = 0.0, a2 = 0.0, a3 = 0.0;

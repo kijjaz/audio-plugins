@@ -65,13 +65,23 @@ IronStackEditor::IronStackEditor(IronStackAudioProcessor &p)
   };
 
   setupKnob(driveKnob, driveLabel, "DRIVE", "drive", driveAttachment);
+  setupKnob(tightKnob, tightLabel, "TIGHT", "tight", tightAttachment);
+  setupKnob(sagKnob, sagLabel, "SAG", "sag", sagAttachment);
   setupKnob(bassKnob, bassLabel, "BASS", "bass", bassAttachment);
   setupKnob(midKnob, midLabel, "MIDDLE", "mid", midAttachment);
   setupKnob(trebleKnob, trebleLabel, "TREBLE", "treble", trebleAttachment);
-  setupKnob(volumeKnob, volumeLabel, "VOLUME", "volume", volumeAttachment);
+  setupKnob(presenceKnob, presenceLabel, "PRESENCE", "presence", presenceAttachment);
+  setupKnob(spreadKnob, spreadLabel, "SPREAD", "spread", spreadAttachment);
+  setupKnob(volumeKnob, volumeLabel, "MASTER", "volume", volumeAttachment);
 
-  // Pro Console size: comfortable width to host logo + 2 wide selectors + badge without collision
-  setSize(760, 500);
+  // 4. Vintage Bright Switch
+  brightToggle.setButtonText("BRIGHT");
+  addAndMakeVisible(brightToggle);
+  brightAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+      audioProcessor.apvts, "bright", brightToggle);
+
+  // Pro Console v0.0.2 dimensions: wide console format
+  setSize(840, 530);
   startTimerHz(30); // 30 FPS visual feedback
 }
 
@@ -113,7 +123,7 @@ void IronStackEditor::paint(juce::Graphics &g) {
 
   g.setColour(ironstack::IronStackLookAndFeel::tweedGold);
   g.setFont(juce::Font("Georgia", 9.5f, juce::Font::italic));
-  g.drawText("ANALOG AMP & TONE SUITE", 25, 33, 170, 16, juce::Justification::left, false);
+  g.drawText("ANALOG AMP & TONE SUITE v0.0.2", 25, 33, 210, 16, juce::Justification::left, false);
 
   // Calibration badge
   auto badgeBounds = juce::Rectangle<float>((float)getWidth() - 110.0f, 14.0f, 92.0f, 28.0f);
@@ -135,12 +145,19 @@ void IronStackEditor::paint(juce::Graphics &g) {
   g.drawText("12AX7 PREAMP", 20, 222, 128, 16, juce::Justification::centred, false);
 
   // 5. Section Header for Tone Stack Controls
-  auto ctrlHeaderArea = juce::Rectangle<int>(20, 256, getWidth() - 40, 24);
+  auto ctrlHeaderArea = juce::Rectangle<int>(20, 252, getWidth() - 40, 24);
   g.setColour(ironstack::IronStackLookAndFeel::textOffWhite.withAlpha(0.6f));
   g.setFont(juce::Font(10.5f, juce::Font::bold));
-  g.drawText("PHYSICAL CIRCUIT & TONE CONTROLS", ctrlHeaderArea, juce::Justification::left, false);
+  g.drawText("PREAMP DYNAMICS & COUPLING", 24, 252, 220, 20, juce::Justification::left, false);
+  g.drawText("PHYSICAL PASSIVE TONE STACK", 270, 252, 250, 20, juce::Justification::left, false);
+  g.drawText("ACOUSTICS & MASTER", 590, 252, 220, 20, juce::Justification::left, false);
+
   g.setColour(ironstack::IronStackLookAndFeel::goldAccent.withAlpha(0.25f));
-  g.drawHorizontalLine(276, 20.0f, (float)getWidth() - 20.0f);
+  g.drawHorizontalLine(272, 20.0f, (float)getWidth() - 20.0f);
+
+  // Section dividing subtle vertical markers
+  g.drawVerticalLine(256, 276.0f, (float)getHeight() - 25.0f);
+  g.drawVerticalLine(574, 276.0f, (float)getHeight() - 25.0f);
 
   // 6. Corner Industrial Hex Screws
   auto drawScrew = [&g](float x, float y) {
@@ -159,36 +176,52 @@ void IronStackEditor::paint(juce::Graphics &g) {
 void IronStackEditor::resized() {
   // Selectors in header with generous widths and no overlap
   const int badgeRightMargin = 120;
-  const int selW = 205;
+  const int selW = 220;
   const int selH = 28;
   const int selY = 14;
 
   cabSelector.setBounds(getWidth() - badgeRightMargin - selW, selY, selW, selH);
-  ampSelector.setBounds(getWidth() - badgeRightMargin - selW * 2 - 10, selY, selW, selH);
+  ampSelector.setBounds(getWidth() - badgeRightMargin - selW * 2 - 12, selY, selW, selH);
 
   // Visualizer beside Tube
   visualizer.setBounds(164, 70, getWidth() - 188, 168);
 
-  // Rotary Knobs in Bottom Section
-  const int knobY = 296;
-  const int labelY = knobY + 98;
-  const int knobSize = 88;
-  const int numKnobs = 5;
-  const int startX = 36;
-  const int spacing = (getWidth() - startX * 2 - knobSize) / (numKnobs - 1);
+  // Bottom Section: Grouped Rotary Knobs
+  // Group 1: Preamp Dynamics (Drive, Tight, Sag) - left section
+  const int knobY = 295;
+  const int labelY = knobY + 74;
+  const int knobSize = 68;
 
-  driveKnob.setBounds(startX + 0 * spacing, knobY, knobSize, knobSize);
-  driveLabel.setBounds(startX + 0 * spacing, labelY, knobSize, 18);
+  driveKnob.setBounds(26, knobY, knobSize, knobSize);
+  driveLabel.setBounds(26, labelY, knobSize, 18);
 
-  bassKnob.setBounds(startX + 1 * spacing, knobY, knobSize, knobSize);
-  bassLabel.setBounds(startX + 1 * spacing, labelY, knobSize, 18);
+  tightKnob.setBounds(102, knobY, knobSize, knobSize);
+  tightLabel.setBounds(102, labelY, knobSize, 18);
 
-  midKnob.setBounds(startX + 2 * spacing, knobY, knobSize, knobSize);
-  midLabel.setBounds(startX + 2 * spacing, labelY, knobSize, 18);
+  sagKnob.setBounds(178, knobY, knobSize, knobSize);
+  sagLabel.setBounds(178, labelY, knobSize, 18);
 
-  trebleKnob.setBounds(startX + 3 * spacing, knobY, knobSize, knobSize);
-  trebleLabel.setBounds(startX + 3 * spacing, labelY, knobSize, 18);
+  // Group 2: Passive Tone Stack (Bass, Mid, Treble + Bright switch)
+  bassKnob.setBounds(272, knobY, knobSize, knobSize);
+  bassLabel.setBounds(272, labelY, knobSize, 18);
 
-  volumeKnob.setBounds(startX + 4 * spacing, knobY, knobSize, knobSize);
-  volumeLabel.setBounds(startX + 4 * spacing, labelY, knobSize, 18);
+  midKnob.setBounds(348, knobY, knobSize, knobSize);
+  midLabel.setBounds(348, labelY, knobSize, 18);
+
+  trebleKnob.setBounds(424, knobY, knobSize, knobSize);
+  trebleLabel.setBounds(424, labelY, knobSize, 18);
+
+  brightToggle.setBounds(500, knobY + 20, 70, 28);
+
+  // Group 3: Acoustics & Output (Presence, Spread, Master Volume)
+  presenceKnob.setBounds(590, knobY, knobSize, knobSize);
+  presenceLabel.setBounds(590, labelY, knobSize, 18);
+
+  spreadKnob.setBounds(666, knobY, knobSize, knobSize);
+  spreadLabel.setBounds(666, labelY, knobSize, 18);
+
+  // Master knob slightly elevated in size
+  const int masterSize = 74;
+  volumeKnob.setBounds(744, knobY - 3, masterSize, masterSize);
+  volumeLabel.setBounds(744, labelY, masterSize, 18);
 }

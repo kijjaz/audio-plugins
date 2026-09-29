@@ -125,6 +125,44 @@ public:
         g.strokePath(arrow, juce::PathStrokeType(1.6f, juce::PathStrokeType::mitered, juce::PathStrokeType::rounded));
     }
 
+    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                          bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
+    {
+        auto bounds = button.getLocalBounds().toFloat();
+        float toggleW = 44.0f;
+        float toggleH = 20.0f;
+        auto toggleArea = juce::Rectangle<float>(bounds.getX(), bounds.getCentreY() - toggleH * 0.5f, toggleW, toggleH);
+
+        // 1. Recessed Switch Slot Track
+        g.setColour(carbonDark.darker(0.6f));
+        g.fillRoundedRectangle(toggleArea, toggleH * 0.5f);
+        g.setColour(button.getToggleState() ? goldAccent : juce::Colour(0xff3a3c42));
+        g.drawRoundedRectangle(toggleArea, toggleH * 0.5f, 1.2f);
+
+        // 2. Tactile Metal Rocker / Switch Knob
+        float thumbDiameter = toggleH - 4.0f;
+        float thumbX = button.getToggleState() 
+            ? (toggleArea.getRight() - thumbDiameter - 2.0f)
+            : (toggleArea.getX() + 2.0f);
+        float thumbY = toggleArea.getY() + 2.0f;
+
+        juce::ColourGradient knobGrad(
+            button.getToggleState() ? goldHighlight : juce::Colour(0xffc8c9cc),
+            thumbX, thumbY,
+            button.getToggleState() ? goldAccent.darker(0.4f) : juce::Colour(0xff4a4c52),
+            thumbX + thumbDiameter, thumbY + thumbDiameter, false);
+        g.setGradientFill(knobGrad);
+        g.fillEllipse(thumbX, thumbY, thumbDiameter, thumbDiameter);
+        g.setColour(juce::Colours::black.withAlpha(0.6f));
+        g.drawEllipse(thumbX, thumbY, thumbDiameter, thumbDiameter, 1.0f);
+
+        // 3. Label text
+        auto textArea = bounds.withTrimmedLeft(toggleW + 8.0f);
+        g.setColour(button.getToggleState() ? goldHighlight : textOffWhite.withAlpha(0.7f));
+        g.setFont(juce::Font("Georgia", 11.0f, juce::Font::bold));
+        g.drawText(button.getButtonText(), textArea.toNearestInt(), juce::Justification::centredLeft, true);
+    }
+
     static void draw12AX7Tube(juce::Graphics& g, juce::Rectangle<float> bounds, float glowAmount)
     {
         float cx = bounds.getCentreX();

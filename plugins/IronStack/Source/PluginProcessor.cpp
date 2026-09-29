@@ -80,6 +80,15 @@ IronStackAudioProcessor::createParameterLayout() {
                                                          10.0f, 5.0f));
   layout.add(std::make_unique<juce::AudioParameterFloat>("treble", "Treble",
                                                          0.0f, 10.0f, 5.0f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("presence", "Presence",
+                                                         0.0f, 10.0f, 5.0f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("tight", "Tight",
+                                                         0.0f, 10.0f, 2.5f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("sag", "Sag",
+                                                         0.0f, 10.0f, 5.0f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>("spread", "Stereo Spread",
+                                                         0.0f, 100.0f, 100.0f)); // % spread
+  layout.add(std::make_unique<juce::AudioParameterBool>("bright", "Bright Switch", false));
   layout.add(std::make_unique<juce::AudioParameterFloat>("volume", "Volume",
                                                          0.0f, 1.0f, 0.5f));
 
@@ -126,11 +135,18 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   float bass = *apvts.getRawParameterValue("bass");
   float mid = *apvts.getRawParameterValue("mid");
   float treble = *apvts.getRawParameterValue("treble");
+  float presence = *apvts.getRawParameterValue("presence");
+  float tight = *apvts.getRawParameterValue("tight");
+  float sag = *apvts.getRawParameterValue("sag");
+  float spread = *apvts.getRawParameterValue("spread");
+  bool bright = *apvts.getRawParameterValue("bright") > 0.5f;
   float vol = *apvts.getRawParameterValue("volume");
 
   auto selectedModel = static_cast<ToneStack::Model>(juce::jlimit(0, 9, modelIdx));
   toneStackL.setModel(selectedModel);
   toneStackR.setModel(selectedModel);
+  toneStackL.setBright(bright);
+  toneStackR.setBright(bright);
 
   // Set preamp tube staging voicing: Bass head vs Guitar lead
   bool isBassHead = (selectedModel == ToneStack::Model::FenderBassman ||
@@ -145,9 +161,17 @@ void IronStackAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
   auto selectedCab = static_cast<Cabinet::Model>(juce::jlimit(0, 11, cabIdx));
   cabinetL.setModel(selectedCab);
   cabinetR.setModel(selectedCab);
+  cabinetL.setPresence(presence);
+  cabinetR.setPresence(presence);
+  cabinetL.setStereoSpread(spread);
+  cabinetR.setStereoSpread(spread);
 
   inputTubeL.setDrive(driveDb);
   inputTubeR.setDrive(driveDb);
+  inputTubeL.setTight(tight);
+  inputTubeR.setTight(tight);
+  inputTubeL.setSag(sag);
+  inputTubeR.setSag(sag);
 
   toneStackL.setKnobs(bass, mid, treble);
   toneStackR.setKnobs(bass, mid, treble);

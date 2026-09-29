@@ -123,6 +123,20 @@ public:
         updateFilters();
     }
 
+    void setPresence(float presence0to10) {
+        // presence = 5.0 -> nominal cabinet profile
+        // presence = 0.0 -> -6 dB darker cone roll-off
+        // presence = 10.0 -> +6 dB upper harmonic bite
+        presenceTrimDb = (juce::jlimit(0.0f, 10.0f, presence0to10) - 5.0f) * 1.2f;
+        updateFilters();
+    }
+
+    void setStereoSpread(float spread0to100) {
+        // spread0to100: 0% = mono coherent, 100% = full acoustic mic spread
+        spreadAmount = juce::jlimit(0.0f, 1.0f, spread0to100 / 100.0f);
+        updateFilters();
+    }
+
     inline float processSample(float input) noexcept {
         if (currentModel == Model::Bypass)
             return input;
@@ -164,7 +178,7 @@ public:
 
         double w0_pres = 2.0 * M_PI * profile.presenceFreq / sampleRate;
         double a_pres = std::sin(w0_pres) / (2.0 * profile.presenceQ);
-        double A_pres = std::pow(10.0, profile.presenceGainDb / 40.0);
+        double A_pres = std::pow(10.0, (profile.presenceGainDb + presenceTrimDb) / 40.0);
         std::complex<double> h_pres = ( (1.0 + a_pres*A_pres) - 2.0*std::cos(w0_pres)*z1 + (1.0 - a_pres*A_pres)*z2 ) /
                                      ( (1.0 + a_pres/A_pres) - 2.0*std::cos(w0_pres)*z1 + (1.0 - a_pres/A_pres)*z2 );
 
@@ -189,8 +203,8 @@ private:
         if (currentModel == Model::Bypass)
             return;
 
-        // Subtle stereo microphone spread between Left and Right capsules
-        float spread = (channel == Channel::Right) ? 1.035f : 1.0f;
+        // Dynamic stereo microphone spread between Left and Right capsules
+        float spread = (channel == Channel::Right) ? (1.0f + 0.035f * spreadAmount) : 1.0f;
 
         float hp = juce::jlimit(20.0f, static_cast<float>(sampleRate * 0.45), profile.hpFreq * spread);
         float thump = juce::jlimit(40.0f, static_cast<float>(sampleRate * 0.45), profile.thumpFreq * spread);
@@ -208,7 +222,7 @@ private:
             sampleRate, mid, profile.midQ, std::pow(10.0f, profile.midGainDb / 20.0f)));
 
         presenceFilter.setCoefficients(juce::IIRCoefficients::makePeakFilter(
-            sampleRate, presence, profile.presenceQ, std::pow(10.0f, profile.presenceGainDb / 20.0f)));
+            sampleRate, presence, profile.presenceQ, std::pow(10.0f, (profile.presenceGainDb + presenceTrimDb) / 20.0f)));
 
         shimmerFilter.setCoefficients(juce::IIRCoefficients::makePeakFilter(
             sampleRate, shimmer, profile.shimmerQ, std::pow(10.0f, profile.shimmerGainDb / 20.0f)));
@@ -222,6 +236,8 @@ private:
     Channel channel = Channel::Left;
     Model currentModel = Model::Jensen_4x10;
     AcousticProfile profile;
+    float presenceTrimDb = 0.0f;
+    float spreadAmount = 1.0f;
 
     juce::IIRFilter hpFilter;
     juce::IIRFilter thumpFilter;

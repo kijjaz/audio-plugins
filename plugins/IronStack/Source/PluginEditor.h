@@ -29,22 +29,38 @@ private:
 
   // Rotary Knobs (Carbon & Gold Pro Console)
   juce::Slider driveKnob;
+  juce::Slider tightKnob;
+  juce::Slider sagKnob;
   juce::Slider bassKnob;
   juce::Slider midKnob;
   juce::Slider trebleKnob;
+  juce::Slider presenceKnob;
+  juce::Slider spreadKnob;
   juce::Slider volumeKnob;
 
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> driveAttachment;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> tightAttachment;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sagAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> bassAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> midAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trebleAttachment;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> presenceAttachment;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> spreadAttachment;
   std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
 
   juce::Label driveLabel;
+  juce::Label tightLabel;
+  juce::Label sagLabel;
   juce::Label bassLabel;
   juce::Label midLabel;
   juce::Label trebleLabel;
+  juce::Label presenceLabel;
+  juce::Label spreadLabel;
   juce::Label volumeLabel;
+
+  // Vintage Switches
+  juce::ToggleButton brightToggle;
+  std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> brightAttachment;
 
   // Kinetic Tube Glow State
   float tubeGlow = 0.25f;

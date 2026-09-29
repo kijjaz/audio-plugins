@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 # Project Name
-project(IronStack VERSION 1.0.0 LANGUAGES CXX C)
+project(IronStack VERSION 0.0.2 LANGUAGES CXX C)
 
 # --- Standard ---
 set(CMAKE_CXX_STANDARD 17)
