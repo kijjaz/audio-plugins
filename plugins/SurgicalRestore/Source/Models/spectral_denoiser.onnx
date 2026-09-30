@@ -1,0 +1,679 @@
+
+pytorch2.14.1:™Ü
+î
+spectrogram_log_mag
+enc1.0.weight
+enc1.0.biasgetitemnode_Conv_95"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†J‚
+	namespace‘: spectral_model.SpectralMaskUnet/enc1: torch.nn.modules.container.Sequential/enc1.1: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training: aten._native_batch_norm_legit_no_training.defaultJG
+!pkg.onnxscript.rewriter.rule_name"FuseBatchNormIntoConv, FuseConvPadJŒ
+pkg.torch.onnx.class_hierarchy´['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J†
+pkg.torch.onnx.fx_nodeÖ%_native_batch_norm_legit_no_training : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d, %p_enc1_1_weight, %p_enc1_1_bias, %b_enc1_1_running_mean, %b_enc1_1_running_var, 0.1, 1e-05), kwargs = {})J\
+pkg.torch.onnx.name_scopes>['', 'enc1', 'enc1.1', '_native_batch_norm_legit_no_training']JŒ
+pkg.torch.onnx.stack_traceØFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 69, in forward
+    e1 = self.enc1(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+˛	
+getitem
+leaky_relunode_leaky_relu"	LeakyRelu*
+alphaÕÃL>†J≠
+	namespaceü: spectral_model.SpectralMaskUnet/enc1: torch.nn.modules.container.Sequential/enc1.2: torch.nn.modules.activation.LeakyReLU/leaky_relu: aten.leaky_relu.defaultJ≥
+pkg.torch.onnx.class_hierarchyê['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jî
+pkg.torch.onnx.fx_nodez%leaky_relu : [num_users=2] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem, 0.2), kwargs = {})JB
+pkg.torch.onnx.name_scopes$['', 'enc1', 'enc1.2', 'leaky_relu']J¯
+pkg.torch.onnx.stack_traceŸFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 69, in forward
+    e1 = self.enc1(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+â
+
+leaky_relu
+enc2.0.weight
+enc2.0.bias	getitem_3node_Conv_88"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†J‰
+	namespace÷: spectral_model.SpectralMaskUnet/enc2: torch.nn.modules.container.Sequential/enc2.1: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_1: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJŒ
+pkg.torch.onnx.class_hierarchy´['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J§
+pkg.torch.onnx.fx_nodeâ%_native_batch_norm_legit_no_training_1 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_1, %p_enc2_1_weight, %p_enc2_1_bias, %b_enc2_1_running_mean, %b_enc2_1_running_var, 0.1, 1e-05), kwargs = {})J^
+pkg.torch.onnx.name_scopes@['', 'enc2', 'enc2.1', '_native_batch_norm_legit_no_training_1']Jœ
+pkg.torch.onnx.stack_trace∞File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 70, in forward
+    e2 = self.enc2(e1)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ç
+
+	getitem_3leaky_relu_1node_leaky_relu_1"	LeakyRelu*
+alphaÕÃL>†JØ
+	namespace°: spectral_model.SpectralMaskUnet/enc2: torch.nn.modules.container.Sequential/enc2.2: torch.nn.modules.activation.LeakyReLU/leaky_relu_1: aten.leaky_relu.defaultJ≥
+pkg.torch.onnx.class_hierarchyê['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_1 : [num_users=2] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_3, 0.2), kwargs = {})JD
+pkg.torch.onnx.name_scopes&['', 'enc2', 'enc2.2', 'leaky_relu_1']J˘
+pkg.torch.onnx.stack_trace⁄File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 70, in forward
+    e2 = self.enc2(e1)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+ã
+leaky_relu_1
+enc3.0.weight
+enc3.0.bias	getitem_6node_Conv_89"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†J‰
+	namespace÷: spectral_model.SpectralMaskUnet/enc3: torch.nn.modules.container.Sequential/enc3.1: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_2: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJŒ
+pkg.torch.onnx.class_hierarchy´['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J§
+pkg.torch.onnx.fx_nodeâ%_native_batch_norm_legit_no_training_2 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_2, %p_enc3_1_weight, %p_enc3_1_bias, %b_enc3_1_running_mean, %b_enc3_1_running_var, 0.1, 1e-05), kwargs = {})J^
+pkg.torch.onnx.name_scopes@['', 'enc3', 'enc3.1', '_native_batch_norm_legit_no_training_2']Jœ
+pkg.torch.onnx.stack_trace∞File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 71, in forward
+    e3 = self.enc3(e2)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ç
+
+	getitem_6leaky_relu_2node_leaky_relu_2"	LeakyRelu*
+alphaÕÃL>†JØ
+	namespace°: spectral_model.SpectralMaskUnet/enc3: torch.nn.modules.container.Sequential/enc3.2: torch.nn.modules.activation.LeakyReLU/leaky_relu_2: aten.leaky_relu.defaultJ≥
+pkg.torch.onnx.class_hierarchyê['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_2 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_6, 0.2), kwargs = {})JD
+pkg.torch.onnx.name_scopes&['', 'enc3', 'enc3.2', 'leaky_relu_2']J˘
+pkg.torch.onnx.stack_trace⁄File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 71, in forward
+    e3 = self.enc3(e2)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+Ã
+leaky_relu_2
+bottleneck.0.weight
+bottleneck.0.bias	getitem_9node_Conv_90"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†J
+	namespace‚: spectral_model.SpectralMaskUnet/bottleneck: torch.nn.modules.container.Sequential/bottleneck.1: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_3: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJŒ
+pkg.torch.onnx.class_hierarchy´['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']Jº
+pkg.torch.onnx.fx_node°%_native_batch_norm_legit_no_training_3 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_3, %p_bottleneck_1_weight, %p_bottleneck_1_bias, %b_bottleneck_1_running_mean, %b_bottleneck_1_running_var, 0.1, 1e-05), kwargs = {})Jj
+pkg.torch.onnx.name_scopesL['', 'bottleneck', 'bottleneck.1', '_native_batch_norm_legit_no_training_3']J‘
+pkg.torch.onnx.stack_traceµFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 73, in forward
+    b = self.bottleneck(e3)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+™
+
+	getitem_9leaky_relu_3node_leaky_relu_3"	LeakyRelu*
+alphaÕÃL>†Jª
+	namespace≠: spectral_model.SpectralMaskUnet/bottleneck: torch.nn.modules.container.Sequential/bottleneck.2: torch.nn.modules.activation.LeakyReLU/leaky_relu_3: aten.leaky_relu.defaultJ≥
+pkg.torch.onnx.class_hierarchyê['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_3 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_9, 0.2), kwargs = {})JP
+pkg.torch.onnx.name_scopes2['', 'bottleneck', 'bottleneck.2', 'leaky_relu_3']J˛
+pkg.torch.onnx.stack_traceﬂFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 73, in forward
+    b = self.bottleneck(e3)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+å	
+leaky_relu_3
+
+up2.weight
+up2.biasconvolutionnode_convolution"ConvTranspose*
+group†*
+pads@@ @@ †*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†*
+output_padding@ @ †J
+	namespacer: spectral_model.SpectralMaskUnet/up2: torch.nn.modules.conv.ConvTranspose2d/convolution: aten.convolution.defaultJä
+pkg.torch.onnx.class_hierarchyh['spectral_model.SpectralMaskUnet', 'torch.nn.modules.conv.ConvTranspose2d', 'aten.convolution.default']J‹
+pkg.torch.onnx.fx_node¡%convolution : [num_users=1] = call_function[target=torch.ops.aten.convolution.default](args = (%leaky_relu_3, %p_up2_weight, %p_up2_bias, [2, 1], [1, 0], [1, 1], True, [0, 0], 1), kwargs = {})J8
+pkg.torch.onnx.name_scopes['', 'up2', 'convolution']JÇ
+pkg.torch.onnx.stack_trace„File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 75, in forward
+    u2 = self.up2(b)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 1198, in forward
+    return F.conv_transpose2d(
+¯
+convolution
+leaky_relu_1catnode_cat"Concat*
+axis†JD
+	namespace7: spectral_model.SpectralMaskUnet/cat: aten.cat.defaultJY
+pkg.torch.onnx.class_hierarchy7['spectral_model.SpectralMaskUnet', 'aten.cat.default']Jô
+pkg.torch.onnx.fx_node%cat : [num_users=1] = call_function[target=torch.ops.aten.cat.default](args = ([%convolution, %leaky_relu_1], 1), kwargs = {})J)
+pkg.torch.onnx.name_scopes['', 'cat']JŒ
+pkg.torch.onnx.stack_traceØFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 79, in forward
+    d2 = self.dec2(torch.cat([u2, e2], dim=1))
+õ
+cat
+dec2.0.weight
+dec2.0.bias
+getitem_12node_Conv_91"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†J‰
+	namespace÷: spectral_model.SpectralMaskUnet/dec2: torch.nn.modules.container.Sequential/dec2.1: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_4: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJŒ
+pkg.torch.onnx.class_hierarchy´['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J§
+pkg.torch.onnx.fx_nodeâ%_native_batch_norm_legit_no_training_4 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_4, %p_dec2_1_weight, %p_dec2_1_bias, %b_dec2_1_running_mean, %b_dec2_1_running_var, 0.1, 1e-05), kwargs = {})J^
+pkg.torch.onnx.name_scopes@['', 'dec2', 'dec2.1', '_native_batch_norm_legit_no_training_4']JÁ
+pkg.torch.onnx.stack_trace»File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 79, in forward
+    d2 = self.dec2(torch.cat([u2, e2], dim=1))
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ß
+
+
+getitem_12leaky_relu_4node_leaky_relu_4"	LeakyRelu*
+alphaÕÃL>†JØ
+	namespace°: spectral_model.SpectralMaskUnet/dec2: torch.nn.modules.container.Sequential/dec2.2: torch.nn.modules.activation.LeakyReLU/leaky_relu_4: aten.leaky_relu.defaultJ≥
+pkg.torch.onnx.class_hierarchyê['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jô
+pkg.torch.onnx.fx_node%leaky_relu_4 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_12, 0.2), kwargs = {})JD
+pkg.torch.onnx.name_scopes&['', 'dec2', 'dec2.2', 'leaky_relu_4']Jë
+pkg.torch.onnx.stack_traceÚFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 79, in forward
+    d2 = self.dec2(torch.cat([u2, e2], dim=1))
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+ò	
+leaky_relu_4
+
+up1.weight
+up1.biasconvolution_1node_convolution_1"ConvTranspose*
+group†*
+pads@@ @@ †*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†*
+output_padding@ @ †JÅ
+	namespacet: spectral_model.SpectralMaskUnet/up1: torch.nn.modules.conv.ConvTranspose2d/convolution_1: aten.convolution.defaultJä
+pkg.torch.onnx.class_hierarchyh['spectral_model.SpectralMaskUnet', 'torch.nn.modules.conv.ConvTranspose2d', 'aten.convolution.default']Jﬁ
+pkg.torch.onnx.fx_node√%convolution_1 : [num_users=1] = call_function[target=torch.ops.aten.convolution.default](args = (%leaky_relu_4, %p_up1_weight, %p_up1_bias, [2, 1], [1, 0], [1, 1], True, [0, 0], 1), kwargs = {})J:
+pkg.torch.onnx.name_scopes['', 'up1', 'convolution_1']JÉ
+pkg.torch.onnx.stack_trace‰File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 81, in forward
+    u1 = self.up1(d2)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 1198, in forward
+    return F.conv_transpose2d(
+É
+convolution_1
+
+leaky_relucat_1
+node_cat_1"Concat*
+axis†JF
+	namespace9: spectral_model.SpectralMaskUnet/cat_1: aten.cat.defaultJY
+pkg.torch.onnx.class_hierarchy7['spectral_model.SpectralMaskUnet', 'aten.cat.default']Jú
+pkg.torch.onnx.fx_nodeÅ%cat_1 : [num_users=1] = call_function[target=torch.ops.aten.cat.default](args = ([%convolution_1, %leaky_relu], 1), kwargs = {})J+
+pkg.torch.onnx.name_scopes['', 'cat_1']JŒ
+pkg.torch.onnx.stack_traceØFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 84, in forward
+    d1 = self.dec1(torch.cat([u1, e1], dim=1))
+ù
+cat_1
+dec1.0.weight
+dec1.0.bias
+getitem_15node_Conv_92"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†J‰
+	namespace÷: spectral_model.SpectralMaskUnet/dec1: torch.nn.modules.container.Sequential/dec1.1: torch.nn.modules.batchnorm.BatchNorm2d/_native_batch_norm_legit_no_training_5: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJŒ
+pkg.torch.onnx.class_hierarchy´['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm2d', 'aten._native_batch_norm_legit_no_training.default']J§
+pkg.torch.onnx.fx_nodeâ%_native_batch_norm_legit_no_training_5 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv2d_5, %p_dec1_1_weight, %p_dec1_1_bias, %b_dec1_1_running_mean, %b_dec1_1_running_var, 0.1, 1e-05), kwargs = {})J^
+pkg.torch.onnx.name_scopes@['', 'dec1', 'dec1.1', '_native_batch_norm_legit_no_training_5']JÁ
+pkg.torch.onnx.stack_trace»File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 84, in forward
+    d1 = self.dec1(torch.cat([u1, e1], dim=1))
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+ß
+
+
+getitem_15leaky_relu_5node_leaky_relu_5"	LeakyRelu*
+alphaÕÃL>†JØ
+	namespace°: spectral_model.SpectralMaskUnet/dec1: torch.nn.modules.container.Sequential/dec1.2: torch.nn.modules.activation.LeakyReLU/leaky_relu_5: aten.leaky_relu.defaultJ≥
+pkg.torch.onnx.class_hierarchyê['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jô
+pkg.torch.onnx.fx_node%leaky_relu_5 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_15, 0.2), kwargs = {})JD
+pkg.torch.onnx.name_scopes&['', 'dec1', 'dec1.2', 'leaky_relu_5']Jë
+pkg.torch.onnx.stack_traceÚFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 84, in forward
+    d1 = self.dec1(torch.cat([u1, e1], dim=1))
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+Å
+leaky_relu_5
+head.0.weight
+head.0.biasconv2d_6node_conv2d_6"Conv*
+group†*
+pads@@@@†*
+kernel_shape@@†*
+strides@@†*
+auto_pad"NOTSET†*
+	dilations@@†Jû
+	namespaceê: spectral_model.SpectralMaskUnet/head: torch.nn.modules.container.Sequential/head.0: torch.nn.modules.conv.Conv2d/conv2d_6: aten.conv2d.defaultJ¶
+pkg.torch.onnx.class_hierarchyÉ['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.conv.Conv2d', 'aten.conv2d.default']J¡
+pkg.torch.onnx.fx_node¶%conv2d_6 : [num_users=1] = call_function[target=torch.ops.aten.conv2d.default](args = (%leaky_relu_5, %p_head_0_weight, %p_head_0_bias, [1, 1], [1, 1]), kwargs = {})J@
+pkg.torch.onnx.name_scopes"['', 'head', 'head.0', 'conv2d_6']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 86, in forward
+    mask = self.head(d1)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 565, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+Æ	
+conv2d_6sigmoidnode_sigmoid"SigmoidJ•
+	namespaceó: spectral_model.SpectralMaskUnet/head: torch.nn.modules.container.Sequential/head.1: torch.nn.modules.activation.Sigmoid/sigmoid: aten.sigmoid.defaultJÆ
+pkg.torch.onnx.class_hierarchyã['spectral_model.SpectralMaskUnet', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.Sigmoid', 'aten.sigmoid.default']Jã
+pkg.torch.onnx.fx_nodeq%sigmoid : [num_users=1] = call_function[target=torch.ops.aten.sigmoid.default](args = (%conv2d_6,), kwargs = {})J?
+pkg.torch.onnx.name_scopes!['', 'head', 'head.1', 'sigmoid']JŸ
+pkg.torch.onnx.stack_trace∫File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 86, in forward
+    mask = self.head(d1)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 361, in forward
+    return torch.sigmoid(input)
+Å
+sigmoid
+val_58
+val_62
+val_66
+val_67predicted_gain_masknode_slice_2"SliceJI
+	namespace<: spectral_model.SpectralMaskUnet/slice_2: aten.slice.TensorJZ
+pkg.torch.onnx.class_hierarchy8['spectral_model.SpectralMaskUnet', 'aten.slice.Tensor']Jë
+pkg.torch.onnx.fx_nodew%slice_2 : [num_users=1] = call_function[target=torch.ops.aten.slice.Tensor](args = (%slice_1, 2, 0, 513), kwargs = {})J-
+pkg.torch.onnx.name_scopes['', 'slice_2']J¡
+pkg.torch.onnx.stack_trace¢File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/spectral_model.py", line 88, in forward
+    mask = mask[:, :, :orig_F, :]
+main_graph*dBenc1.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset1632j
+length1440p*sBenc1.0.biasJ`8~3ø—?/øAÄ*?¯Mø^T>?Ï?T8?ë§Å=Äf∞>‚H‰>áïΩyY˝æ3D!?ˇﬂ?˚`ß>∆"ø0î—>%"??—?√É9?‡ƒ9?Ë	>≥O‹>c 1?*f0Benc2.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset21504j
+length69120p*‘0Benc2.0.biasJ¿ΩG±?‹¯
+øÿ»ÖΩ+ÕÉΩXœ¶>¯åT?«±øsˆª>ølÙÑæ.ßøàáﬂΩÍëBø
+€ÌΩî[H?ü?ÑÒx?ÙCR>jÇ_?8?<˚Ä>fø¶Ú§?˙?⁄°¥>xé?úñ>∑Ûﬂ>'
+≠æadÇ>¶kBæ≈=Póı?lÓå>√™?ó7øŒ«PøW9∞Ωﬁ=?Ô‡Ç=a9>öàæ¯TâøÅÅø2≈ÀæŒ»‰>•:jæv—«>*h`0Benc3.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset233472j
+length276480p*X`Benc3.0.biasj'
+locationspectral_denoiser.onnx.dataj
+offset0j
+length384p*n``Bbottleneck.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset786432j
+length552960p*``Bbottleneck.0.biasj'
+locationspectral_denoiser.onnx.dataj
+offset384j
+length384p*d`0B
+up2.weightj'
+locationspectral_denoiser.onnx.dataj
+offset159744j
+length73728p*—0Bup2.biasJ¿#∫='˙S>\&>ì<÷°âΩ˘<]æ]XÄº]¶=o–Ω^ıΩ=“BΩ=Èæ¡>4ƒæ¥É´=ªfΩàïæ@:ßº#Ÿ¡Ω˝ÁΩÇ+”Ω'ıæÿ%æÔQ^<©ïÜºlfê=∂≠=Y‚æ!ÔO>;⁄-=9*æ:’ÈΩhÃΩBæ=á·™º31ŒΩµ¢Á;1˚®=ºéæ]ç æ˙=^F®ªœ∑L=µú¯∫T >∫Qº+®>=JÍΩ*h0`Bdec2.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset509952j
+length276480p*‘0Bdec2.0.biasJ¿C[ÕæëÂã?›ﬂãΩW*≤ø˜&æ“o+?¨ì„æﬂ®®?£≠?m—ì>T¬w?gV∂? )> ».æâ∂~?çΩ|?xä»>*î?ÜÚ`>=úÈ?H_√?˛NMø}Ú¥Ω⁄wÉ?˘Û™>%$@8 §?r‘Çø¯â?¶S°>;™’?˚kæ=õø¶mø{ˇj?,ï?äÙéºò‘?$K˛ΩØIŒ?tx´?‚ı“=’˘#?∫ªù?0óÜ>qıs?}å%? üΩ*b0B
+up1.weightj'
+locationspectral_denoiser.onnx.dataj
+offset3072j
+length18432p*pBup1.biasJ`'Ä>∆=´ΩBXòº≈%Üª¡*ìºŸ•=ó@JΩÍRÜΩπŒ,>êfõ;°√∏=‰Ïæï°=’ª4Ω¡2âΩ=pømΩ›É^ºÔ´⁄ΩoCM=≈À<Ø˙†=k
+(æàs=*f0Bdec1.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset90624j
+length69120p*sBdec1.0.biasJ`8h=? øë™æ∏∞?æÕ6?∆¯	?>Á= R„>f#g?';‡>’æíæ`B»>Q?ô]0øî®]?tÉÚæõu«>ƒ\–ºíL?…¨	?ã‘o>:©?ÎxêæÌ¡Ò>*bBhead.0.weightj'
+locationspectral_denoiser.onnx.dataj
+offset768j
+length864p*Bhead.0.biasJE^¿º*Bval_58J        *Bval_62J      *Bval_66J       *Bval_67J       Z‰
+spectrogram_log_mag'
+%!
+batch
+
+Å
+time_frames"=
+/pkg.torch.export.graph_signature.InputSpec.kind
+USER_INPUT"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"&
+!pkg.torch.onnx.original_node_namexbl
+predicted_gain_mask'
+%!
+batch
+
+Å
+time_frames",
+!pkg.torch.onnx.original_node_nameslice_3j'
+enc1.0.weight
+
+
+
+
+j
+enc1.0.bias
+
+
+j'
+enc2.0.weight
+
+0
+
+
+j
+enc2.0.bias
+
+
+0j'
+enc3.0.weight
+
+`
+0
+
+j
+enc3.0.bias
+
+
+`j-
+bottleneck.0.weight
+
+`
+`
+
+j
+bottleneck.0.bias
+
+
+`j‘
+
+up2.weight
+
+`
+0
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"1
+!pkg.torch.onnx.original_node_namep_up2_weightjƒ
+up2.bias
+
+
+0"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"/
+!pkg.torch.onnx.original_node_name
+p_up2_biasj'
+dec2.0.weight
+
+0
+`
+
+j
+dec2.0.bias
+
+
+0j‘
+
+up1.weight
+
+0
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"1
+!pkg.torch.onnx.original_node_namep_up1_weightjƒ
+up1.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"/
+!pkg.torch.onnx.original_node_name
+p_up1_biasj'
+dec1.0.weight
+
+
+0
+
+j
+dec1.0.bias
+
+
+j⁄
+head.0.weight
+
+
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"4
+!pkg.torch.onnx.original_node_namep_head_0_weightj 
+head.0.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"2
+!pkg.torch.onnx.original_node_namep_head_0_biasj\
+val_58
+
+
+"F
+$pkg.onnxscript.optimizer.folded_from['val_44', 'val_56', 'val_57']j\
+val_62
+
+
+"F
+$pkg.onnxscript.optimizer.folded_from['val_59', 'val_60', 'val_61']j\
+val_66
+
+
+"F
+$pkg.onnxscript.optimizer.folded_from['val_63', 'val_64', 'val_65']j
+val_67
+
+
+j2
+getitem'
+%!
+batch
+
+Ñ
+time_framesj5
+
+leaky_relu'
+%!
+batch
+
+Ñ
+time_framesj4
+	getitem_3'
+%!
+batch
+0
+Ç
+time_framesj7
+leaky_relu_1'
+%!
+batch
+0
+Ç
+time_framesj4
+	getitem_6'
+%!
+batch
+`
+Å
+time_framesj7
+leaky_relu_2'
+%!
+batch
+`
+Å
+time_framesj4
+	getitem_9'
+%!
+batch
+`
+Å
+time_framesj7
+leaky_relu_3'
+%!
+batch
+`
+Å
+time_framesj6
+convolution'
+%!
+batch
+0
+Ç
+time_framesj.
+cat'
+%!
+batch
+`
+Ç
+time_framesj5
+
+getitem_12'
+%!
+batch
+0
+Ç
+time_framesj7
+leaky_relu_4'
+%!
+batch
+0
+Ç
+time_framesj8
+convolution_1'
+%!
+batch
+
+Ñ
+time_framesj0
+cat_1'
+%!
+batch
+0
+Ñ
+time_framesj5
+
+getitem_15'
+%!
+batch
+
+Ñ
+time_framesj7
+leaky_relu_5'
+%!
+batch
+
+Ñ
+time_framesj3
+conv2d_6'
+%!
+batch
+
+Ñ
+time_framesj2
+sigmoid'
+%!
+batch
+
+Ñ
+time_framesÇ◊
+0pkg.torch.export.ExportedProgram.graph_signature¢
+# inputs
+p_enc1_0_weight: PARAMETER target='enc1.0.weight'
+p_enc1_0_bias: PARAMETER target='enc1.0.bias'
+p_enc1_1_weight: PARAMETER target='enc1.1.weight'
+p_enc1_1_bias: PARAMETER target='enc1.1.bias'
+p_enc2_0_weight: PARAMETER target='enc2.0.weight'
+p_enc2_0_bias: PARAMETER target='enc2.0.bias'
+p_enc2_1_weight: PARAMETER target='enc2.1.weight'
+p_enc2_1_bias: PARAMETER target='enc2.1.bias'
+p_enc3_0_weight: PARAMETER target='enc3.0.weight'
+p_enc3_0_bias: PARAMETER target='enc3.0.bias'
+p_enc3_1_weight: PARAMETER target='enc3.1.weight'
+p_enc3_1_bias: PARAMETER target='enc3.1.bias'
+p_bottleneck_0_weight: PARAMETER target='bottleneck.0.weight'
+p_bottleneck_0_bias: PARAMETER target='bottleneck.0.bias'
+p_bottleneck_1_weight: PARAMETER target='bottleneck.1.weight'
+p_bottleneck_1_bias: PARAMETER target='bottleneck.1.bias'
+p_up2_weight: PARAMETER target='up2.weight'
+p_up2_bias: PARAMETER target='up2.bias'
+p_dec2_0_weight: PARAMETER target='dec2.0.weight'
+p_dec2_0_bias: PARAMETER target='dec2.0.bias'
+p_dec2_1_weight: PARAMETER target='dec2.1.weight'
+p_dec2_1_bias: PARAMETER target='dec2.1.bias'
+p_up1_weight: PARAMETER target='up1.weight'
+p_up1_bias: PARAMETER target='up1.bias'
+p_dec1_0_weight: PARAMETER target='dec1.0.weight'
+p_dec1_0_bias: PARAMETER target='dec1.0.bias'
+p_dec1_1_weight: PARAMETER target='dec1.1.weight'
+p_dec1_1_bias: PARAMETER target='dec1.1.bias'
+p_head_0_weight: PARAMETER target='head.0.weight'
+p_head_0_bias: PARAMETER target='head.0.bias'
+b_enc1_1_running_mean: BUFFER target='enc1.1.running_mean' persistent=True
+b_enc1_1_running_var: BUFFER target='enc1.1.running_var' persistent=True
+b_enc1_1_num_batches_tracked: BUFFER target='enc1.1.num_batches_tracked' persistent=True
+b_enc2_1_running_mean: BUFFER target='enc2.1.running_mean' persistent=True
+b_enc2_1_running_var: BUFFER target='enc2.1.running_var' persistent=True
+b_enc2_1_num_batches_tracked: BUFFER target='enc2.1.num_batches_tracked' persistent=True
+b_enc3_1_running_mean: BUFFER target='enc3.1.running_mean' persistent=True
+b_enc3_1_running_var: BUFFER target='enc3.1.running_var' persistent=True
+b_enc3_1_num_batches_tracked: BUFFER target='enc3.1.num_batches_tracked' persistent=True
+b_bottleneck_1_running_mean: BUFFER target='bottleneck.1.running_mean' persistent=True
+b_bottleneck_1_running_var: BUFFER target='bottleneck.1.running_var' persistent=True
+b_bottleneck_1_num_batches_tracked: BUFFER target='bottleneck.1.num_batches_tracked' persistent=True
+b_dec2_1_running_mean: BUFFER target='dec2.1.running_mean' persistent=True
+b_dec2_1_running_var: BUFFER target='dec2.1.running_var' persistent=True
+b_dec2_1_num_batches_tracked: BUFFER target='dec2.1.num_batches_tracked' persistent=True
+b_dec1_1_running_mean: BUFFER target='dec1.1.running_mean' persistent=True
+b_dec1_1_running_var: BUFFER target='dec1.1.running_var' persistent=True
+b_dec1_1_num_batches_tracked: BUFFER target='dec1.1.num_batches_tracked' persistent=True
+x: USER_INPUT
+
+# outputs
+slice_3: USER_OUTPUT
+Ç]
+2pkg.torch.export.ExportedProgram.range_constraints'{s77: VR[0, int_oo], s0: VR[0, int_oo]}B
+ 

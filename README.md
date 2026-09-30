@@ -6,7 +6,14 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ## 🚀 Available Plugins & Quick Links
 
-### 1. [Fried Tofu](plugins/FriedTofu/README.md)
+### 1. [Surgical Restore](plugins/SurgicalRestore/README.md)
+* **Type**: Neural Audio Restoration, Vintage Vinyl Denoiser & Mastering Suite (VST3 / AU / Standalone).
+* **Key Features**: 100% synthetically trained machine learning models, Mid/Side (M/S) deep scratch and anti-phase click extraction, Levinson-Durbin LPC residual inpainting, dynamic groove-chatter De-Crackle engine, and Decision-Directed neural De-Hiss with psychoacoustic Bark critical band smoothing and Harmonic Comb Shielding (protects brass, sax, and quadruple-reed overtones).
+* **Performance**: 88x real-time throughput at 96 kHz consuming ~1.1% CPU.
+
+---
+
+### 2. [Fried Tofu](plugins/FriedTofu/README.md)
 * **Type**: Wave Digital Filter (WDF) Diode Clipper & Analog Saturation.
 * **Key Features**: True one-port WDF non-linear solver with damped Newton-Raphson iteration, 4 Shockley diode models (Si 1N4148, Ge 1N34A, Schottky BAT41, Red LED), asymmetric odd/even harmonic blending, 4x polyphase oversampling, real-time oscilloscope, and dynamic static transfer curve visualizer.
 * 📦 **[Download Latest Fried Tofu Builds (macOS, Windows, Linux)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml)**

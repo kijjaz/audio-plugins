@@ -29,6 +29,8 @@ plugins/Bossman/Tone/
 # Python
 __pycache__/
 *.pyc
+.venv/
+*.pt
 
 # Node
 node_modules/

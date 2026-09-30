@@ -1,0 +1,462 @@
+
+pytorch2.14.1:ÚΩ
+≥
+
+audio_input
+net.0.weight
+
+net.0.biasconv1dnode_conv1d"Conv*
+group†*
+pads@@†*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†Jê
+	namespaceÇ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.0: torch.nn.modules.conv.Conv1d/conv1d: aten.conv1d.defaultJõ
+pkg.torch.onnx.class_hierarchyy['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']J¨
+pkg.torch.onnx.fx_nodeë%conv1d : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%x, %p_net_0_weight, %p_net_0_bias, [1], [3]), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'net', 'net.0', 'conv1d']JÂ
+pkg.torch.onnx.stack_trace∆File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 385, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+‹	
+conv1d
+leaky_relunode_leaky_relu"	LeakyRelu*
+alphaÕÃL>†J°
+	namespaceì: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.1: torch.nn.modules.activation.LeakyReLU/leaky_relu: aten.leaky_relu.defaultJ©
+pkg.torch.onnx.class_hierarchyÜ['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jì
+pkg.torch.onnx.fx_nodey%leaky_relu : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%conv1d, 0.2), kwargs = {})J@
+pkg.torch.onnx.name_scopes"['', 'net', 'net.1', 'leaky_relu']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+–
+
+leaky_relu
+net.2.weight
+
+net.2.biasgetitemnode_Conv_30"Conv*
+group†*
+pads@@†*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†J÷
+	namespace»: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.3: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJƒ
+pkg.torch.onnx.class_hierarchy°['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']Jû
+pkg.torch.onnx.fx_nodeÉ%_native_batch_norm_legit_no_training : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_1, %p_net_3_weight, %p_net_3_bias, %b_net_3_running_mean, %b_net_3_running_var, 0.1, 1e-05), kwargs = {})JZ
+pkg.torch.onnx.name_scopes<['', 'net', 'net.3', '_native_batch_norm_legit_no_training']J∆
+pkg.torch.onnx.stack_traceßFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ë	
+getitemleaky_relu_1node_leaky_relu_1"	LeakyRelu*
+alphaÕÃL>†J£
+	namespaceï: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.4: torch.nn.modules.activation.LeakyReLU/leaky_relu_1: aten.leaky_relu.defaultJ©
+pkg.torch.onnx.class_hierarchyÜ['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jñ
+pkg.torch.onnx.fx_node|%leaky_relu_1 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem, 0.2), kwargs = {})JB
+pkg.torch.onnx.name_scopes$['', 'net', 'net.4', 'leaky_relu_1']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+⁄
+leaky_relu_1
+net.5.weight
+
+net.5.bias	getitem_3node_Conv_31"Conv*
+group†*
+pads@@†*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†Jÿ
+	namespace : model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.6: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_1: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJƒ
+pkg.torch.onnx.class_hierarchy°['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']J†
+pkg.torch.onnx.fx_nodeÖ%_native_batch_norm_legit_no_training_1 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_2, %p_net_6_weight, %p_net_6_bias, %b_net_6_running_mean, %b_net_6_running_var, 0.1, 1e-05), kwargs = {})J\
+pkg.torch.onnx.name_scopes>['', 'net', 'net.6', '_native_batch_norm_legit_no_training_1']J∆
+pkg.torch.onnx.stack_traceßFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ï	
+	getitem_3leaky_relu_2node_leaky_relu_2"	LeakyRelu*
+alphaÕÃL>†J£
+	namespaceï: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.7: torch.nn.modules.activation.LeakyReLU/leaky_relu_2: aten.leaky_relu.defaultJ©
+pkg.torch.onnx.class_hierarchyÜ['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_2 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_3, 0.2), kwargs = {})JB
+pkg.torch.onnx.name_scopes$['', 'net', 'net.7', 'leaky_relu_2']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+⁄
+leaky_relu_2
+net.8.weight
+
+net.8.bias	getitem_6node_Conv_32"Conv*
+group†*
+pads@@†*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†Jÿ
+	namespace : model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.9: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_2: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJƒ
+pkg.torch.onnx.class_hierarchy°['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']J†
+pkg.torch.onnx.fx_nodeÖ%_native_batch_norm_legit_no_training_2 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_3, %p_net_9_weight, %p_net_9_bias, %b_net_9_running_mean, %b_net_9_running_var, 0.1, 1e-05), kwargs = {})J\
+pkg.torch.onnx.name_scopes>['', 'net', 'net.9', '_native_batch_norm_legit_no_training_2']J∆
+pkg.torch.onnx.stack_traceßFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ó	
+	getitem_6leaky_relu_3node_leaky_relu_3"	LeakyRelu*
+alphaÕÃL>†J§
+	namespaceñ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.10: torch.nn.modules.activation.LeakyReLU/leaky_relu_3: aten.leaky_relu.defaultJ©
+pkg.torch.onnx.class_hierarchyÜ['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_3 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_6, 0.2), kwargs = {})JC
+pkg.torch.onnx.name_scopes%['', 'net', 'net.10', 'leaky_relu_3']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+‚
+leaky_relu_3
+net.11.weight
+net.11.bias	getitem_9node_Conv_33"Conv*
+group†*
+pads@@†*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†JŸ
+	namespaceÀ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.12: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_3: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJƒ
+pkg.torch.onnx.class_hierarchy°['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']J§
+pkg.torch.onnx.fx_nodeâ%_native_batch_norm_legit_no_training_3 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_4, %p_net_12_weight, %p_net_12_bias, %b_net_12_running_mean, %b_net_12_running_var, 0.1, 1e-05), kwargs = {})J]
+pkg.torch.onnx.name_scopes?['', 'net', 'net.12', '_native_batch_norm_legit_no_training_3']J∆
+pkg.torch.onnx.stack_traceßFile "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 210, in forward
+    return F.batch_norm(
+Ó	
+	getitem_9leaky_relu_4node_leaky_relu_4"	LeakyRelu*
+alphaÕÃL>†J§
+	namespaceñ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.13: torch.nn.modules.activation.LeakyReLU/leaky_relu_4: aten.leaky_relu.defaultJ©
+pkg.torch.onnx.class_hierarchyÜ['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jò
+pkg.torch.onnx.fx_node~%leaky_relu_4 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%getitem_9, 0.2), kwargs = {})JC
+pkg.torch.onnx.name_scopes%['', 'net', 'net.13', 'leaky_relu_4']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+œ
+
+leaky_relu_4
+net.14.weight
+net.14.biasconv1d_5node_conv1d_5"Conv*
+group†*
+pads@@†*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†Jì
+	namespaceÖ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.14: torch.nn.modules.conv.Conv1d/conv1d_5: aten.conv1d.defaultJõ
+pkg.torch.onnx.class_hierarchyy['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']Jª
+pkg.torch.onnx.fx_node†%conv1d_5 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%leaky_relu_4, %p_net_14_weight, %p_net_14_bias, [1], [1]), kwargs = {})J?
+pkg.torch.onnx.name_scopes!['', 'net', 'net.14', 'conv1d_5']JÂ
+pkg.torch.onnx.stack_trace∆File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 385, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+Ï	
+conv1d_5leaky_relu_5node_leaky_relu_5"	LeakyRelu*
+alphaÕÃL>†J§
+	namespaceñ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.15: torch.nn.modules.activation.LeakyReLU/leaky_relu_5: aten.leaky_relu.defaultJ©
+pkg.torch.onnx.class_hierarchyÜ['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.activation.LeakyReLU', 'aten.leaky_relu.default']Jó
+pkg.torch.onnx.fx_node}%leaky_relu_5 : [num_users=1] = call_function[target=torch.ops.aten.leaky_relu.default](args = (%conv1d_5, 0.2), kwargs = {})JC
+pkg.torch.onnx.name_scopes%['', 'net', 'net.15', 'leaky_relu_5']J
+pkg.torch.onnx.stack_trace—File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py", line 923, in forward
+    return F.leaky_relu(input, self.negative_slope, self.inplace)
+’
+
+leaky_relu_5
+net.16.weight
+net.16.biasclick_probability_logitsnode_conv1d_6"Conv*
+group†*
+pads@ @ †*
+kernel_shape@†*
+strides@†*
+auto_pad"NOTSET†*
+	dilations@†Jì
+	namespaceÖ: model.ClickDetector1D/net: torch.nn.modules.container.Sequential/net.16: torch.nn.modules.conv.Conv1d/conv1d_6: aten.conv1d.defaultJõ
+pkg.torch.onnx.class_hierarchyy['model.ClickDetector1D', 'torch.nn.modules.container.Sequential', 'torch.nn.modules.conv.Conv1d', 'aten.conv1d.default']J±
+pkg.torch.onnx.fx_nodeñ%conv1d_6 : [num_users=1] = call_function[target=torch.ops.aten.conv1d.default](args = (%leaky_relu_5, %p_net_16_weight, %p_net_16_bias), kwargs = {})J?
+pkg.torch.onnx.name_scopes!['', 'net', 'net.16', 'conv1d_6']JÂ
+pkg.torch.onnx.stack_trace∆File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/model.py", line 51, in forward
+    return self.net(x)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py", line 259, in forward
+    input = module(input)
+  File "/Users/kijjaz/Desktop/Antigravity/2026/20260926 Audio Plugins/ml_audio_restoration/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py", line 385, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+main_graph*Z Bnet.0.weightj$
+locationclick_detector.onnx.dataj
+offset0j
+length896p*ì B
+net.0.biasJÄ!∫æ/f∂>A¸è>ä)M><->öâæKV=Ü>Å-æ$Éæ Ê—>¨AÔΩ1Ç æq≥ËºUÕÃ=/næ˙,»<‰ﬂædh<>|}5øÍë¥<·æMÎ≥æ ÜeΩÍò=:”™<ÑTCøˆ`ãæÇgÀ=qÇ>M⁄mæI#ÕΩ*ì B
+net.2.biasJÄ”l†@Åº‘øåˆY¿¡¶€@ﬁÄ?êX7@≠›h¿ ª?> uíøDæn@ÆÈLø'¡¿¢ƒﬂø’¯ó@1ù@átçΩ-˙	¿™YøEá@ΩˇÈøMÅø˛‡è¿≤ˆ@o`@DÄΩ˜√¿(´≥?XúæÔ@âÊΩò{	¿í¯Ü?*ì B
+net.5.biasJÄÇ\ä>ÿjW>.π∞=gq<qe¡>˜3Çæ U ?Jì•=Ú*?éa=•>=«ëÍ>:ó_>:m∂=X@	?.Ó>Tò<û%>Û˝%?ÚI¨>§æç>%r>vV'?@;Q<ÙÑΩ‚œ6?$•7>≥Mc=H¡<Rã=qAx>+’>*ì B
+net.8.biasJÄÚ¨=”Ö?hQ;ú?,,ø¢	øhˇ>2LÇ?	G?∏>Jù2>^ÑO>k º=F\~>£Ò>Dô¶>I.?^Hy>:Æé>/Ckæ˝vb?õp øÃBæ˙>>ƒn?v‹ºöÆj>ê
+ïæú÷î>Ín:>rr`>âÆ¸=*î Bnet.11.biasJÄÿ≠g?@4?5° ?gW/?&qòøëñ?.Ëìæ‘œ0>ˇm	@‡zí?OW>D1t>°G><´?º>2$?ü?é?ŒE>CŸ0?≥õ\?ßº∆?èÛ?eœæ±¶?‹‚?7¢ø,ç>Ë¡æ–&à>≠¯˜?Ä?*SBnet.14.biasJ@Ωü=ò±=úg >Áˆï:‘á=ª$2`Ωrjù=π1—=YÄqºx[=u 	ª7ˆ˚=¶¬8=jü">£®°=F/m=*YBnet.16.weightJ@û∏òæsúZ>˘ªB>.Æsæ*_>ﬂHx>ä<>_5æûbg>&R>I3e>¢„©æ:∆hæ *æ⁄VUæœ¬ö>*Bnet.16.biasJ'ñ5æ*_  Bnet.2.weightj$
+locationclick_detector.onnx.dataj
+offset7040j
+length20480p*`  Bnet.5.weightj$
+locationclick_detector.onnx.dataj
+offset27520j
+length20480p*`  Bnet.8.weightj$
+locationclick_detector.onnx.dataj
+offset48000j
+length20480p*a  Bnet.11.weightj$
+locationclick_detector.onnx.dataj
+offset68480j
+length20480p*^ Bnet.14.weightj$
+locationclick_detector.onnx.dataj
+offset896j
+length6144pZ”
+audio_input
+
+batch
+
+	samples"=
+/pkg.torch.export.graph_signature.InputSpec.kind
+USER_INPUT"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"&
+!pkg.torch.onnx.original_node_namexb™
+click_probability_logits
+
+batch
+
+	samples"?
+0pkg.torch.export.graph_signature.OutputSpec.kindUSER_OUTPUT"-
+!pkg.torch.onnx.original_node_nameconv1d_6j‘
+net.0.weight
+
+ 
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"3
+!pkg.torch.onnx.original_node_namep_net_0_weightj»
+
+net.0.bias
+
+
+ "<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"1
+!pkg.torch.onnx.original_node_namep_net_0_biasj
+
+net.2.bias
+
+
+ j
+
+net.5.bias
+
+
+ j
+
+net.8.bias
+
+
+ j
+net.11.bias
+
+
+ j 
+net.14.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"2
+!pkg.torch.onnx.original_node_namep_net_14_biasj÷
+net.16.weight
+
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"4
+!pkg.torch.onnx.original_node_namep_net_16_weightj 
+net.16.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"2
+!pkg.torch.onnx.original_node_namep_net_16_biasj"
+net.2.weight
+
+ 
+ 
+j"
+net.5.weight
+
+ 
+ 
+j"
+net.8.weight
+
+ 
+ 
+j#
+net.11.weight
+
+ 
+ 
+j÷
+net.14.weight
+
+
+ 
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"4
+!pkg.torch.onnx.original_node_namep_net_14_weightj(
+conv1d
+
+batch
+ 
+	samplesj,
+
+leaky_relu
+
+batch
+ 
+	samplesj)
+getitem
+
+batch
+ 
+	samplesj.
+leaky_relu_1
+
+batch
+ 
+	samplesj+
+	getitem_3
+
+batch
+ 
+	samplesj.
+leaky_relu_2
+
+batch
+ 
+	samplesj+
+	getitem_6
+
+batch
+ 
+	samplesj.
+leaky_relu_3
+
+batch
+ 
+	samplesj+
+	getitem_9
+
+batch
+ 
+	samplesj.
+leaky_relu_4
+
+batch
+ 
+	samplesj*
+conv1d_5
+
+batch
+
+	samplesj.
+leaky_relu_5
+
+batch
+
+	samplesÇî
+0pkg.torch.export.ExportedProgram.graph_signatureﬂ
+# inputs
+p_net_0_weight: PARAMETER target='net.0.weight'
+p_net_0_bias: PARAMETER target='net.0.bias'
+p_net_2_weight: PARAMETER target='net.2.weight'
+p_net_2_bias: PARAMETER target='net.2.bias'
+p_net_3_weight: PARAMETER target='net.3.weight'
+p_net_3_bias: PARAMETER target='net.3.bias'
+p_net_5_weight: PARAMETER target='net.5.weight'
+p_net_5_bias: PARAMETER target='net.5.bias'
+p_net_6_weight: PARAMETER target='net.6.weight'
+p_net_6_bias: PARAMETER target='net.6.bias'
+p_net_8_weight: PARAMETER target='net.8.weight'
+p_net_8_bias: PARAMETER target='net.8.bias'
+p_net_9_weight: PARAMETER target='net.9.weight'
+p_net_9_bias: PARAMETER target='net.9.bias'
+p_net_11_weight: PARAMETER target='net.11.weight'
+p_net_11_bias: PARAMETER target='net.11.bias'
+p_net_12_weight: PARAMETER target='net.12.weight'
+p_net_12_bias: PARAMETER target='net.12.bias'
+p_net_14_weight: PARAMETER target='net.14.weight'
+p_net_14_bias: PARAMETER target='net.14.bias'
+p_net_16_weight: PARAMETER target='net.16.weight'
+p_net_16_bias: PARAMETER target='net.16.bias'
+b_net_3_running_mean: BUFFER target='net.3.running_mean' persistent=True
+b_net_3_running_var: BUFFER target='net.3.running_var' persistent=True
+b_net_3_num_batches_tracked: BUFFER target='net.3.num_batches_tracked' persistent=True
+b_net_6_running_mean: BUFFER target='net.6.running_mean' persistent=True
+b_net_6_running_var: BUFFER target='net.6.running_var' persistent=True
+b_net_6_num_batches_tracked: BUFFER target='net.6.num_batches_tracked' persistent=True
+b_net_9_running_mean: BUFFER target='net.9.running_mean' persistent=True
+b_net_9_running_var: BUFFER target='net.9.running_var' persistent=True
+b_net_9_num_batches_tracked: BUFFER target='net.9.num_batches_tracked' persistent=True
+b_net_12_running_mean: BUFFER target='net.12.running_mean' persistent=True
+b_net_12_running_var: BUFFER target='net.12.running_var' persistent=True
+b_net_12_num_batches_tracked: BUFFER target='net.12.num_batches_tracked' persistent=True
+x: USER_INPUT
+
+# outputs
+conv1d_6: USER_OUTPUT
+Çb
+2pkg.torch.export.ExportedProgram.range_constraints,{s77: VR[0, int_oo], s53: VR[2, 2147483647]}B
+ 
