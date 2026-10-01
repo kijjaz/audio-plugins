@@ -32,9 +32,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout SurgicalRestoreAudioProcesso
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         "hf_tilt", "Air Tilt (dB)", juce::NormalisableRange<float> (0.0f, 8.0f, 0.5f), 3.0f));
 
-    // Stage 0 / Hardware Modeling: Sub-Sonic Rumble Filter
+    // Stage 0 / Hardware Modeling: Sub-Sonic Rumble Filter & Tape Azimuth
     params.push_back (std::make_unique<juce::AudioParameterBool> (
         "rumble_filter", "Rumble Filter (25Hz 18dB/oct)", true));
+    params.push_back (std::make_unique<juce::AudioParameterBool> (
+        "azimuth_align", "Auto Azimuth Align (Tape)", false));
 
     // Master / Routing
     params.push_back (std::make_unique<juce::AudioParameterBool> (
@@ -101,6 +103,7 @@ void SurgicalRestoreAudioProcessor::setCurrentProgram (int index)
             apvts.getParameter ("hiss_reduction")->setValueNotifyingHost (apvts.getParameterRange ("hiss_reduction").convertTo0to1 (14.0f));
             apvts.getParameter ("harmonic_shield")->setValueNotifyingHost (apvts.getParameterRange ("harmonic_shield").convertTo0to1 (0.85f));
             apvts.getParameter ("rumble_filter")->setValueNotifyingHost (0.0f);
+            apvts.getParameter ("azimuth_align")->setValueNotifyingHost (1.0f);
             break;
 
         case 3: // Transparent Vocal Solo
@@ -110,12 +113,15 @@ void SurgicalRestoreAudioProcessor::setCurrentProgram (int index)
             apvts.getParameter ("hiss_reduction")->setValueNotifyingHost (apvts.getParameterRange ("hiss_reduction").convertTo0to1 (8.0f));
             apvts.getParameter ("harmonic_shield")->setValueNotifyingHost (apvts.getParameterRange ("harmonic_shield").convertTo0to1 (0.95f));
             apvts.getParameter ("rumble_filter")->setValueNotifyingHost (1.0f);
+            apvts.getParameter ("azimuth_align")->setValueNotifyingHost (0.0f);
             break;
     }
 }
 
 void SurgicalRestoreAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    azimuthEngine.prepare (sampleRate);
+
     for (int ch = 0; ch < 2; ++ch)
     {
         rumbleFilter[ch].prepare (sampleRate, 25.0f);
@@ -166,6 +172,7 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     float hissDb = apvts.getRawParameterValue ("hiss_reduction")->load();
     float harmShield = apvts.getRawParameterValue ("harmonic_shield")->load();
     bool enableRumble = apvts.getRawParameterValue ("rumble_filter")->load() > 0.5f;
+    bool enableAzimuth = apvts.getRawParameterValue ("azimuth_align")->load() > 0.5f;
 
     int numSamples = buffer.getNumSamples();
     int delayBufSize = delayBuffer.getNumSamples();
@@ -202,6 +209,13 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
                 chData[i] = rumbleFilter[ch].processSample (chData[i]);
             }
         }
+    }
+
+    // Tape Azimuth & Phase Alignment (removes L/R skew before M/S or denoising)
+    if (enableAzimuth && totalNumInputChannels == 2)
+    {
+        azimuthEngine.processBlock (buffer.getWritePointer (0), buffer.getWritePointer (1), numSamples, true);
+        detectedAzimuthSkew.store (azimuthEngine.getDetectedSkewSamples());
     }
 
     // Mid/Side Processing

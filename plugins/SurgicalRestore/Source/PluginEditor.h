@@ -32,6 +32,7 @@ private:
 
     juce::ComboBox presetComboBox;
     juce::ToggleButton rumbleFilterButton;
+    juce::ToggleButton azimuthAlignButton;
     juce::ToggleButton deltaListenButton;
     juce::ToggleButton bypassButton;
 
@@ -43,6 +44,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> harmShieldAttach;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> rumbleFilterAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> azimuthAlignAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> deltaListenAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttach;
 

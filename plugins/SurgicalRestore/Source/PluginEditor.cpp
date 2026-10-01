@@ -15,7 +15,7 @@ SurgicalRestoreAudioProcessorEditor::SurgicalRestoreAudioProcessorEditor (Surgic
         addAndMakeVisible (slider);
 
         label.setText (text, juce::dontSendNotification);
-        label.setFont (juce::Font (12.0f, juce::Font::bold));
+        label.setFont (juce::FontOptions (12.0f, juce::Font::bold));
         label.setJustificationType (juce::Justification::centred);
         label.setColour (juce::Label::textColourId, sr_ui::CarbonGoldLookAndFeel::textOffWhite);
         addAndMakeVisible (label);
@@ -48,6 +48,9 @@ SurgicalRestoreAudioProcessorEditor::SurgicalRestoreAudioProcessorEditor (Surgic
     rumbleFilterButton.setButtonText ("RUMBLE HPF (25Hz)");
     addAndMakeVisible (rumbleFilterButton);
 
+    azimuthAlignButton.setButtonText ("AUTO AZIMUTH (TAPE)");
+    addAndMakeVisible (azimuthAlignButton);
+
     deltaListenButton.setButtonText ("AUDITION DELTA");
     addAndMakeVisible (deltaListenButton);
 
@@ -68,12 +71,14 @@ SurgicalRestoreAudioProcessorEditor::SurgicalRestoreAudioProcessorEditor (Surgic
 
     rumbleFilterAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processorRef.apvts, "rumble_filter", rumbleFilterButton);
+    azimuthAlignAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
+        processorRef.apvts, "azimuth_align", azimuthAlignButton);
     deltaListenAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processorRef.apvts, "delta_listen", deltaListenButton);
     bypassAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processorRef.apvts, "bypass", bypassButton);
 
-    setSize (720, 380);
+    setSize (760, 380);
 }
 
 SurgicalRestoreAudioProcessorEditor::~SurgicalRestoreAudioProcessorEditor()
@@ -102,12 +107,12 @@ void SurgicalRestoreAudioProcessorEditor::paint (juce::Graphics& g)
 
     // Title
     g.setColour (sr_ui::CarbonGoldLookAndFeel::goldHighlight);
-    g.setFont (juce::Font ("Helvetica Neue", 18.0f, juce::Font::bold));
+    g.setFont (juce::FontOptions ("Helvetica Neue", 18.0f, juce::Font::bold));
     g.drawText ("SURGICAL RESTORE", headerBounds.reduced (16.0f, 0.0f), juce::Justification::centredLeft);
 
     g.setColour (sr_ui::CarbonGoldLookAndFeel::textDim);
-    g.setFont (juce::Font (12.0f, juce::Font::plain));
-    g.drawText ("NEURAL MASTERING CONSOLE • M/S DE-CLICK", headerBounds.reduced (16.0f, 0.0f), juce::Justification::centredRight);
+    g.setFont (juce::FontOptions (12.0f, juce::Font::plain));
+    g.drawText ("NEURAL MASTERING CONSOLE • M/S & AZIMUTH", headerBounds.reduced (16.0f, 0.0f), juce::Justification::centredRight);
 }
 
 void SurgicalRestoreAudioProcessorEditor::resized()
@@ -120,11 +125,13 @@ void SurgicalRestoreAudioProcessorEditor::resized()
 
     // Bottom action bar
     auto bottomBar = area.removeFromBottom (34);
-    rumbleFilterButton.setBounds (bottomBar.removeFromLeft (160));
-    bottomBar.removeFromLeft (16);
-    deltaListenButton.setBounds (bottomBar.removeFromLeft (140));
-    bottomBar.removeFromLeft (16);
-    bypassButton.setBounds (bottomBar.removeFromLeft (90));
+    rumbleFilterButton.setBounds (bottomBar.removeFromLeft (150));
+    bottomBar.removeFromLeft (12);
+    azimuthAlignButton.setBounds (bottomBar.removeFromLeft (165));
+    bottomBar.removeFromLeft (12);
+    deltaListenButton.setBounds (bottomBar.removeFromLeft (130));
+    bottomBar.removeFromLeft (12);
+    bypassButton.setBounds (bottomBar.removeFromLeft (80));
 
     area.removeFromBottom (16);
 

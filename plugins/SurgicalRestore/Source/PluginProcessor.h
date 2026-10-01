@@ -5,6 +5,7 @@
 #include "DSP/DeCrackleEngine.h"
 #include "DSP/SpectralDeNoiser.h"
 #include "DSP/RumbleFilter.h"
+#include "DSP/AzimuthAlignEngine.h"
 
 class SurgicalRestoreAudioProcessor : public juce::AudioProcessor
 {
@@ -43,8 +44,10 @@ public:
     // Telemetry for UI
     std::atomic<float> clicksRepairedPerSec { 0.0f };
     std::atomic<float> noiseReductionMeter { 0.0f };
+    std::atomic<float> detectedAzimuthSkew { 0.0f };
 
 private:
+    sr_dsp::AzimuthAlignEngine azimuthEngine;
     sr_dsp::RumbleFilter rumbleFilter[2];
     sr_dsp::LPCResidualEngine lpcEngine[2];
     sr_dsp::DeCrackleEngine decrackleEngine[2];
