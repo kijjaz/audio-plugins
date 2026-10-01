@@ -10,6 +10,7 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 * **Type**: Neural Audio Restoration, Vintage Vinyl Denoiser & Mastering Suite (VST3 / AU / Standalone).
 * **Key Features**: 100% synthetically trained machine learning models, Mid/Side (M/S) deep scratch and anti-phase click extraction, Levinson-Durbin LPC residual inpainting, dynamic groove-chatter De-Crackle engine, and Decision-Directed neural De-Hiss with psychoacoustic Bark critical band smoothing and Harmonic Comb Shielding (protects brass, sax, and quadruple-reed overtones).
 * **Performance**: 88x real-time throughput at 96 kHz consuming ~1.1% CPU.
+* 📦 **[Download Latest SurgicalRestore Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/surgical_restore.yml)**
 
 ---
 

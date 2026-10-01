@@ -6,6 +6,12 @@ An advanced, surgical audio restoration suite engineered for historical recordin
 
 ---
 
+### 📦 Download Pre-Compiled Builds
+* 🚀 **[Download Latest Automated Builds (macOS VST3/AU/App, Windows VST3/App)](https://github.com/kijjaz/audio-plugins/actions/workflows/surgical_restore.yml)**
+  *(Click the latest successful run and download the build artifact zip files)*
+
+---
+
 ## 🎧 The Core Problem & Innovation
 
 Traditional restoration plugins often destroy the music they aim to save:

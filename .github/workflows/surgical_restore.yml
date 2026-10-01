@@ -1,0 +1,74 @@
+name: Build SurgicalRestore
+
+on:
+  push:
+    paths:
+      - 'plugins/SurgicalRestore/**'
+      - '.github/workflows/surgical_restore.yml'
+  pull_request:
+    paths:
+      - 'plugins/SurgicalRestore/**'
+      - '.github/workflows/surgical_restore.yml'
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: Build macOS (VST3 / AU / Standalone)
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/SurgicalRestore -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SurgicalRestore-macOS-VST3
+        path: build/SurgicalRestore_artefacts/Release/VST3/Surgical Restore.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SurgicalRestore-macOS-AU
+        path: build/SurgicalRestore_artefacts/Release/AU/Surgical Restore.component
+        if-no-files-found: error
+
+    - name: Upload Standalone App Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SurgicalRestore-macOS-Standalone
+        path: build/SurgicalRestore_artefacts/Release/Standalone/Surgical Restore.app
+        if-no-files-found: error
+
+  build-windows:
+    name: Build Windows (VST3 / Standalone)
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/SurgicalRestore -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload Windows VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SurgicalRestore-Windows-VST3
+        path: build/SurgicalRestore_artefacts/Release/VST3/Surgical Restore.vst3
+        if-no-files-found: error
+
+    - name: Upload Windows Standalone Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SurgicalRestore-Windows-Standalone
+        path: build/SurgicalRestore_artefacts/Release/Standalone/Surgical Restore.exe
+        if-no-files-found: error
