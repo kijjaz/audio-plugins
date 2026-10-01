@@ -20,7 +20,7 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-### 2. [AetherBeam Reverb](plugins/AetherBeam/README.md)
+### 3. [AetherBeam Reverb](plugins/AetherBeam/README.md)
 * **Type**: Real-Time 3D Ray-Tracing Acoustic Reverb & Nonlinear Waveguide.
 * **Key Features**: Orders 0–4 physical specular ray tracing (up to 96 paths) with 3D wireframe perspective mesh, spatial microphone polar patterns (Binaural, ORTF, Blumlein, Omni), dynamic audience occupancy absorption simulator, finite-amplitude wave steepening (Fubini-Bessel series at $fff \approx 122\text{ dB SPL}$), and 3-Band Material Damping EQ.
 * **Spaces**: Musikverein Vienna, Sydney Opera House, Hagia Sophia, Šibenik Cathedral, Sponza Palace, Capitol Studios Chamber 4, Rome Pantheon, and more.
@@ -28,40 +28,40 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-### 3. [Vacuum Tape Sim](plugins/VacuumTapeSim/README.md)
+### 4. [Vacuum Tape Sim](plugins/VacuumTapeSim/README.md)
 * **Type**: Analog Tube Compression & Tape Hysteresis Emulation.
 * **Key Features**: Physical "Voltage Drain" tube supply sag modeling, dynamic magnetic tape hysteresis coercivity, mechanical wow & flutter transport simulation, and Wallace loss filters.
 * 📦 **[Download Latest VacuumTapeSim Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/vacuum_tape_sim.yml)**
 
 ---
 
-### 4. [IronStack](plugins/IronStack/)
+### 5. [IronStack](plugins/IronStack/)
 * **Type**: Component-Level Analog Amplifier & Multi-Cabinet Suite.
 * **Key Features**: Exact continuous nodal matrix solvers & Bilinear Transform (DAFx-06 Yeh & Smith 3rd-order FMV and 4th-order James/Baxandall networks), kinetic 12AX7 vacuum tube preamp with dynamic DC cathode bias sag, 8 iconic amplifier circuits (Bassman 5F6-A, AA864, Ampeg B-15N, Twin Reverb AB763, JCM800, AC30 Top Boost, Mesa Dual Rectifier, Soldano SLO-100), and 8 Tone3000 acoustically-calibrated cabinet impulse responses.
 * 📦 **[Download Latest IronStack Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml)**
 
 ---
 
-### 5. [Discrete 808](plugins/Discrete808/)
+### 6. [Discrete 808](plugins/Discrete808/)
 * **Type**: Component-Level Analog Drum Synthesis.
 * **Key Features**: Exact component-level modeling of vintage transistor circuits, bridled T-network resonators, germanium diode clipping, and voice parameter randomization.
 
 ---
 
-### 4. [ConcreteMachine](plugins/ConcreteMachine/)
+### 7. [ConcreteMachine](plugins/ConcreteMachine/)
 * **Type**: Musique Concrète Workstation & Experimental TapeOS.
 * **Key Features**: Chaos-driven tape looping, Morphophone multi-tap head mechanism, and algorithmic spatial montage.
 
 ---
 
-### 5. [FlyBy (VST3 / AU)](plugins/FlyBy/README.md)
+### 8. [FlyBy (VST3 / AU)](plugins/FlyBy/README.md)
 * **Type**: 3D Binaural Spatial Panner & Dynamic Elevation Engine.
 * **Key Features**: Spherical Rayleigh-Woodworth ITD, dual pinna notches ($N_1, N_2$) with overhead zenith presence and torso reflection, transient preservation attack detection to eliminate pinna comb-filtering smear, floor grounding reflections, dynamic speed-adaptive Doppler frequency shifts, and autonomous 3D flight trajectories (Swoop, Helical, Zenith, Flutter).
 * 📦 **[Download Latest FlyBy Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml)**
 
 ---
 
-### 6. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
+### 9. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
 * **Type**: Zero-Dependency Web Audio 3D Spatial Audio Library & AudioWorklet Engine.
 * **Key Features**: Drop-in high-performance AudioWorklet DSP with zero build dependencies, Three.js / WebXR camera tracking integration, full feature parity with FlyBy VST3, opt-in ceiling and floor boundary reflections, and interactive browser-based 3D radar demo.
 

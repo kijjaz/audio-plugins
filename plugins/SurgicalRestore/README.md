@@ -106,6 +106,7 @@ Copy to your system plugin folders:
 ```bash
 cp -R "build/SurgicalRestore_artefacts/Release/VST3/Surgical Restore.vst3" ~/Library/Audio/Plug-Ins/VST3/
 cp -R "build/SurgicalRestore_artefacts/Release/AU/Surgical Restore.component" ~/Library/Audio/Plug-Ins/Components/
+cp -R "build/SurgicalRestore_artefacts/Release/Standalone/Surgical Restore.app" /Applications/
 ```
 
 ---
