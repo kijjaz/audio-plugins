@@ -48,12 +48,13 @@ void SurgicalRestoreAudioProcessor::prepareToPlay (double sampleRate, int sample
         spectralDenoiser[ch].prepare (sampleRate);
     }
 
-    delayBuffer.setSize (2, samplesPerBlock + lookaheadSamples);
+    // Size circular delay buffer for exact latency alignment
+    delayBuffer.setSize (2, latencySamples + samplesPerBlock + 1024);
     delayBuffer.clear();
     delayWritePos = 0;
 
-    // Report lookahead latency to host for sample-accurate time-alignment
-    setLatencySamples (lookaheadSamples);
+    // Report STFT latency to host DAW for PDC (Plugin Delay Compensation)
+    setLatencySamples (latencySamples);
 }
 
 void SurgicalRestoreAudioProcessor::releaseResources()
@@ -89,11 +90,28 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     float harmShield = apvts.getRawParameterValue ("harmonic_shield")->load();
 
     int numSamples = buffer.getNumSamples();
-    juce::AudioBuffer<float> originalCopy;
-    if (deltaListen)
+    int delayBufSize = delayBuffer.getNumSamples();
+
+    // 1. Store input in circular delay buffer for time-aligned Delta calculation
+    for (int ch = 0; ch < totalNumInputChannels; ++ch)
     {
-        originalCopy.makeCopyOf (buffer);
+        auto* inData = buffer.getReadPointer (ch);
+        if (delayWritePos + numSamples <= delayBufSize)
+        {
+            delayBuffer.copyFrom (ch, delayWritePos, inData, numSamples);
+        }
+        else
+        {
+            int part1 = delayBufSize - delayWritePos;
+            int part2 = numSamples - part1;
+            delayBuffer.copyFrom (ch, delayWritePos, inData, part1);
+            delayBuffer.copyFrom (ch, 0, inData + part1, part2);
+        }
     }
+
+    // Compute read position aligned with plugin latency (latencySamples)
+    int delayReadPos = (delayWritePos - latencySamples + delayBufSize) % delayBufSize;
+    delayWritePos = (delayWritePos + numSamples) % delayBufSize;
 
     // Mid/Side Processing
     if (totalNumInputChannels == 2)
@@ -101,7 +119,7 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         auto* left = buffer.getWritePointer (0);
         auto* right = buffer.getWritePointer (1);
 
-        // 1. Transform to Mid/Side
+        // 2. Transform to Mid/Side
         for (int i = 0; i < numSamples; ++i)
         {
             float m = (left[i] + right[i]) * 0.70710678f;
@@ -110,7 +128,7 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
             right[i] = s;
         }
 
-        // 2. Stage 1 (De-Click) & Stage 2 (De-Crackle) in M/S domain
+        // 3. Stage 1 (De-Click) & Stage 2 (De-Crackle) in M/S domain
         for (int ch = 0; ch < 2; ++ch)
         {
             auto* channelData = buffer.getWritePointer (ch);
@@ -121,7 +139,7 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
                 float in = channelData[i];
                 float res = lpcEngine[ch].processSample (in);
 
-                // Threshold detection
+                // Adaptive threshold
                 float thresh = (ch == 1 ? 0.015f : 0.025f) * (11.0f - clickSens);
                 if (std::abs (res) > thresh && i > 4 && i < numSamples - maxWidth)
                 {
@@ -133,7 +151,7 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
             }
         }
 
-        // 3. Transform back to Left/Right
+        // 4. Transform back to Left/Right
         for (int i = 0; i < numSamples; ++i)
         {
             float m = left[i];
@@ -142,22 +160,25 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
             right[i] = (m - s) * 0.70710678f;
         }
 
-        // 4. Stage 3 (Neural De-Hiss with Harmonic Shield)
+        // 5. Stage 3 (Neural De-Hiss with Harmonic Shield)
         for (int ch = 0; ch < 2; ++ch)
         {
             spectralDenoiser[ch].processBlock (buffer.getWritePointer (ch), numSamples, hissDb, harmShield);
         }
     }
 
-    // Delta Mode: Output = Original - Cleaned
+    // Delta Mode: Output = TimeAlignedOriginal[n - latency] - Cleaned[n]
     if (deltaListen)
     {
         for (int ch = 0; ch < totalNumInputChannels; ++ch)
         {
-            auto* orig = originalCopy.getReadPointer (ch);
             auto* clean = buffer.getWritePointer (ch);
             for (int i = 0; i < numSamples; ++i)
-                clean[i] = orig[i] - clean[i];
+            {
+                int rPos = (delayReadPos + i) % delayBufSize;
+                float origSample = delayBuffer.getSample (ch, rPos);
+                clean[i] = origSample - clean[i];
+            }
         }
     }
 }

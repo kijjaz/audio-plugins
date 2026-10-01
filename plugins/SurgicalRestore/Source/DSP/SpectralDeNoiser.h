@@ -2,113 +2,166 @@
 #include <juce_dsp/juce_dsp.h>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 namespace sr_dsp
 {
 
 /**
- * C++ Decision-Directed Spectral De-Noiser with Bark Smoothing & Harmonic Shield.
+ * C++ Production-Grade STFT Overlap-Add Spectral Processor.
+ * Uses exact 1024-point FFT + Hann analysis & synthesis windowing (75% overlap, hop=256).
+ * Performs true Forward FFT -> Spectral Gain Masking -> Inverse FFT -> Overlap-Add.
  */
 class SpectralDeNoiser
 {
 public:
+    static constexpr int fftOrder = 10;
+    static constexpr int fftSize = 1024;
+    static constexpr int hopSize = 256;
+    static constexpr int numBins = fftSize / 2 + 1; // 513
+
     SpectralDeNoiser()
-        : m_forwardFFT (10) // 1024 points (2^10)
-        , m_inverseFFT (10)
-        , m_window (1024, juce::dsp::WindowingFunction<float>::hann)
+        : m_fft (fftOrder)
+        , m_window (fftSize, juce::dsp::WindowingFunction<float>::hann)
     {
     }
 
     void prepare (double sampleRate)
     {
         m_sampleRate = sampleRate;
-        m_inputFifo.assign (1024, 0.0f);
-        m_outputFifo.assign (1024, 0.0f);
-        m_fftData.assign (2048, 0.0f);
-        m_priorSNR.assign (513, 10.0f);
-        m_noisePSD.assign (513, 0.0001f);
-        m_fifoIdx = 0;
+        m_inputFifo.assign (fftSize, 0.0f);
+        m_outputFifo.assign (fftSize * 2, 0.0f);
+        m_timeDomainBuffer.assign (fftSize, 0.0f);
+        m_complexFftData.assign (fftSize * 2, 0.0f);
+        m_priorSNR.assign (numBins, 10.0f);
+        m_noisePSD.assign (numBins, 0.0001f);
+        m_fifoWritePos = 0;
+        m_samplesSinceLastHop = 0;
     }
 
-    // Process a block of samples through overlap-add STFT
     void processBlock (float* channelData, int numSamples, float reductionDb, float harmonicShield)
     {
         float minGain = std::pow (10.0f, -reductionDb / 20.0f);
 
         for (int i = 0; i < numSamples; ++i)
         {
-            m_inputFifo[m_fifoIdx] = channelData[i];
+            float inSample = channelData[i];
 
-            // Every 256 samples (75% overlap)
-            if ((m_fifoIdx % 256) == 0)
+            // 1. Push into circular input FIFO
+            m_inputFifo[m_fifoWritePos] = inSample;
+
+            // 2. Step forward
+            m_fifoWritePos = (m_fifoWritePos + 1) % fftSize;
+            m_samplesSinceLastHop++;
+
+            // 3. Process STFT frame every hopSize (256 samples)
+            if (m_samplesSinceLastHop >= hopSize)
             {
+                m_samplesSinceLastHop = 0;
                 processFrame (minGain, harmonicShield);
             }
 
-            // Output reconstructed audio with delta accounting
-            channelData[i] = m_outputFifo[m_fifoIdx];
-            m_outputFifo[m_fifoIdx] = 0.0f; // clear for next overlap add
+            // 4. Pull from output overlap-add FIFO (delayed by fftSize samples)
+            channelData[i] = m_outputFifo[0];
 
-            m_fifoIdx = (m_fifoIdx + 1) % 1024;
+            // Shift output FIFO
+            for (size_t k = 0; k < m_outputFifo.size() - 1; ++k)
+                m_outputFifo[k] = m_outputFifo[k + 1];
+            m_outputFifo.back() = 0.0f;
         }
     }
 
 private:
     void processFrame (float minGain, float harmonicShield)
     {
-        // 1. Copy and window
-        for (int i = 0; i < 1024; ++i)
+        // 1. Extract linear analysis frame from circular input FIFO
+        for (int i = 0; i < fftSize; ++i)
         {
-            int idx = (m_fifoIdx + i) % 1024;
-            m_fftData[i] = m_inputFifo[idx];
-            m_fftData[1024 + i] = 0.0f;
+            int readIdx = (m_fifoWritePos - fftSize + i + fftSize) % fftSize;
+            m_timeDomainBuffer[i] = m_inputFifo[readIdx];
+            m_complexFftData[i * 2] = m_timeDomainBuffer[i];
+            m_complexFftData[i * 2 + 1] = 0.0f;
         }
-        m_window.multiplyWithWindowingTable (m_fftData.data(), 1024);
 
-        // 2. Forward FFT
-        m_forwardFFT.performFrequencyOnlyForwardTransform (m_fftData.data());
-
-        // 3. Decision-directed gain calculation with Bark smoothing
-        for (int k = 0; k < 513; ++k)
+        // Apply analysis window
+        m_window.multiplyWithWindowingTable (m_timeDomainBuffer.data(), fftSize);
+        for (int i = 0; i < fftSize; ++i)
         {
-            float power = m_fftData[k] * m_fftData[k];
+            m_complexFftData[i * 2] = m_timeDomainBuffer[i];
+            m_complexFftData[i * 2 + 1] = 0.0f;
+        }
+
+        // 2. Forward Complex FFT
+        m_fft.perform (reinterpret_cast<const juce::dsp::Complex<float>*> (m_complexFftData.data()),
+                       reinterpret_cast<juce::dsp::Complex<float>*> (m_complexFftData.data()), false);
+
+        // 3. Apply Decision-Directed Wiener spectral gain mask
+        for (int k = 0; k < numBins; ++k)
+        {
+            float real = m_complexFftData[k * 2];
+            float imag = m_complexFftData[k * 2 + 1];
+            float mag = std::sqrt (real * real + imag * imag + 1e-12f);
+            float power = mag * mag;
+
             float postSNR = std::max (0.001f, power / (m_noisePSD[k] + 1e-8f));
 
-            // Decision-directed prior SNR
+            // Decision-directed prior SNR (Ephraim-Malah)
             float a = 0.96f;
             float prior = a * m_priorSNR[k] + (1.0f - a) * std::max (0.0f, postSNR - 1.0f);
             m_priorSNR[k] = prior;
 
             // Wiener gain
             float gain = prior / (1.0f + prior);
-            
-            // Harmonic shield boost
-            gain = std::max (gain * (1.0f + harmonicShield * 0.5f), minGain);
+            gain = std::max (gain * (1.0f + harmonicShield * 0.4f), minGain);
             gain = std::min (1.0f, gain);
 
-            m_fftData[k] *= gain;
+            // Apply gain to complex bin
+            m_complexFftData[k * 2]     *= gain;
+            m_complexFftData[k * 2 + 1] *= gain;
+
+            // Mirror for symmetric real signal
+            if (k > 0 && k < fftSize / 2)
+            {
+                int mirrorIdx = fftSize - k;
+                m_complexFftData[mirrorIdx * 2]     = m_complexFftData[k * 2];
+                m_complexFftData[mirrorIdx * 2 + 1] = -m_complexFftData[k * 2 + 1];
+            }
         }
 
-        // 4. Overlap-add back into output FIFO (scaled for Hann 75% overlap)
-        float olaFactor = 0.375f;
-        for (int i = 0; i < 1024; ++i)
+        // 4. Inverse Complex FFT
+        m_fft.perform (reinterpret_cast<const juce::dsp::Complex<float>*> (m_complexFftData.data()),
+                       reinterpret_cast<juce::dsp::Complex<float>*> (m_complexFftData.data()), true);
+
+        // 5. Synthesis window & Overlap-Add into output FIFO
+        // Normalization factor for 1024-point FFT with Hann 75% overlap
+        float norm = (1.5f / (float)fftSize) * 0.5f;
+
+        for (int i = 0; i < fftSize; ++i)
         {
-            int outIdx = (m_fifoIdx + i) % 1024;
-            m_outputFifo[outIdx] += m_inputFifo[(m_fifoIdx + i) % 1024] * olaFactor;
+            float synthSample = m_complexFftData[i * 2] * norm;
+            m_timeDomainBuffer[i] = synthSample;
+        }
+        m_window.multiplyWithWindowingTable (m_timeDomainBuffer.data(), fftSize);
+
+        for (int i = 0; i < fftSize; ++i)
+        {
+            m_outputFifo[i] += m_timeDomainBuffer[i];
         }
     }
 
     double m_sampleRate = 44100.0;
-    juce::dsp::FFT m_forwardFFT;
-    juce::dsp::FFT m_inverseFFT;
+    juce::dsp::FFT m_fft;
     juce::dsp::WindowingFunction<float> m_window;
 
     std::vector<float> m_inputFifo;
     std::vector<float> m_outputFifo;
-    std::vector<float> m_fftData;
+    std::vector<float> m_timeDomainBuffer;
+    std::vector<float> m_complexFftData;
     std::vector<float> m_priorSNR;
     std::vector<float> m_noisePSD;
-    int m_fifoIdx = 0;
+
+    int m_fifoWritePos = 0;
+    int m_samplesSinceLastHop = 0;
 };
 
 } // namespace sr_dsp

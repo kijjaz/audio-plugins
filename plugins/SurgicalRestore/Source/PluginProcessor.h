@@ -48,8 +48,8 @@ private:
     sr_dsp::DeCrackleEngine decrackleEngine[2];
     sr_dsp::SpectralDeNoiser spectralDenoiser[2];
 
-    // Lookahead circular buffer for VST3 zero-phase repair
-    static constexpr int lookaheadSamples = 512;
+    // Latency-compensation circular buffer for sample-accurate Delta auditioning
+    static constexpr int latencySamples = 1024;
     juce::AudioBuffer<float> delayBuffer;
     int delayWritePos = 0;
 
