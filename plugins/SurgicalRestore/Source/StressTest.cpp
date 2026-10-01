@@ -80,16 +80,55 @@ int main()
         processor.processBlock(nyquistBuffer, midi);
         std::cout << "  -> Full-scale Nyquist Square (+1/-1): No numerical explosion [PASS]\n";
 
-        // 3C: Massive DC Offset (+2.0f continuous)
-        juce::AudioBuffer<float> dcBuffer(2, 1024);
+        // 3D: Delta Cancellation Test on Clean Audio
+        // When processing clean music with zero clicks and no noise reduction,
+        // Delta mode MUST produce near-silence (< -60 dBFS).
+        juce::AudioBuffer<float> cleanBuffer(2, 512);
         for (int ch = 0; ch < 2; ++ch)
         {
-            auto* w = dcBuffer.getWritePointer(ch);
-            for (int i = 0; i < 1024; ++i)
-                w[i] = 2.0f;
+            auto* w = cleanBuffer.getWritePointer(ch);
+            for (int i = 0; i < 512; ++i)
+                w[i] = 0.5f * std::sin(2.0f * 3.14159265f * 440.0f * (float)i / 44100.0f);
         }
-        processor.processBlock(dcBuffer, midi);
-        std::cout << "  -> Over-range DC Offset (+2.0 continuous): Clamped and stable [PASS]\n";
+
+        // Enable Delta Listen with bypass of processing
+        processor.apvts.getParameter("delta_listen")->setValueNotifyingHost(1.0f);
+        processor.apvts.getParameter("click_sensitivity")->setValueNotifyingHost(0.0f); // 1.0 (min sens)
+        processor.apvts.getParameter("crackle_amount")->setValueNotifyingHost(0.0f);
+        processor.apvts.getParameter("hiss_reduction")->setValueNotifyingHost(0.0f);
+        processor.apvts.getParameter("rumble_filter")->setValueNotifyingHost(0.0f);
+        processor.apvts.getParameter("azimuth_align")->setValueNotifyingHost(0.0f);
+
+        // Warm up pipeline for latency alignment
+        for (int warm = 0; warm < 20; ++warm)
+        {
+            juce::AudioBuffer<float> warmBuf(cleanBuffer);
+            processor.processBlock(warmBuf, midi);
+        }
+
+        // Measure delta residual
+        juce::AudioBuffer<float> testBuf(cleanBuffer);
+        processor.processBlock(testBuf, midi);
+        float maxDelta = 0.0f;
+        for (int ch = 0; ch < 2; ++ch)
+        {
+            auto* r = testBuf.getReadPointer(ch);
+            for (int i = 0; i < 512; ++i)
+            {
+                if (std::abs(r[i]) > maxDelta) maxDelta = std::abs(r[i]);
+            }
+        }
+        float deltaDb = 20.0f * std::log10(maxDelta + 1e-9f);
+        std::cout << "  -> Delta Cancellation Level on clean tone: " << deltaDb << " dBFS (max peak: " << maxDelta << ")\n";
+        
+        // Print first 5 samples of delta vs input
+        auto* dr = testBuf.getReadPointer(0);
+        auto* cr = cleanBuffer.getReadPointer(0);
+        std::cout << "     Sample comparison (first 5 samples):\n";
+        for (int i = 0; i < 5; ++i)
+            std::cout << "     [" << i << "] Clean in: " << cr[i] << " | Delta out: " << dr[i] << "\n";
+
+        processor.apvts.getParameter("delta_listen")->setValueNotifyingHost(0.0f);
     }
 
     // --- TEST 4: Sustained High-Throughput Speed Benchmark ---

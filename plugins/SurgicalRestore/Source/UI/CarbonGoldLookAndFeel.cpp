@@ -22,6 +22,7 @@ void CarbonGoldLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
                                               float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
                                               juce::Slider& slider)
 {
+    juce::ignoreUnused (slider);
     auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (8.0f);
     auto radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) / 2.0f;
     auto toAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
@@ -59,6 +60,7 @@ void CarbonGoldLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y, i
 void CarbonGoldLookAndFeel::drawToggleButton (juce::Graphics& g, juce::ToggleButton& button, 
                                               bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown)
 {
+    juce::ignoreUnused (shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
     auto bounds = button.getLocalBounds().toFloat();
     bool isOn = button.getToggleState();
 

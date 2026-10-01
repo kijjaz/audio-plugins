@@ -37,20 +37,50 @@ public:
         m_noisePSD.assign (numBins, 0.0001f);
         m_fifoWritePos = 0;
         m_samplesSinceLastHop = 0;
+        m_delayLine.assign (fftSize, 0.0f);
+        m_delayPos = 0;
     }
 
     void processBlock (float* channelData, int numSamples, float reductionDb, float harmonicShield)
     {
+        // When De-Hiss reduction is 0 (or negligible), pass through an exact sample-accurate 1024-sample delay line.
+        // This guarantees bit-exact cancellation (< -120 dBFS) in Delta audition mode for untouched clean audio.
+        if (reductionDb <= 0.05f)
+        {
+            for (int i = 0; i < numSamples; ++i)
+            {
+                float in = channelData[i];
+                float delayed = m_delayLine[m_delayPos];
+                m_delayLine[m_delayPos] = in;
+                m_delayPos = (m_delayPos + 1) % fftSize;
+                channelData[i] = delayed;
+
+                // Keep STFT FIFO synced
+                m_inputFifo[m_fifoWritePos] = in;
+                m_fifoWritePos = (m_fifoWritePos + 1) % fftSize;
+                m_samplesSinceLastHop = (m_samplesSinceLastHop + 1) % hopSize;
+            }
+            return;
+        }
+
         float minGain = std::pow (10.0f, -reductionDb / 20.0f);
 
         for (int i = 0; i < numSamples; ++i)
         {
             float inSample = channelData[i];
 
-            // 1. Push into circular input FIFO
-            m_inputFifo[m_fifoWritePos] = inSample;
+            // Update delay line state to maintain seamless transitions if unbypassed
+            m_delayLine[m_delayPos] = inSample;
+            m_delayPos = (m_delayPos + 1) % fftSize;
 
-            // 2. Step forward
+            // 1. Pull output first so delay is exactly fftSize (1024 samples)
+            channelData[i] = m_outputFifo[0];
+            for (size_t k = 0; k < m_outputFifo.size() - 1; ++k)
+                m_outputFifo[k] = m_outputFifo[k + 1];
+            m_outputFifo.back() = 0.0f;
+
+            // 2. Push into circular input FIFO
+            m_inputFifo[m_fifoWritePos] = inSample;
             m_fifoWritePos = (m_fifoWritePos + 1) % fftSize;
             m_samplesSinceLastHop++;
 
@@ -60,14 +90,6 @@ public:
                 m_samplesSinceLastHop = 0;
                 processFrame (minGain, harmonicShield);
             }
-
-            // 4. Pull from output overlap-add FIFO (delayed by fftSize samples)
-            channelData[i] = m_outputFifo[0];
-
-            // Shift output FIFO
-            for (size_t k = 0; k < m_outputFifo.size() - 1; ++k)
-                m_outputFifo[k] = m_outputFifo[k + 1];
-            m_outputFifo.back() = 0.0f;
         }
     }
 
@@ -133,8 +155,10 @@ private:
                        reinterpret_cast<juce::dsp::Complex<float>*> (m_complexFftData.data()), true);
 
         // 5. Synthesis window & Overlap-Add into output FIFO
-        // Normalization factor for 1024-point FFT with Hann 75% overlap
-        float norm = (1.5f / (float)fftSize) * 0.5f;
+        // In JUCE (Apple vDSP), IFFT already scales by 1/N.
+        // The sum of Hann^2 for 75% overlap (hop=256, N=1024) is exactly 1.5.
+        // Therefore, the exact unity-gain normalization is 1.0 / 1.5 = 2.0 / 3.0.
+        constexpr float norm = 2.0f / 3.0f;
 
         for (int i = 0; i < fftSize; ++i)
         {
@@ -162,6 +186,9 @@ private:
 
     int m_fifoWritePos = 0;
     int m_samplesSinceLastHop = 0;
+
+    std::vector<float> m_delayLine;
+    int m_delayPos = 0;
 };
 
 } // namespace sr_dsp

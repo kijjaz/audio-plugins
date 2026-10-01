@@ -14,7 +14,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SurgicalRestoreAudioProcesso
 
     // Stage 1: De-Click & M/S
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
-        "click_sensitivity", "Click Sensitivity", juce::NormalisableRange<float> (1.0f, 10.0f, 0.1f), 5.0f));
+        "click_sensitivity", "Click Sensitivity", juce::NormalisableRange<float> (0.0f, 10.0f, 0.1f), 5.0f));
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         "side_boost", "Side Click Sens", juce::NormalisableRange<float> (1.0f, 3.5f, 0.1f), 2.2f));
     params.push_back (std::make_unique<juce::AudioParameterInt> (
@@ -237,27 +237,36 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         // ch 0 = Mid, ch 1 = Side
         for (int ch = 0; ch < 2; ++ch)
         {
-            auto* channelData = buffer.getWritePointer (ch);
-            lpcEngine[ch].calculateCoefficients (channelData, numSamples);
+            bool doDeClick = (clickSens > 0.05f);
+            bool doDeCrackle = (crackleAmt > 0.05f);
 
-            // Channel-specific sensitivity: Side channel benefits from empirical 3.2x boost
-            float chSens = (ch == 1) ? std::min (10.0f, clickSens * sideBoost) : clickSens;
-            float baseThresh = (ch == 1 ? 0.012f : 0.025f);
-            float thresh = baseThresh * (11.0f - chSens);
-
-            for (int i = 0; i < numSamples; ++i)
+            if (doDeClick || doDeCrackle)
             {
-                float in = channelData[i];
-                float res = lpcEngine[ch].processSample (in);
+                auto* channelData = buffer.getWritePointer (ch);
+                lpcEngine[ch].calculateCoefficients (channelData, numSamples);
 
-                if (std::abs (res) > thresh && i > 4 && i < numSamples - maxWidth)
+                // Channel-specific sensitivity: Side channel benefits from empirical 3.2x boost
+                float chSens = (ch == 1) ? std::min (10.0f, clickSens * sideBoost) : clickSens;
+                float baseThresh = (ch == 1 ? 0.012f : 0.025f);
+                float thresh = baseThresh * (11.0f - chSens);
+
+                for (int i = 0; i < numSamples; ++i)
                 {
-                    sr_dsp::ARInpainter::inpaint (channelData, numSamples, i - 1, i + 3);
-                }
+                    float in = channelData[i];
+                    float res = lpcEngine[ch].processSample (in);
 
-                // De-crackle pass (ch 1 Side crackle handled aggressively)
-                float cAmt = (ch == 1) ? crackleAmt * 1.25f : crackleAmt;
-                channelData[i] = decrackleEngine[ch].process (channelData[i], res, cAmt / 20.0f, 12.0f);
+                    if (doDeClick && std::abs (res) > thresh && i > 4 && i < numSamples - maxWidth)
+                    {
+                        sr_dsp::ARInpainter::inpaint (channelData, numSamples, i - 1, i + 3);
+                    }
+
+                    // De-crackle pass (ch 1 Side crackle handled aggressively)
+                    if (doDeCrackle)
+                    {
+                        float cAmt = (ch == 1) ? crackleAmt * 1.25f : crackleAmt;
+                        channelData[i] = decrackleEngine[ch].process (channelData[i], res, cAmt / 20.0f, 12.0f);
+                    }
+                }
             }
         }
 

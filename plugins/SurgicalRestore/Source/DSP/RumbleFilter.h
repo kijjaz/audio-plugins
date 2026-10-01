@@ -1,4 +1,5 @@
 #pragma once
+#include <juce_core/juce_core.h>
 #include <cmath>
 #include <algorithm>
 
@@ -53,7 +54,7 @@ public:
 private:
     void calculateCoefficients()
     {
-        double omega = 2.0 * M_PI * m_cutoff / m_sampleRate;
+        double omega = 2.0 * juce::MathConstants<double>::pi * m_cutoff / m_sampleRate;
         double tanW = std::tan (omega * 0.5);
 
         // 1st order HPF Butterworth: s / (s + 1)
