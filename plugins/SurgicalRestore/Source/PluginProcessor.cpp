@@ -12,9 +12,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout SurgicalRestoreAudioProcesso
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
-    // Stage 1: De-Click
+    // Stage 1: De-Click & M/S
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         "click_sensitivity", "Click Sensitivity", juce::NormalisableRange<float> (1.0f, 10.0f, 0.1f), 5.0f));
+    params.push_back (std::make_unique<juce::AudioParameterFloat> (
+        "side_boost", "Side Click Sens", juce::NormalisableRange<float> (1.0f, 3.5f, 0.1f), 2.2f));
     params.push_back (std::make_unique<juce::AudioParameterInt> (
         "click_width", "Max Click Width", 4, 64, 24));
 
@@ -30,6 +32,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout SurgicalRestoreAudioProcesso
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         "hf_tilt", "Air Tilt (dB)", juce::NormalisableRange<float> (0.0f, 8.0f, 0.5f), 3.0f));
 
+    // Stage 0 / Hardware Modeling: Sub-Sonic Rumble Filter
+    params.push_back (std::make_unique<juce::AudioParameterBool> (
+        "rumble_filter", "Rumble Filter (25Hz 18dB/oct)", true));
+
     // Master / Routing
     params.push_back (std::make_unique<juce::AudioParameterBool> (
         "delta_listen", "Audition Delta", false));
@@ -39,10 +45,80 @@ juce::AudioProcessorValueTreeState::ParameterLayout SurgicalRestoreAudioProcesso
     return { params.begin(), params.end() };
 }
 
+int SurgicalRestoreAudioProcessor::getNumPrograms()
+{
+    return 4;
+}
+
+int SurgicalRestoreAudioProcessor::getCurrentProgram()
+{
+    return currentProgramIndex;
+}
+
+const juce::String SurgicalRestoreAudioProcessor::getProgramName (int index)
+{
+    switch (index)
+    {
+        case 0: return "Vinyl LP (33/45 RPM Microgroove)";
+        case 1: return "Shellac 78 RPM (Archival)";
+        case 2: return "Magnetic Tape / Cassette";
+        case 3: return "Transparent Vocal Solo";
+        default: return "Default";
+    }
+}
+
+void SurgicalRestoreAudioProcessor::changeProgramName (int, const juce::String&)
+{
+}
+
+void SurgicalRestoreAudioProcessor::setCurrentProgram (int index)
+{
+    currentProgramIndex = index;
+    switch (index)
+    {
+        case 0: // Vinyl LP
+            apvts.getParameter ("click_sensitivity")->setValueNotifyingHost (apvts.getParameterRange ("click_sensitivity").convertTo0to1 (6.2f));
+            apvts.getParameter ("side_boost")->setValueNotifyingHost (apvts.getParameterRange ("side_boost").convertTo0to1 (2.5f));
+            apvts.getParameter ("crackle_amount")->setValueNotifyingHost (apvts.getParameterRange ("crackle_amount").convertTo0to1 (40.0f));
+            apvts.getParameter ("hiss_reduction")->setValueNotifyingHost (apvts.getParameterRange ("hiss_reduction").convertTo0to1 (6.0f));
+            apvts.getParameter ("harmonic_shield")->setValueNotifyingHost (apvts.getParameterRange ("harmonic_shield").convertTo0to1 (0.80f));
+            apvts.getParameter ("rumble_filter")->setValueNotifyingHost (1.0f);
+            break;
+
+        case 1: // Shellac 78 RPM Archival
+            apvts.getParameter ("click_sensitivity")->setValueNotifyingHost (apvts.getParameterRange ("click_sensitivity").convertTo0to1 (8.5f));
+            apvts.getParameter ("side_boost")->setValueNotifyingHost (apvts.getParameterRange ("side_boost").convertTo0to1 (3.2f));
+            apvts.getParameter ("crackle_amount")->setValueNotifyingHost (apvts.getParameterRange ("crackle_amount").convertTo0to1 (85.0f));
+            apvts.getParameter ("hiss_reduction")->setValueNotifyingHost (apvts.getParameterRange ("hiss_reduction").convertTo0to1 (18.0f));
+            apvts.getParameter ("harmonic_shield")->setValueNotifyingHost (apvts.getParameterRange ("harmonic_shield").convertTo0to1 (0.60f));
+            apvts.getParameter ("rumble_filter")->setValueNotifyingHost (1.0f);
+            break;
+
+        case 2: // Magnetic Tape / Cassette
+            apvts.getParameter ("click_sensitivity")->setValueNotifyingHost (apvts.getParameterRange ("click_sensitivity").convertTo0to1 (3.0f));
+            apvts.getParameter ("side_boost")->setValueNotifyingHost (apvts.getParameterRange ("side_boost").convertTo0to1 (1.0f));
+            apvts.getParameter ("crackle_amount")->setValueNotifyingHost (apvts.getParameterRange ("crackle_amount").convertTo0to1 (15.0f));
+            apvts.getParameter ("hiss_reduction")->setValueNotifyingHost (apvts.getParameterRange ("hiss_reduction").convertTo0to1 (14.0f));
+            apvts.getParameter ("harmonic_shield")->setValueNotifyingHost (apvts.getParameterRange ("harmonic_shield").convertTo0to1 (0.85f));
+            apvts.getParameter ("rumble_filter")->setValueNotifyingHost (0.0f);
+            break;
+
+        case 3: // Transparent Vocal Solo
+            apvts.getParameter ("click_sensitivity")->setValueNotifyingHost (apvts.getParameterRange ("click_sensitivity").convertTo0to1 (4.5f));
+            apvts.getParameter ("side_boost")->setValueNotifyingHost (apvts.getParameterRange ("side_boost").convertTo0to1 (2.0f));
+            apvts.getParameter ("crackle_amount")->setValueNotifyingHost (apvts.getParameterRange ("crackle_amount").convertTo0to1 (25.0f));
+            apvts.getParameter ("hiss_reduction")->setValueNotifyingHost (apvts.getParameterRange ("hiss_reduction").convertTo0to1 (8.0f));
+            apvts.getParameter ("harmonic_shield")->setValueNotifyingHost (apvts.getParameterRange ("harmonic_shield").convertTo0to1 (0.95f));
+            apvts.getParameter ("rumble_filter")->setValueNotifyingHost (1.0f);
+            break;
+    }
+}
+
 void SurgicalRestoreAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     for (int ch = 0; ch < 2; ++ch)
     {
+        rumbleFilter[ch].prepare (sampleRate, 25.0f);
         lpcEngine[ch].prepare (1024, 16);
         decrackleEngine[ch].prepare (sampleRate);
         spectralDenoiser[ch].prepare (sampleRate);
@@ -84,10 +160,12 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
 
     bool deltaListen = apvts.getRawParameterValue ("delta_listen")->load() > 0.5f;
     float clickSens = apvts.getRawParameterValue ("click_sensitivity")->load();
+    float sideBoost = apvts.getRawParameterValue ("side_boost")->load();
     int maxWidth = (int)apvts.getRawParameterValue ("click_width")->load();
     float crackleAmt = apvts.getRawParameterValue ("crackle_amount")->load();
     float hissDb = apvts.getRawParameterValue ("hiss_reduction")->load();
     float harmShield = apvts.getRawParameterValue ("harmonic_shield")->load();
+    bool enableRumble = apvts.getRawParameterValue ("rumble_filter")->load() > 0.5f;
 
     int numSamples = buffer.getNumSamples();
     int delayBufSize = delayBuffer.getNumSamples();
@@ -113,6 +191,19 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     int delayReadPos = (delayWritePos - latencySamples + delayBufSize) % delayBufSize;
     delayWritePos = (delayWritePos + numSamples) % delayBufSize;
 
+    // Sub-Sonic Rumble Filter (18 dB/oct HPF at 25 Hz)
+    if (enableRumble)
+    {
+        for (int ch = 0; ch < totalNumInputChannels; ++ch)
+        {
+            auto* chData = buffer.getWritePointer (ch);
+            for (int i = 0; i < numSamples; ++i)
+            {
+                chData[i] = rumbleFilter[ch].processSample (chData[i]);
+            }
+        }
+    }
+
     // Mid/Side Processing
     if (totalNumInputChannels == 2)
     {
@@ -129,25 +220,30 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         }
 
         // 3. Stage 1 (De-Click) & Stage 2 (De-Crackle) in M/S domain
+        // ch 0 = Mid, ch 1 = Side
         for (int ch = 0; ch < 2; ++ch)
         {
             auto* channelData = buffer.getWritePointer (ch);
             lpcEngine[ch].calculateCoefficients (channelData, numSamples);
+
+            // Channel-specific sensitivity: Side channel benefits from empirical 3.2x boost
+            float chSens = (ch == 1) ? std::min (10.0f, clickSens * sideBoost) : clickSens;
+            float baseThresh = (ch == 1 ? 0.012f : 0.025f);
+            float thresh = baseThresh * (11.0f - chSens);
 
             for (int i = 0; i < numSamples; ++i)
             {
                 float in = channelData[i];
                 float res = lpcEngine[ch].processSample (in);
 
-                // Adaptive threshold
-                float thresh = (ch == 1 ? 0.015f : 0.025f) * (11.0f - clickSens);
                 if (std::abs (res) > thresh && i > 4 && i < numSamples - maxWidth)
                 {
                     sr_dsp::ARInpainter::inpaint (channelData, numSamples, i - 1, i + 3);
                 }
 
-                // De-crackle pass
-                channelData[i] = decrackleEngine[ch].process (channelData[i], res, crackleAmt / 20.0f, 12.0f);
+                // De-crackle pass (ch 1 Side crackle handled aggressively)
+                float cAmt = (ch == 1) ? crackleAmt * 1.25f : crackleAmt;
+                channelData[i] = decrackleEngine[ch].process (channelData[i], res, cAmt / 20.0f, 12.0f);
             }
         }
 

@@ -19,24 +19,30 @@ private:
 
     // Controls
     juce::Slider clickSensitivitySlider;
+    juce::Slider sideBoostSlider;
     juce::Slider crackleAmountSlider;
     juce::Slider hissReductionSlider;
     juce::Slider harmonicShieldSlider;
 
     juce::Label clickSensitivityLabel;
+    juce::Label sideBoostLabel;
     juce::Label crackleAmountLabel;
     juce::Label hissReductionLabel;
     juce::Label harmonicShieldLabel;
 
+    juce::ComboBox presetComboBox;
+    juce::ToggleButton rumbleFilterButton;
     juce::ToggleButton deltaListenButton;
     juce::ToggleButton bypassButton;
 
     // Attachments
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> clickSensAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sideBoostAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> crackleAmtAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> hissReductAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> harmShieldAttach;
 
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> rumbleFilterAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> deltaListenAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttach;
 

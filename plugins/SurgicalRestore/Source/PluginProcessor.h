@@ -4,6 +4,7 @@
 #include "DSP/ARInpainter.h"
 #include "DSP/DeCrackleEngine.h"
 #include "DSP/SpectralDeNoiser.h"
+#include "DSP/RumbleFilter.h"
 
 class SurgicalRestoreAudioProcessor : public juce::AudioProcessor
 {
@@ -26,11 +27,11 @@ public:
     bool isMidiEffect() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
 
-    int getNumPrograms() override { return 1; }
-    int getCurrentProgram() override { return 0; }
-    void setCurrentProgram (int) override {}
-    const juce::String getProgramName (int) override { return {}; }
-    void changeProgramName (int, const juce::String&) override {}
+    int getNumPrograms() override;
+    int getCurrentProgram() override;
+    void setCurrentProgram (int index) override;
+    const juce::String getProgramName (int index) override;
+    void changeProgramName (int index, const juce::String& newName) override;
 
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
@@ -44,9 +45,12 @@ public:
     std::atomic<float> noiseReductionMeter { 0.0f };
 
 private:
+    sr_dsp::RumbleFilter rumbleFilter[2];
     sr_dsp::LPCResidualEngine lpcEngine[2];
     sr_dsp::DeCrackleEngine decrackleEngine[2];
     sr_dsp::SpectralDeNoiser spectralDenoiser[2];
+
+    int currentProgramIndex = 0;
 
     // Latency-compensation circular buffer for sample-accurate Delta auditioning
     static constexpr int latencySamples = 1024;

@@ -15,18 +15,39 @@ SurgicalRestoreAudioProcessorEditor::SurgicalRestoreAudioProcessorEditor (Surgic
         addAndMakeVisible (slider);
 
         label.setText (text, juce::dontSendNotification);
-        label.setFont (juce::Font (13.0f, juce::Font::bold));
+        label.setFont (juce::Font (12.0f, juce::Font::bold));
         label.setJustificationType (juce::Justification::centred);
         label.setColour (juce::Label::textColourId, sr_ui::CarbonGoldLookAndFeel::textOffWhite);
         addAndMakeVisible (label);
     };
 
     setupKnob (clickSensitivitySlider, clickSensitivityLabel, "DE-CLICK");
+    setupKnob (sideBoostSlider, sideBoostLabel, "SIDE BOOST");
     setupKnob (crackleAmountSlider, crackleAmountLabel, "DE-CRACKLE");
     setupKnob (hissReductionSlider, hissReductionLabel, "DE-HISS (dB)");
     setupKnob (harmonicShieldSlider, harmonicShieldLabel, "HARM SHIELD");
 
+    // Presets Dropdown
+    presetComboBox.addItem ("Vinyl LP (33/45 RPM Microgroove)", 1);
+    presetComboBox.addItem ("Shellac 78 RPM (Archival)", 2);
+    presetComboBox.addItem ("Magnetic Tape / Cassette", 3);
+    presetComboBox.addItem ("Transparent Vocal Solo", 4);
+    presetComboBox.setSelectedId (processorRef.getCurrentProgram() + 1, juce::dontSendNotification);
+    presetComboBox.onChange = [this]()
+    {
+        int id = presetComboBox.getSelectedId();
+        if (id >= 1 && id <= 4)
+            processorRef.setCurrentProgram (id - 1);
+    };
+    presetComboBox.setColour (juce::ComboBox::backgroundColourId, sr_ui::CarbonGoldLookAndFeel::carbonDark);
+    presetComboBox.setColour (juce::ComboBox::textColourId, sr_ui::CarbonGoldLookAndFeel::goldHighlight);
+    presetComboBox.setColour (juce::ComboBox::outlineColourId, sr_ui::CarbonGoldLookAndFeel::goldAccent.withAlpha (0.4f));
+    addAndMakeVisible (presetComboBox);
+
     // Toggles
+    rumbleFilterButton.setButtonText ("RUMBLE HPF (25Hz)");
+    addAndMakeVisible (rumbleFilterButton);
+
     deltaListenButton.setButtonText ("AUDITION DELTA");
     addAndMakeVisible (deltaListenButton);
 
@@ -36,6 +57,8 @@ SurgicalRestoreAudioProcessorEditor::SurgicalRestoreAudioProcessorEditor (Surgic
     // Attachments
     clickSensAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processorRef.apvts, "click_sensitivity", clickSensitivitySlider);
+    sideBoostAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
+        processorRef.apvts, "side_boost", sideBoostSlider);
     crackleAmtAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processorRef.apvts, "crackle_amount", crackleAmountSlider);
     hissReductAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
@@ -43,12 +66,14 @@ SurgicalRestoreAudioProcessorEditor::SurgicalRestoreAudioProcessorEditor (Surgic
     harmShieldAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment> (
         processorRef.apvts, "harmonic_shield", harmonicShieldSlider);
 
+    rumbleFilterAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
+        processorRef.apvts, "rumble_filter", rumbleFilterButton);
     deltaListenAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processorRef.apvts, "delta_listen", deltaListenButton);
     bypassAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processorRef.apvts, "bypass", bypassButton);
 
-    setSize (640, 360);
+    setSize (720, 380);
 }
 
 SurgicalRestoreAudioProcessorEditor::~SurgicalRestoreAudioProcessorEditor()
@@ -82,39 +107,48 @@ void SurgicalRestoreAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (sr_ui::CarbonGoldLookAndFeel::textDim);
     g.setFont (juce::Font (12.0f, juce::Font::plain));
-    g.drawText ("NEURAL MASTERING CONSOLE • ARA 2 / VST3", headerBounds.reduced (16.0f, 0.0f), juce::Justification::centredRight);
+    g.drawText ("NEURAL MASTERING CONSOLE • M/S DE-CLICK", headerBounds.reduced (16.0f, 0.0f), juce::Justification::centredRight);
 }
 
 void SurgicalRestoreAudioProcessorEditor::resized()
 {
-    auto area = getLocalBounds().reduced (24, 20);
-    area.removeFromTop (50); // Header
+    auto area = getLocalBounds().reduced (20, 16);
+    auto header = area.removeFromTop (50);
+
+    // Place Preset selector in top right corner of header
+    presetComboBox.setBounds (header.getRight() - 250, header.getY() + 12, 230, 26);
 
     // Bottom action bar
-    auto bottomBar = area.removeFromBottom (36);
+    auto bottomBar = area.removeFromBottom (34);
+    rumbleFilterButton.setBounds (bottomBar.removeFromLeft (160));
+    bottomBar.removeFromLeft (16);
     deltaListenButton.setBounds (bottomBar.removeFromLeft (140));
     bottomBar.removeFromLeft (16);
     bypassButton.setBounds (bottomBar.removeFromLeft (90));
 
-    area.removeFromBottom (20);
+    area.removeFromBottom (16);
 
-    // 4 Knobs layout across center
-    int numKnobs = 4;
+    // 5 Knobs layout across center
+    int numKnobs = 5;
     int knobWidth = area.getWidth() / numKnobs;
 
     auto r1 = area.removeFromLeft (knobWidth);
     clickSensitivityLabel.setBounds (r1.removeFromTop (20));
-    clickSensitivitySlider.setBounds (r1.reduced (10));
+    clickSensitivitySlider.setBounds (r1.reduced (6));
 
     auto r2 = area.removeFromLeft (knobWidth);
-    crackleAmountLabel.setBounds (r2.removeFromTop (20));
-    crackleAmountSlider.setBounds (r2.reduced (10));
+    sideBoostLabel.setBounds (r2.removeFromTop (20));
+    sideBoostSlider.setBounds (r2.reduced (6));
 
     auto r3 = area.removeFromLeft (knobWidth);
-    hissReductionLabel.setBounds (r3.removeFromTop (20));
-    hissReductionSlider.setBounds (r3.reduced (10));
+    crackleAmountLabel.setBounds (r3.removeFromTop (20));
+    crackleAmountSlider.setBounds (r3.reduced (6));
 
-    auto r4 = area;
-    harmonicShieldLabel.setBounds (r4.removeFromTop (20));
-    harmonicShieldSlider.setBounds (r4.reduced (10));
+    auto r4 = area.removeFromLeft (knobWidth);
+    hissReductionLabel.setBounds (r4.removeFromTop (20));
+    hissReductionSlider.setBounds (r4.reduced (6));
+
+    auto r5 = area;
+    harmonicShieldLabel.setBounds (r5.removeFromTop (20));
+    harmonicShieldSlider.setBounds (r5.reduced (6));
 }
