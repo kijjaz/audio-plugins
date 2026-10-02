@@ -34,7 +34,7 @@ public:
         m_timeDomainBuffer.assign (fftSize, 0.0f);
         m_complexFftData.assign (fftSize * 2, 0.0f);
         m_priorSNR.assign (numBins, 10.0f);
-        m_noisePSD.assign (numBins, 0.0001f);
+        m_noisePSD.assign (numBins, 0.01f);
         m_fifoWritePos = 0;
         m_samplesSinceLastHop = 0;
         m_delayLine.assign (fftSize, 0.0f);
@@ -123,9 +123,17 @@ private:
             float real = m_complexFftData[k * 2];
             float imag = m_complexFftData[k * 2 + 1];
             float mag = std::sqrt (real * real + imag * imag + 1e-12f);
-            float power = mag * mag;
+            // Normalized FFT power
+            float power = (mag * mag) / static_cast<float> (fftSize);
 
-            float postSNR = std::max (0.001f, power / (m_noisePSD[k] + 1e-8f));
+            // Adaptive Minimum Statistics noise floor tracking
+            if (power < m_noisePSD[k])
+                m_noisePSD[k] = 0.90f * m_noisePSD[k] + 0.10f * power; // fast tracking of quiet passages
+            else
+                m_noisePSD[k] = 0.998f * m_noisePSD[k] + 0.002f * power; // slow rise during loud signal
+
+            // Post-SNR relative to tracked noise floor
+            float postSNR = std::max (0.001f, power / (m_noisePSD[k] + 1e-9f));
 
             // Decision-directed prior SNR (Ephraim-Malah)
             float a = 0.96f;

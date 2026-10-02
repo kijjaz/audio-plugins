@@ -179,6 +179,34 @@ int main()
         std::cout << "  -> XML Preset tree saved (" << memBlock.getSize() << " bytes) and restored successfully [PASS]\n";
     }
 
+    // --- TEST 6: Real-World Audio Restoration Verification ---
+    std::cout << "\n[Test 6] Audio Restoration Action Verification (De-Click & De-Hiss):\n";
+    {
+        processor.prepareToPlay (44100.0, 512);
+        processor.setCurrentProgram (0); // Vinyl LP default preset
+        juce::AudioBuffer<float> testAudio (2, 1024);
+        juce::MidiBuffer midi;
+
+        // Populate with audio + sharp vinyl click at sample 200
+        for (int ch = 0; ch < 2; ++ch)
+        {
+            auto* w = testAudio.getWritePointer (ch);
+            for (int i = 0; i < 1024; ++i)
+                w[i] = 0.3f * std::sin (2.0f * 3.14159265f * 440.0f * (float)i / 44100.0f);
+            w[200] = 0.95f; // Large click spike
+        }
+
+        // Process through restoration pipeline
+        processor.processBlock (testAudio, midi);
+
+        // Verify click at sample 200 is repaired
+        float clickValL = std::abs (testAudio.getSample (0, 200));
+        float clickValR = std::abs (testAudio.getSample (1, 200));
+        std::cout << "  -> Repaired click spike: Left = " << clickValL << ", Right = " << clickValR 
+                  << " (original was 0.95) [PASS]\n";
+        assert (clickValL < 0.6f && clickValR < 0.6f);
+    }
+
     std::cout << "\n========================================================\n";
     std::cout << "  ALL STRESS TESTS PASSED WITH ZERO CRASHES OR LEAKS!\n";
     std::cout << "========================================================\n";

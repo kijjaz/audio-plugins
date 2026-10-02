@@ -218,7 +218,7 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         detectedAzimuthSkew.store (azimuthEngine.getDetectedSkewSamples());
     }
 
-    // Mid/Side Processing
+    // Restoration Processing (Mid/Side for Stereo, Direct for Mono)
     if (totalNumInputChannels == 2)
     {
         auto* left = buffer.getWritePointer (0);
@@ -284,6 +284,38 @@ void SurgicalRestoreAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         {
             spectralDenoiser[ch].processBlock (buffer.getWritePointer (ch), numSamples, hissDb, harmShield);
         }
+    }
+    else if (totalNumInputChannels == 1)
+    {
+        // Direct processing for Mono Tracks
+        bool doDeClick = (clickSens > 0.05f);
+        bool doDeCrackle = (crackleAmt > 0.05f);
+
+        auto* channelData = buffer.getWritePointer (0);
+
+        if (doDeClick || doDeCrackle)
+        {
+            lpcEngine[0].calculateCoefficients (channelData, numSamples);
+            float thresh = 0.025f * (11.0f - clickSens);
+
+            for (int i = 0; i < numSamples; ++i)
+            {
+                float in = channelData[i];
+                float res = lpcEngine[0].processSample (in);
+
+                if (doDeClick && std::abs (res) > thresh && i > 4 && i < numSamples - maxWidth)
+                {
+                    sr_dsp::ARInpainter::inpaint (channelData, numSamples, i - 1, i + 3);
+                }
+
+                if (doDeCrackle)
+                {
+                    channelData[i] = decrackleEngine[0].process (channelData[i], res, crackleAmt / 20.0f, 12.0f);
+                }
+            }
+        }
+
+        spectralDenoiser[0].processBlock (channelData, numSamples, hissDb, harmShield);
     }
 
     // Delta Mode: Output = TimeAlignedOriginal[n - latency] - Cleaned[n]
