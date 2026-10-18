@@ -4,9 +4,15 @@ on:
   push:
     paths:
       - 'plugins/VacuumTapeSim/**'
+      - '.github/workflows/vacuum_tape_sim.yml'
+    branches: [ "main", "master" ]
+    tags: [ "vacuumtapesim-*" ]
   pull_request:
     paths:
       - 'plugins/VacuumTapeSim/**'
+      - '.github/workflows/vacuum_tape_sim.yml'
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -55,3 +61,62 @@ jobs:
         name: VacuumTapeSim-macOS-AU
         path: build/VacuumTapeSim_artefacts/Release/AU/Vacuum Tape Sim.component
         if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: VacuumTapeSim-Windows-VST3
+          path: windows_vst3/Vacuum Tape Sim.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: VacuumTapeSim-macOS-VST3
+          path: macos_bundle/Vacuum Tape Sim.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: VacuumTapeSim-macOS-AU
+          path: macos_bundle/Vacuum Tape Sim.component
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/VacuumTapeSim-macOS-Universal.zip "Vacuum Tape Sim.vst3" "Vacuum Tape Sim.component"
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/VacuumTapeSim-Windows-x64.zip "Vacuum Tape Sim.vst3"
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: vacuumtapesim-v1.0.0
+          name: "Vacuum Tape Sim v1.0.0 — Tube Saturation & Tape Transport"
+          body: |
+            ### Vacuum Tape Sim v1.0.0 — Analog Tube Compression & Tape Hysteresis Emulation
+            
+            #### 📦 Direct Downloads:
+            - **[VacuumTapeSim-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/vacuumtapesim-v1.0.0/VacuumTapeSim-macOS-Universal.zip)** — VST3 and AU (Component) for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[VacuumTapeSim-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/vacuumtapesim-v1.0.0/VacuumTapeSim-Windows-x64.zip)** — VST3 64-bit for Windows.
+            
+            #### 🌟 Highlights:
+            - Physical "Voltage Drain" tube supply sag modeling.
+            - Dynamic magnetic tape hysteresis coercivity and mechanical wow & flutter transport simulation.
+            - Authentic Wallace loss filters.
+          files: |
+            release_pkgs/VacuumTapeSim-macOS-Universal.zip
+            release_pkgs/VacuumTapeSim-Windows-x64.zip
+

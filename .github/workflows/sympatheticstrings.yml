@@ -1,0 +1,122 @@
+name: Build SympatheticStrings
+
+on:
+  push:
+    paths:
+      - 'plugins/SympatheticStrings/**'
+      - '.github/workflows/sympatheticstrings.yml'
+    branches: [ "main", "master" ]
+    tags: [ "sympatheticstrings-*" ]
+  pull_request:
+    paths:
+      - 'plugins/SympatheticStrings/**'
+      - '.github/workflows/sympatheticstrings.yml'
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/SympatheticStrings -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SympatheticStrings-Windows-VST3
+        path: build/SympatheticStrings_artefacts/Release/VST3/Sympathetic Strings.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3/AU
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/SympatheticStrings -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SympatheticStrings-macOS-VST3
+        path: build/SympatheticStrings_artefacts/Release/VST3/Sympathetic Strings.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SympatheticStrings-macOS-AU
+        path: build/SympatheticStrings_artefacts/Release/AU/Sympathetic Strings.component
+        if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: SympatheticStrings-Windows-VST3
+          path: windows_vst3/Sympathetic Strings.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: SympatheticStrings-macOS-VST3
+          path: macos_bundle/Sympathetic Strings.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: SympatheticStrings-macOS-AU
+          path: macos_bundle/Sympathetic Strings.component
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/SympatheticStrings-macOS-Universal.zip "Sympathetic Strings.vst3" "Sympathetic Strings.component"
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/SympatheticStrings-Windows-x64.zip "Sympathetic Strings.vst3"
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: sympatheticstrings-v0.0.2
+          name: "Sympathetic Strings v0.0.2 — Dual-Polarization Waveguide & Resonator"
+          body: |
+            ### Sympathetic Strings v0.0.2 — Dual-Polarization Waveguide & Parabolic Jawari Resonator
+            
+            #### 📦 Direct Downloads:
+            - **[SympatheticStrings-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/sympatheticstrings-v0.0.2/SympatheticStrings-macOS-Universal.zip)** — VST3 and AU (Component) for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[SympatheticStrings-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/sympatheticstrings-v0.0.2/SympatheticStrings-Windows-x64.zip)** — VST3 64-bit for Windows.
+            
+            #### 🌟 Highlights:
+            - Dynamic energy-normalized boundary wrapping (Equal-Energy Twang Calibration).
+            - Jiva (cotton thread) boundary scattering and amplitude-dependent elliptical cross-polarization precession.
+            - 6-mode physical wooden body resonator.
+          files: |
+            release_pkgs/SympatheticStrings-macOS-Universal.zip
+            release_pkgs/SympatheticStrings-Windows-x64.zip
+

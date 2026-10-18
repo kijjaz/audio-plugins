@@ -5,10 +5,13 @@ on:
     paths:
       - 'plugins/FriedTofu/**'
       - '.github/workflows/friedtofu.yml'
+    branches: [ "main", "master" ]
+    tags: [ "friedtofu-*" ]
   pull_request:
     paths:
       - 'plugins/FriedTofu/**'
       - '.github/workflows/friedtofu.yml'
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -114,3 +117,75 @@ jobs:
         name: FriedTofu-Linux-VST3
         path: build/FriedTofu_artefacts/Release/VST3/Fried Tofu.vst3
         if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofu-Windows-VST3
+          path: windows_vst3/Fried Tofu.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofu-macOS-VST3
+          path: macos_bundle/Fried Tofu.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofu-macOS-AU
+          path: macos_bundle/Fried Tofu.component
+
+      - name: Download Linux VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofu-Linux-VST3
+          path: linux_vst3/Fried Tofu.vst3
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/FriedTofu-macOS-Universal.zip "Fried Tofu.vst3" "Fried Tofu.component"
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/FriedTofu-Windows-x64.zip "Fried Tofu.vst3"
+          cd ..
+          # Zip Linux VST3 Bundle
+          cd linux_vst3
+          zip -r ../release_pkgs/FriedTofu-Linux-x64.zip "Fried Tofu.vst3"
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: friedtofu-v1.0.0
+          name: "Fried Tofu v1.0.0 — Wave Digital Filter Diode Clipper"
+          body: |
+            ### Fried Tofu v1.0.0 — Wave Digital Filter Diode Clipper & Analog Saturation
+            
+            #### 📦 Direct Downloads:
+            - **[FriedTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-v1.0.0/FriedTofu-macOS-Universal.zip)** — VST3 and AU (Component) for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[FriedTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-v1.0.0/FriedTofu-Windows-x64.zip)** — VST3 64-bit for Windows.
+            - **[FriedTofu-Linux-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-v1.0.0/FriedTofu-Linux-x64.zip)** — VST3 64-bit for Linux.
+            
+            #### 🌟 Highlights:
+            - True one-port WDF non-linear solver with damped Newton-Raphson iteration.
+            - 4 Shockley diode models: Si 1N4148, Ge 1N34A, Schottky BAT41, and Red LED.
+            - Asymmetric odd/even harmonic blending and 4x polyphase oversampling.
+            - Real-time oscilloscope and dynamic transfer curve visualizer.
+          files: |
+            release_pkgs/FriedTofu-macOS-Universal.zip
+            release_pkgs/FriedTofu-Windows-x64.zip
+            release_pkgs/FriedTofu-Linux-x64.zip
+

@@ -5,10 +5,13 @@ on:
     paths:
       - 'plugins/FriedTofuMultiband/**'
       - '.github/workflows/friedtofu_multiband.yml'
+    branches: [ "main", "master" ]
+    tags: [ "friedtofu-multiband-*" ]
   pull_request:
     paths:
       - 'plugins/FriedTofuMultiband/**'
       - '.github/workflows/friedtofu_multiband.yml'
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -114,3 +117,74 @@ jobs:
         name: FriedTofuMultiband-Linux-VST3
         path: build/FriedTofuMultiband_artefacts/Release/VST3/Fried Tofu Multiband.vst3
         if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofuMultiband-Windows-VST3
+          path: windows_vst3/Fried Tofu Multiband.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofuMultiband-macOS-VST3
+          path: macos_bundle/Fried Tofu Multiband.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofuMultiband-macOS-AU
+          path: macos_bundle/Fried Tofu Multiband.component
+
+      - name: Download Linux VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FriedTofuMultiband-Linux-VST3
+          path: linux_vst3/Fried Tofu Multiband.vst3
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/FriedTofuMultiband-macOS-Universal.zip "Fried Tofu Multiband.vst3" "Fried Tofu Multiband.component"
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/FriedTofuMultiband-Windows-x64.zip "Fried Tofu Multiband.vst3"
+          cd ..
+          # Zip Linux VST3 Bundle
+          cd linux_vst3
+          zip -r ../release_pkgs/FriedTofuMultiband-Linux-x64.zip "Fried Tofu Multiband.vst3"
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: friedtofu-multiband-v1.0.0
+          name: "Fried Tofu Multiband v1.0.0 — 3-Band Linear-Phase WDF Diode Clipper"
+          body: |
+            ### Fried Tofu Multiband v1.0.0 — 3-Band Linear-Phase WDF Diode Saturation & Clipper
+            
+            #### 📦 Direct Downloads:
+            - **[FriedTofuMultiband-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-multiband-v1.0.0/FriedTofuMultiband-macOS-Universal.zip)** — VST3 and AU (Component) for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[FriedTofuMultiband-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-multiband-v1.0.0/FriedTofuMultiband-Windows-x64.zip)** — VST3 64-bit for Windows.
+            - **[FriedTofuMultiband-Linux-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-multiband-v1.0.0/FriedTofuMultiband-Linux-x64.zip)** — VST3 64-bit for Linux.
+            
+            #### 🌟 Highlights:
+            - Mathematically perfect nulling (~ -300 dB) complementary linear-phase FIR crossover network.
+            - Independent WDF diode solver per band (Low, Mid, High) with 4 diode topologies.
+            - Per-band Drive, Diode selector, and solo/mute/trim controls.
+          files: |
+            release_pkgs/FriedTofuMultiband-macOS-Universal.zip
+            release_pkgs/FriedTofuMultiband-Windows-x64.zip
+            release_pkgs/FriedTofuMultiband-Linux-x64.zip
+

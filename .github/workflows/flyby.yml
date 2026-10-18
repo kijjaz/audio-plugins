@@ -4,9 +4,15 @@ on:
   push:
     paths:
       - 'plugins/FlyBy/**'
+      - '.github/workflows/flyby.yml'
+    branches: [ "main", "master" ]
+    tags: [ "flyby-*" ]
   pull_request:
     paths:
       - 'plugins/FlyBy/**'
+      - '.github/workflows/flyby.yml'
+    branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -55,3 +61,62 @@ jobs:
         name: FlyBy-macOS-AU
         path: build/FlyBy_artefacts/Release/AU/FlyBy.component
         if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FlyBy-Windows-VST3
+          path: windows_vst3/FlyBy.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: FlyBy-macOS-VST3
+          path: macos_bundle/FlyBy.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: FlyBy-macOS-AU
+          path: macos_bundle/FlyBy.component
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/FlyBy-macOS-Universal.zip FlyBy.vst3 FlyBy.component
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/FlyBy-Windows-x64.zip FlyBy.vst3
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: flyby-v1.0.0
+          name: "FlyBy v1.0.0 — 3D Binaural Spatial Panner"
+          body: |
+            ### FlyBy v1.0.0 — 3D Binaural Spatial Panner & Dynamic Elevation Engine
+            
+            #### 📦 Direct Downloads:
+            - **[FlyBy-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/flyby-v1.0.0/FlyBy-macOS-Universal.zip)** — VST3 and AU (Component) for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[FlyBy-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/flyby-v1.0.0/FlyBy-Windows-x64.zip)** — VST3 64-bit for Windows.
+            
+            #### 🌟 Highlights:
+            - Spherical Rayleigh-Woodworth ITD & dual pinna notches with overhead presence.
+            - Transient preservation attack detection to eliminate pinna comb-filtering smear.
+            - Dynamic speed-adaptive Doppler frequency shifts and autonomous 3D flight trajectories.
+          files: |
+            release_pkgs/FlyBy-macOS-Universal.zip
+            release_pkgs/FlyBy-Windows-x64.zip
+
