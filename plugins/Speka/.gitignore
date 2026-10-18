@@ -1,0 +1,7 @@
+build/
+speka_cli
+*.aux
+*.log
+*.out
+*.toc
+*.wav

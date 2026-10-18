@@ -1,0 +1,69 @@
+name: Build Speka
+
+on:
+  push:
+    paths:
+      - 'plugins/Speka/**'
+      - '.github/workflows/speka.yml'
+    branches: [ "main", "master" ]
+  pull_request:
+    paths:
+      - 'plugins/Speka/**'
+      - '.github/workflows/speka.yml'
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/Speka -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Speka-Windows-VST3
+        path: build/Speka_artefacts/Release/VST3/Speka.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3/AU/App
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/Speka -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Speka-macOS-VST3
+        path: build/Speka_artefacts/Release/VST3/Speka.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Speka-macOS-AU
+        path: build/Speka_artefacts/Release/AU/Speka.component
+        if-no-files-found: error
+
+    - name: Upload Standalone App Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Speka-macOS-Standalone
+        path: build/Speka_artefacts/Release/Standalone/Speka.app
+        if-no-files-found: error

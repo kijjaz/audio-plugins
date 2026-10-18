@@ -4,20 +4,44 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-## 🚀 Available Plugins & Quick Links
+## ⚡ Quick Download Hub (Pre-built Binaries)
 
-### 1. [Surgical Restore](plugins/SurgicalRestore/README.md)
-* **Type**: Neural Audio Restoration, Vintage Vinyl Denoiser & Mastering Suite (VST3 / AU / Standalone).
-* **Key Features**: 100% synthetically trained machine learning models, Mid/Side (M/S) deep scratch and anti-phase click extraction, Levinson-Durbin LPC residual inpainting, dynamic groove-chatter De-Crackle engine, and Decision-Directed neural De-Hiss with psychoacoustic Bark critical band smoothing and Harmonic Comb Shielding (protects brass, sax, and quadruple-reed overtones).
-* **Performance**: 88x real-time throughput at 96 kHz consuming ~1.1% CPU.
-* 📦 **[Download Latest SurgicalRestore Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/surgical_restore.yml)**
+All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **Windows (x64)**, and **Linux**. You can download the latest binaries directly from the latest successful CI runs below:
+
+| Plugin | Type / Format | Status & Download Link | Supported OS |
+| :--- | :--- | :--- | :--- |
+| **Fried Tofu** | WDF Diode Clipper & Analog Saturation (VST3, AU, Standalone) | [![FriedTofu](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml)** | macOS, Windows, Linux |
+| **Fried Tofu Multiband** | 3-Band Linear-Phase WDF Diode Clipper (VST3, AU, Standalone) | [![FriedTofuMultiband](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu_multiband.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu_multiband.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu_multiband.yml)** | macOS, Windows, Linux |
+| **AetherBeam Reverb** | 3D Ray-Tracing Acoustic Reverb (VST3, AU, Standalone) | [![AetherBeam](https://github.com/kijjaz/audio-plugins/actions/workflows/aetherbeam.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/aetherbeam.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/aetherbeam.yml)** | macOS, Windows, Linux |
+| **Vacuum Tape Sim** | Tube Saturation & Tape Transport (VST3, AU, Standalone) | [![VacuumTapeSim](https://github.com/kijjaz/audio-plugins/actions/workflows/vacuum_tape_sim.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/vacuum_tape_sim.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/vacuum_tape_sim.yml)** | macOS, Windows |
+| **IronStack** | 8-Amp Preamp & Cabinet Simulator (VST3, AU, Standalone) | [![IronStack](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml)** | macOS, Windows |
+| **Sympathetic Strings** | Dual-Polarization Waveguide & Parabolic Jawari Resonator | [![SympatheticStrings](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml)** | macOS, Windows |
+| **FlyBy** | 3D Binaural Spatial Panner (VST3, AU, Standalone) | [![FlyBy](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml)** | macOS, Windows |
+| **ConcreteMachine** | Musique Concrète Workstation & TapeOS (VST3, AU, Standalone) | [![ConcreteMachine](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml)** | macOS, Windows |
+| **Speka** | 1980s PC Speaker & PIT 8253 1-Bit Transducer Emulator (VST3, AU, Standalone) | [![Speka](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml)** | macOS, Windows |
+| **FlyByWeb** | Web Audio / AudioWorklet 3D Panner (JavaScript Library) | [Web Demo & Source](plugins/FlyByWeb/README.md) | Browser / Web Audio |
+
+> **💡 How to download from GitHub Actions:**
+> 1. Click **[Get Latest Builds]** for your desired plugin above.
+> 2. Click the top-most run with a green checkmark (✅).
+> 3. Scroll to the bottom of the page under **Artifacts** and click to download your OS package (e.g. `*-macOS-VST3`, `*-macOS-AU`, or `*-Windows-VST3`).
+> *(Note: A free GitHub account login is required by GitHub to download action artifacts).*
 
 ---
 
-### 2. [Fried Tofu](plugins/FriedTofu/README.md)
+## 🚀 Available Plugins & Details
+
+### 1. [Fried Tofu](plugins/FriedTofu/README.md)
 * **Type**: Wave Digital Filter (WDF) Diode Clipper & Analog Saturation.
 * **Key Features**: True one-port WDF non-linear solver with damped Newton-Raphson iteration, 4 Shockley diode models (Si 1N4148, Ge 1N34A, Schottky BAT41, Red LED), asymmetric odd/even harmonic blending, 4x polyphase oversampling, real-time oscilloscope, and dynamic static transfer curve visualizer.
 * 📦 **[Download Latest Fried Tofu Builds (macOS, Windows, Linux)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml)**
+
+---
+
+### 2. [Fried Tofu Multiband](plugins/FriedTofuMultiband/README.md)
+* **Type**: 3-Band Linear-Phase WDF Diode Saturation & Clipper.
+* **Key Features**: Mathematically perfect nulling ($\approx -300\,\text{dB}$) complementary linear-phase FIR crossover network, independent WDF diode solver per band (Low, Mid, High), per-band Drive, Diode selector, and solo/mute/trim controls.
+* 📦 **[Download Latest Fried Tofu Multiband Builds (macOS, Windows, Linux)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu_multiband.yml)**
 
 ---
 
@@ -43,15 +67,17 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-### 6. [Discrete 808](plugins/Discrete808/)
-* **Type**: Component-Level Analog Drum Synthesis.
-* **Key Features**: Exact component-level modeling of vintage transistor circuits, bridled T-network resonators, germanium diode clipping, and voice parameter randomization.
+### 6. [Sympathetic Strings (v0.0.2)](plugins/SympatheticStrings/)
+* **Type**: Dual-Polarization Waveguide & Parabolic Jawari Resonator (VST3 / AU / Standalone).
+* **Key Features**: Dynamic energy-normalized boundary wrapping (Equal-Energy Twang Calibration across all velocities), Jiva (cotton thread) boundary scattering, amplitude-dependent elliptical cross-polarization precession, 6-mode physical wooden body resonator, per-string `[M]` Mute / `[S]` Solo buttons, resonant string loop filter, and flexible drone voicing with custom semitone/cent micro-tuning.
+* 📦 **[Download Latest SympatheticStrings Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml)**
 
 ---
 
 ### 7. [ConcreteMachine](plugins/ConcreteMachine/)
 * **Type**: Musique Concrète Workstation & Experimental TapeOS.
 * **Key Features**: Chaos-driven tape looping, Morphophone multi-tap head mechanism, and algorithmic spatial montage.
+* 📦 **[Download Latest ConcreteMachine Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml)**
 
 ---
 
@@ -62,7 +88,14 @@ A collection of professional, open-source audio DSP plugins and experimental syn
 
 ---
 
-### 9. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
+### 9. [Speka](plugins/Speka/README.md)
+* **Type**: Physical Transducer & 1-Bit Digital Audio Modulation Simulator (IBM PC 5150).
+* **Key Features**: Authentic RealSound PWM, Sigma-Delta PDM, Delta Modulation, and Direct 1-Bit modes; full physical voice-coil current integration, 2.25″ Alnico paper cone & 12mm ceramic piezo models, cabinet acoustics with panel rattle, vintage beige desktop chassis with amber CRT oscilloscope, and 8 factory calibrated presets at 0.0 dB trim.
+* 📦 **[Download Latest Speka Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml)**
+
+---
+
+### 10. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
 * **Type**: Zero-Dependency Web Audio 3D Spatial Audio Library & AudioWorklet Engine.
 * **Key Features**: Drop-in high-performance AudioWorklet DSP with zero build dependencies, Three.js / WebXR camera tracking integration, full feature parity with FlyBy VST3, opt-in ceiling and floor boundary reflections, and interactive browser-based 3D radar demo.
 

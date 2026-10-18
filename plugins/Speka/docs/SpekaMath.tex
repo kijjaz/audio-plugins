@@ -1,0 +1,268 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{microtype}
+\geometry{margin=1in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{Physics and Mathematics of "Speka"}\\
+\large A Physical and Electromechanical Simulation of 1-Bit PWM PC Speaker Audio and Chassis Acoustics}
+\author{\textbf{Kijjaz} (kijjaz@gmail.com) \and \textbf{Antigravity Audio Research}}
+\date{October 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper details the complete mathematical formulation and digital signal processing (DSP) architecture for \textbf{Speka}, an audio engine designed to physically simulate the playback of digitized audio through the internal 1-bit PC speaker of vintage personal computers (such as the IBM 5150, PC/XT, AT, and 1990s clones). Rather than treating the PC speaker as a naive bitcrusher or 1-bit square wave clipper, Speka couples four interacting physical layers: (1) the timer hardware and software modulation domain (Intel 8253/8254 PIT, RealSound PWM, and 2nd-order Sigma-Delta PDM with PolyBLEP anti-aliasing); (2) the single-ended unipolar electrical drive circuit (7406 open-collector inverter, $33\,\Omega$ ballast resistor, and inductive voice coil RL dynamics with motional back-EMF and supply rail droop); (3) the non-linear electromechanical transducer dynamics (a 2.25-inch stamped paper cone with progressive suspension hardening $K(x)$, magnetic flux decay $Bl(x)$, physical spider bottoming, and high-frequency cone breakup modes, with an alternate 12\,mm ceramic piezoelectric disk model); and (4) the acoustic enclosure and chassis acoustics (internal steel case cavity resonances, front plastic slotted bezel filtering, and excursion-triggered chassis chatter and rattle).
+\end{abstract}
+
+\section{Introduction and Historical Context}
+In early IBM PC-compatible architectures (commencing with the IBM 5150 in 1981), sound output was restricted to an internal miniature loudspeaker intended strictly for diagnostic beep codes. The hardware lacked a digital-to-analog converter (DAC) or programmable sound generator (PSG) such as the Texas Instruments SN76489 or General Instrument AY-3-8910 found in gaming consoles and contemporary microcomputers.
+
+Despite these binary limitations, ingenious programmers in the late 1980s and 1990s—notably Access Software with their \textit{RealSound} system in \textit{Mean Streets} (1989)—devised pulse-width modulation (PWM) and pulse-density modulation (PDM) techniques that exploited the electromechanical inertia of the speaker cone as an analog reconstruction low-pass filter, enabling multi-bit digitized speech, sound effects, and music playback.
+
+\section{Timer Hardware and 1-Bit Modulation}
+
+\subsection{The Intel 8253/8254 Programmable Interval Timer (PIT)}
+The PC speaker output is driven by Channel~2 of the Intel 8253/8254 PIT. The timer's clock input is tied to the master system oscillator divided by 12:
+\begin{equation}
+f_{\text{pit}} = \frac{14.318181\overline{81}\text{ MHz}}{12} = 1,193,181.\overline{81}\text{ Hz} \approx 1.193182\text{ MHz}
+\end{equation}
+
+Digital software control interfaces through system port \texttt{0x61} (PPI Port B):
+\begin{itemize}
+    \item \textbf{Bit 0 (TMR2 GATE)}: Controls the count gate of Timer~2.
+    \item \textbf{Bit 1 (SPKR DATA)}: Logically ANDed with the OUT2 output of Timer~2 to gate the signal to the 7406 driver.
+\end{itemize}
+
+\subsection{Mode A: RealSound Pulse-Width Modulation (PWM)}
+In RealSound-style reproduction, Timer 2 is operated in Mode 2 (rate generator) or Mode 0 (interrupt on terminal count). The CPU reloads the counter value at an audio frame/carrier frequency $f_c \in [8\text{ kHz}, 24\text{ kHz}]$.
+
+The number of master clock cycles per PWM carrier period is:
+\begin{equation}
+N_{\text{period}} = \left\lfloor \frac{f_{\text{pit}}}{f_c} \right\rfloor
+\end{equation}
+
+The effective quantization bit-depth $B_{\text{eff}}$ achievable at carrier rate $f_c$ is strictly bounded by:
+\begin{equation}
+B_{\text{eff}} = \log_2(N_{\text{period}}) = \log_2\left( \left\lfloor \frac{f_{\text{pit}}}{f_c} \right\rfloor \right)
+\end{equation}
+
+\begin{table}[h]
+\centering
+\caption{RealSound Carrier Frequencies vs. Effective Resolution}
+\begin{tabular}{ccc}
+\toprule
+Carrier Frequency $f_c$ & Timer Period $N_{\text{period}}$ & Effective Bit Depth $B_{\text{eff}}$ \\
+\midrule
+$8,000\text{ Hz}$ & 149 ticks & 7.22 bits (150 levels) \\
+$11,025\text{ Hz}$ & 108 ticks & 6.75 bits (109 levels) \\
+$16,500\text{ Hz}$ & 72 ticks & 6.17 bits (73 levels) \\
+$18,900\text{ Hz}$ & 63 ticks & 5.98 bits (64 levels) \\
+$24,000\text{ Hz}$ & 49 ticks & 5.61 bits (50 levels) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For an input audio sample $x[k] \in [-1.0, 1.0]$, the high-state pulse duration $t_{\text{high}}$ (in clock ticks) is:
+\begin{equation}
+t_{\text{high}}[k] = \text{round}\left( \frac{x[k] + 1.0}{2.0} \cdot N_{\text{period}} \right), \quad t_{\text{high}} \in [0, N_{\text{period}}]
+\end{equation}
+
+The continuous-time duty cycle is:
+\begin{equation}
+D[k] = \frac{t_{\text{high}}[k]}{N_{\text{period}}}
+\end{equation}
+
+\subsection{Mode B: Pulse-Density Modulation (2nd-Order Sigma-Delta)}
+For demoscene tracker routines and utilities like \texttt{pcspkr}, audio is quantized into a 1-bit stream using a second-order noise-shaping Sigma-Delta ($\Sigma\Delta$) structure:
+\begin{align}
+e[n] &= x[n] - y[n-1] \\
+v_1[n] &= v_1[n-1] + c_1 \cdot e[n] \\
+v_2[n] &= v_2[n-1] + v_1[n] - c_2 \cdot y[n-1] \\
+y[n] &= \begin{cases} 1 & \text{if } v_2[n] \ge 0 \\ 0 & \text{if } v_2[n] < 0 \end{cases}
+\end{align}
+where $c_1 = 0.8$ and $c_2 = 0.5$ ensure stability while pushing quantization noise into the supersonic region.
+
+\subsection{Anti-Aliased Edge Synthesis via PolyBLEP}
+Direct sampling of discontinuous 1-bit pulses at digital audio rates ($f_s = 44.1\text{ kHz}\text{--}96\text{ kHz}$) causes severe foldover aliasing. To avoid this, transitions between binary levels $y \in \{0, 1\}$ are smoothed using a second-order Polynomial Band-Limited Step (PolyBLEP) residual $R(t)$:
+\begin{equation}
+R(t) = \begin{cases}
+2t - t^2 - 1 & \text{for } 0 \le t < 1 \\
+t^2 + 2t + 1 & \text{for } -1 \le t < 0 \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation}
+where $t = \frac{\tau - \tau_{\text{edge}}}{T_s}$ is the normalized time offset from the sampling instant. For every rising step of magnitude $\Delta y = +1$, $R(t)$ is added; for every falling step $\Delta y = -1$, $R(t)$ is subtracted.
+
+\subsection{CPU Interrupt Latency and DRAM Refresh Jitter}
+On real x86 systems, DRAM refresh cycles (which steal $\sim 5\%$ of bus memory cycles via DMA Channel 0 every $15.1\,\mu\text{s}$) and interrupt servicing create jitter in timer reload times:
+\begin{equation}
+t_{\text{jitter}}[n] = \sigma_j \cdot w[n]
+\end{equation}
+where $w[n] \sim \mathcal{N}(0, 1)$ is Gaussian noise and $\sigma_j \approx 2\text{--}5\,\mu\text{s}$. This reproduces the characteristic low-level background "grate" and flutter of PC speaker audio.
+
+\section{Electrical Circuit and Driver Stage}
+
+\subsection{Unipolar 7406 Open-Collector Drive}
+The speaker in the IBM 5150 is connected between the $+5\text{V}$ DC supply rail and the collector output of an open-collector inverter (7406) via a $33\,\Omega$, $0.5\text{W}$ series current-limiting resistor $R_{\text{ballast}}$:
+
+\begin{equation}
+R_{\text{ballast}} = 33\,\Omega, \quad R_e \approx 8\,\Omega, \quad L_e \approx 0.2\text{ mH}
+\end{equation}
+
+When the 7406 is ON (output pulled to ground):
+\begin{equation}
+I_{\text{peak}} \approx \frac{V_{cc} - V_{\text{sat}}}{R_{\text{ballast}} + R_e + R_{\text{on}}} = \frac{5.0 - 0.2}{33 + 8 + 0.5} \approx 115\text{ mA}
+\end{equation}
+
+When the 7406 is OFF: the collector is high-impedance ($I \to 0$).
+
+\paragraph{Critical Insight (Unipolar Excursion Bias):} The voice coil is driven \textbf{strictly unipolar}. Current never reverses. Consequently, at a $50\%$ duty cycle, the voice coil experiences a persistent DC bias current of $\bar{I} \approx 57\text{ mA}$, shifting the cone equilibrium position forward:
+\begin{equation}
+x_{\text{DC}} = \frac{Bl_0 \cdot \bar{I}}{k_0} \approx \frac{1.2 \cdot 0.057}{3400} \approx 0.02\text{ mm}
+\end{equation}
+
+\subsection{Voice Coil RL State-Space with Motional Back-EMF}
+The electrical current $i(t)$ through the voice coil satisfies:
+\begin{equation}
+\frac{di}{dt} = \frac{1}{L_e} \left[ V_{\text{drive}}(t) - \left( R_{\text{ballast}} + R_e + R_{\text{sw}}(t) \right) i(t) - e_b(t) \right]
+\end{equation}
+where:
+\begin{itemize}
+    \item $R_{\text{sw}}(t) = 0.5\,\Omega$ when the 7406 gate is active ($y = 1$), and $R_{\text{sw}}(t) = R_{\text{off}} \approx 10^5\,\Omega$ when off ($y = 0$).
+    \item $e_b(t) = Bl(x) \cdot v(t)$ is the motional back-EMF generated by cone velocity $v(t) = \dot{x}(t)$.
+    \item $V_{\text{drive}}(t) = V_{cc} - \Delta V_{\text{droop}}(t)$ models power supply rail sag under sustained current demand.
+\end{itemize}
+
+\subsection{Power Supply Rail Sag}
+The $+5\text{V}$ rail droops slightly when current is drawn through the speaker circuit:
+\begin{equation}
+\frac{d\Delta V_{\text{droop}}}{dt} = \frac{1}{\tau_{\text{droop}}} \left( \gamma_{\text{sag}} \cdot i(t) - \Delta V_{\text{droop}}(t) \right)
+\end{equation}
+with recovery time constant $\tau_{\text{droop}} \approx 15\text{ ms}$ and sag coefficient $\gamma_{\text{sag}} \approx 2.5\text{ V/A}$. This creates dynamic compression on dense pulse trains.
+
+\section{Electromechanical Speaker Cone Dynamics}
+
+\subsection{Non-Linear Thiele-Small Equations of Motion}
+The mechanical motion of the 2.25-inch paper cone is modeled as a coupled second-order non-linear mass-spring-damper system:
+\begin{align}
+\frac{dx}{dt} &= v(t) \\
+\frac{dv}{dt} &= \frac{1}{M_{ms}} \left[ F_{\text{Lorentz}}(t) - R_{ms} v(t) - K(x) \cdot x(t) \right]
+\end{align}
+
+where:
+\begin{itemize}
+    \item $M_{ms} = 0.7 \times 10^{-3}\text{ kg}$ (moving mass of cone, voice coil, and co-moving air).
+    \item $R_{ms} = 0.35\text{ N}\cdot\text{s/m}$ (mechanical suspension damping, yielding $Q_{ms} \approx 4.4$).
+    \item $F_{\text{Lorentz}}(t) = Bl(x) \cdot i(t)$ is the electromagnetic driving force.
+\end{itemize}
+
+\subsection{Nonlinear Suspension Hardening $K(x)$}
+As cone excursion approaches the spider and surround limits ($X_{\max} \approx \pm 0.8\text{ mm}$), the restoring spring force stiffens dramatically:
+\begin{equation}
+K(x) = k_0 \cdot \left( 1 + \beta_2 x^2 + \beta_4 x^4 \right)
+\end{equation}
+where $k_0 = 3400\text{ N/m}$ sets the small-signal fundamental resonance:
+\begin{equation}
+f_0 = \frac{1}{2\pi} \sqrt{\frac{k_0}{M_{ms}}} \approx \frac{1}{2\pi} \sqrt{\frac{3400}{0.0007}} \approx 350.8\text{ Hz}
+\end{equation}
+and $\beta_2 = 4 \times 10^6\text{ m}^{-2}$, $\beta_4 = 1.6 \times 10^{13}\text{ m}^{-4}$. When excursion exceeds $X_{\max}$, an inelastic mechanical boundary condition is applied:
+\begin{equation}
+v(t^+) = -\eta \cdot v(t^-), \quad \eta = 0.12
+\end{equation}
+producing hard mechanical "bottoming" clicks.
+
+\subsection{Magnetic Force Factor Decay $Bl(x)$}
+When the voice coil leaves the uniform magnetic field of the permanent magnet gap:
+\begin{equation}
+Bl(x) = Bl_0 \cdot \exp\left( -\frac{x^2}{2 \sigma_{\text{gap}}^2} \right)
+\end{equation}
+with $Bl_0 = 1.2\text{ N/A}$ and $\sigma_{\text{gap}} = 0.6\text{ mm}$.
+
+\subsection{Far-Field Radiated Sound Pressure}
+For a miniature unbaffled or small-baffled driver, sound pressure in the acoustic far field is proportional to \textbf{cone acceleration}, not displacement:
+\begin{equation}
+p_{\text{acoustic}}(t) = \frac{\rho_0 S_d}{2 \pi r} \cdot \frac{d^2 x}{dt^2} = \frac{\rho_0 S_d}{2 \pi r} \cdot \frac{dv}{dt}
+\end{equation}
+where $\rho_0 \approx 1.204\text{ kg/m}^3$ is air density and $S_d \approx 2.5 \times 10^{-3}\text{ m}^2$ is effective cone area.
+
+\subsection{Cone Breakup Modes}
+At frequencies above $1.5\text{ kHz}$, the paper diaphragm ceases to move as a rigid piston, exhibiting flexural bending modes. We model three modal resonators in parallel:
+\begin{equation}
+H_{\text{breakup}}(s) = \sum_{m=1}^{3} \frac{g_m \omega_m^2}{s^2 + \frac{\omega_m}{Q_m} s + \omega_m^2}
+\end{equation}
+with:
+\begin{itemize}
+    \item Mode 1: $f_1 = 2,400\text{ Hz}$, $Q_1 = 3.2$, $g_1 = 0.35$
+    \item Mode 2: $f_2 = 3,750\text{ Hz}$, $Q_2 = 4.0$, $g_2 = 0.25$
+    \item Mode 3: $f_3 = 5,100\text{ Hz}$, $Q_3 = 2.8$, $g_3 = 0.15$
+\end{itemize}
+
+\subsection{Alternative Transducer: Ceramic Piezoelectric Disk}
+For budget clone motherboards and laptops (e.g. ThinkPad 700 series), the driver is a 12\,mm ceramic piezo buzzer:
+\begin{equation}
+H_{\text{piezo}}(s) = \left( \frac{s}{s + \omega_{\text{hp}}} \right)^2 \cdot \frac{\omega_p^2}{s^2 + \frac{\omega_p}{Q_p} s + \omega_p^2}
+\end{equation}
+with high-pass cutoff $f_{\text{hp}} = 1,200\text{ Hz}$ ($12\text{ dB/octave}$ low-end cutoff) and prominent ceramic resonance $f_p = 3,250\text{ Hz}$ ($Q_p = 8.5$).
+
+\section{Enclosure and Chassis Acoustics}
+
+\subsection{Internal Metal Case Cavity Modes}
+The speaker's rear wave radiates into the steel enclosure (dimensions $\sim 45 \times 40 \times 15\text{ cm}$). The internal standing waves and metallic reflections are represented as an un-damped resonator bank:
+\begin{equation}
+H_{\text{chassis}}(s) = 1 + \sum_{k=1}^{4} \frac{a_k \omega_k s}{s^2 + \frac{\omega_k}{Q_k} s + \omega_k^2}
+\end{equation}
+with frequencies $f_k \in \{185\text{ Hz}, 340\text{ Hz}, 520\text{ Hz}, 790\text{ Hz}\}$ and $Q_k \in [3.5, 6.0]$.
+
+\subsection{Front Plastic Bezel Grille Damping}
+The sound radiating forward traverses narrow horizontal ventilation slots in the ABS front fascia:
+\begin{equation}
+H_{\text{bezel}}(s) = \frac{\omega_b^2}{s^2 + \frac{\omega_b}{Q_b} s + \omega_b^2}, \quad f_b = 4,500\text{ Hz}, \; Q_b = 0.707
+\end{equation}
+
+\subsection{Excursion-Triggered Chassis Rattle and Screw Chatter}
+Vibration from large cone displacements excites chassis panel chatter:
+\begin{equation}
+E_{\text{rattle}}[n] = (1 - \alpha_r) E_{\text{rattle}}[n-1] + \alpha_r \cdot \max(0, |x[n]| - X_{\text{rattle\_thresh}})
+\end{equation}
+When $E_{\text{rattle}}[n] > 0$, an impulsive stochastic noise burst is excited:
+\begin{equation}
+rattle[n] = E_{\text{rattle}}[n] \cdot \xi[n] \cdot \text{sign}(v[n])
+\end{equation}
+where $\xi[n]$ is uniform white noise bandpass-filtered between $800\text{ Hz}$ and $3.5\text{ kHz}$.
+
+\section{Numerical Discretization and Real-Time Integration}
+The coupled state system $[\Delta V_{\text{droop}}, i, x, v]^T$ is updated using a second-order Runge-Kutta (Heun's method) or semi-implicit Euler integration scheme at the sampling period $T_s = 1/f_s$. Because typical audio sample rates ($44.1\text{ kHz}$ to $96\text{ kHz}$) provide time steps $T_s \approx 10\text{--}22\,\mu\text{s}$, a $2\times$ or $4\times$ internal sub-stepping loop is used for the stiff electrical voice coil equation ($L_e = 0.2\text{ mH}$, $R \approx 41\,\Omega \implies \tau_e = 4.8\,\mu\text{s}$):
+
+\begin{equation}
+\Delta t = \frac{T_s}{M_{\text{substeps}}}, \quad M_{\text{substeps}} = 4
+\end{equation}
+
+This guarantees numerical stability without requiring implicit matrix solvers.
+
+\section{Conclusion}
+The resulting \textbf{Speka} system provides an authentic physical model capturing:
+\begin{enumerate}
+    \item The characteristic high-pitched carrier whine and timer-step distortion of vintage RealSound PWM routines.
+    \item The unipolar asymmetric forward-cone excursion bias and voice coil motional back-EMF.
+    \item The thin, boxy $350\text{ Hz}$ cone resonance, high-frequency paper breakup modes, and complete absence of sub-bass.
+    \item The metallic chassis ringing and mechanical chatter characteristic of vintage beige desktop personal computers.
+\end{enumerate}
+
+\end{document}
