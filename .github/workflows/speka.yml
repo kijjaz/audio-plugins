@@ -6,6 +6,7 @@ on:
       - 'plugins/Speka/**'
       - '.github/workflows/speka.yml'
     branches: [ "main", "master" ]
+    tags: [ "speka-*" ]
   pull_request:
     paths:
       - 'plugins/Speka/**'
@@ -67,3 +68,68 @@ jobs:
         name: Speka-macOS-Standalone
         path: build/Speka_artefacts/Release/Standalone/Speka.app
         if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: Speka-Windows-VST3
+          path: windows_vst3/Speka.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: Speka-macOS-VST3
+          path: macos_bundle/Speka.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: Speka-macOS-AU
+          path: macos_bundle/Speka.component
+
+      - name: Download macOS Standalone
+        uses: actions/download-artifact@v4
+        with:
+          name: Speka-macOS-Standalone
+          path: macos_bundle/Speka.app
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/Speka-macOS-Universal.zip Speka.vst3 Speka.component Speka.app
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/Speka-Windows-x64.zip Speka.vst3
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: speka-v0.1.0
+          name: "Speka v0.1.0 — IBM PC 5150 Speaker & PIT-8253 Transducer Emulator"
+          body: |
+            ### Speka v0.1.0 — 1980s PC Speaker & PIT-8253 1-Bit Transducer Emulator
+            
+            #### 📦 Direct Downloads:
+            - **[Speka-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-macOS-Universal.zip)** — VST3, AU (Component), and Standalone app for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[Speka-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-Windows-x64.zip)** — VST3 64-bit for Windows.
+            
+            #### 🌟 Highlights:
+            - Authentic RealSound PWM, Sigma-Delta PDM, Delta Modulation, and Direct 1-Bit modes.
+            - Physical voice-coil current integration and dual transducer models (2.25″ Paper Cone & 12mm Ceramic Piezo).
+            - Internal component loudness calibration with all 8 factory presets resting at 0.0 dB unity trim.
+            - IBM 5150 beige desktop chassis with monochrome amber CRT oscilloscope and BIOS diagnostic telemetry.
+          files: |
+            release_pkgs/Speka-macOS-Universal.zip
+            release_pkgs/Speka-Windows-x64.zip

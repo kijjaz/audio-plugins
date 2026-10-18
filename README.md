@@ -18,14 +18,12 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 | **Sympathetic Strings** | Dual-Polarization Waveguide & Parabolic Jawari Resonator | [![SympatheticStrings](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml)** | macOS, Windows |
 | **FlyBy** | 3D Binaural Spatial Panner (VST3, AU, Standalone) | [![FlyBy](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml)** | macOS, Windows |
 | **ConcreteMachine** | Musique Concrète Workstation & TapeOS (VST3, AU, Standalone) | [![ConcreteMachine](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml)** | macOS, Windows |
-| **Speka** | 1980s PC Speaker & PIT 8253 1-Bit Transducer Emulator (VST3, AU, Standalone) | [![Speka](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml)** | macOS, Windows |
+| **Speka** | 1980s PC Speaker & PIT 8253 1-Bit Transducer Emulator (VST3, AU, Standalone) | [![Speka](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-Windows-x64.zip) | macOS, Windows |
 | **FlyByWeb** | Web Audio / AudioWorklet 3D Panner (JavaScript Library) | [Web Demo & Source](plugins/FlyByWeb/README.md) | Browser / Web Audio |
 
-> **💡 How to download from GitHub Actions:**
-> 1. Click **[Get Latest Builds]** for your desired plugin above.
-> 2. Click the top-most run with a green checkmark (✅).
-> 3. Scroll to the bottom of the page under **Artifacts** and click to download your OS package (e.g. `*-macOS-VST3`, `*-macOS-AU`, or `*-Windows-VST3`).
-> *(Note: A free GitHub account login is required by GitHub to download action artifacts).*
+> **💡 How to download pre-built plugins:**
+> * **Direct 1-Click Downloads (Fastest, No Login Required):** Visit **[GitHub Releases](https://github.com/kijjaz/audio-plugins/releases)** to grab `.zip` archives directly.
+> * **Raw CI Artifacts via GitHub Actions:** Click **[Get Latest Builds]** in the table, click the top-most successful run (✅), and scroll down to the **Artifacts** section at the bottom of the page *(GitHub login required for action artifacts)*.
 
 ---
 
@@ -91,7 +89,10 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 ### 9. [Speka](plugins/Speka/README.md)
 * **Type**: Physical Transducer & 1-Bit Digital Audio Modulation Simulator (IBM PC 5150).
 * **Key Features**: Authentic RealSound PWM, Sigma-Delta PDM, Delta Modulation, and Direct 1-Bit modes; full physical voice-coil current integration, 2.25″ Alnico paper cone & 12mm ceramic piezo models, cabinet acoustics with panel rattle, vintage beige desktop chassis with amber CRT oscilloscope, and 8 factory calibrated presets at 0.0 dB trim.
-* 📦 **[Download Latest Speka Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml)**
+* 📦 **[Direct 1-Click Downloads (GitHub Releases — No Login Required)](https://github.com/kijjaz/audio-plugins/releases)**:
+  - 🍎 **[Download Speka-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-macOS-Universal.zip)** *(Universal: Apple Silicon arm64 & Intel — VST3, AU, Standalone App)*
+  - 🪟 **[Download Speka-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-Windows-x64.zip)** *(Windows 64-bit VST3)*
+* ⚙️ **[View GitHub Actions CI Build Runs](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml)**
 
 ---
 
