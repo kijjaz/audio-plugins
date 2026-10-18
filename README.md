@@ -17,7 +17,6 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 | **IronStack** | 8-Amp Preamp & Cabinet Simulator (VST3, AU, Standalone) | [![IronStack](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/ironstack.yml)** | macOS, Windows |
 | **Sympathetic Strings** | Dual-Polarization Waveguide & Parabolic Jawari Resonator | [![SympatheticStrings](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml)** | macOS, Windows |
 | **FlyBy** | 3D Binaural Spatial Panner (VST3, AU, Standalone) | [![FlyBy](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml)** | macOS, Windows |
-| **ConcreteMachine** | Musique Concrète Workstation & TapeOS (VST3, AU, Standalone) | [![ConcreteMachine](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml) <br>👉 **[Get Latest Builds](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml)** | macOS, Windows |
 | **Speka** | 1980s PC Speaker & PIT 8253 1-Bit Transducer Emulator (VST3, AU, Standalone) | [![Speka](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-Windows-x64.zip) | macOS, Windows |
 | **FlyByWeb** | Web Audio / AudioWorklet 3D Panner (JavaScript Library) | [Web Demo & Source](plugins/FlyByWeb/README.md) | Browser / Web Audio |
 
@@ -72,21 +71,14 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 
 ---
 
-### 7. [ConcreteMachine](plugins/ConcreteMachine/)
-* **Type**: Musique Concrète Workstation & Experimental TapeOS.
-* **Key Features**: Chaos-driven tape looping, Morphophone multi-tap head mechanism, and algorithmic spatial montage.
-* 📦 **[Download Latest ConcreteMachine Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/concretemachine.yml)**
-
----
-
-### 8. [FlyBy (VST3 / AU)](plugins/FlyBy/README.md)
+### 7. [FlyBy (VST3 / AU)](plugins/FlyBy/README.md)
 * **Type**: 3D Binaural Spatial Panner & Dynamic Elevation Engine.
 * **Key Features**: Spherical Rayleigh-Woodworth ITD, dual pinna notches ($N_1, N_2$) with overhead zenith presence and torso reflection, transient preservation attack detection to eliminate pinna comb-filtering smear, floor grounding reflections, dynamic speed-adaptive Doppler frequency shifts, and autonomous 3D flight trajectories (Swoop, Helical, Zenith, Flutter).
 * 📦 **[Download Latest FlyBy Builds (macOS, Windows)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml)**
 
 ---
 
-### 9. [Speka](plugins/Speka/README.md)
+### 8. [Speka](plugins/Speka/README.md)
 * **Type**: Physical Transducer & 1-Bit Digital Audio Modulation Simulator (IBM PC 5150).
 * **Key Features**: Authentic RealSound PWM, Sigma-Delta PDM, Delta Modulation, and Direct 1-Bit modes; full physical voice-coil current integration, 2.25″ Alnico paper cone & 12mm ceramic piezo models, cabinet acoustics with panel rattle, vintage beige desktop chassis with amber CRT oscilloscope, and 8 factory calibrated presets at 0.0 dB trim.
 * 📦 **[Direct 1-Click Downloads (GitHub Releases — No Login Required)](https://github.com/kijjaz/audio-plugins/releases)**:
@@ -96,7 +88,7 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 
 ---
 
-### 10. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
+### 9. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
 * **Type**: Zero-Dependency Web Audio 3D Spatial Audio Library & AudioWorklet Engine.
 * **Key Features**: Drop-in high-performance AudioWorklet DSP with zero build dependencies, Three.js / WebXR camera tracking integration, full feature parity with FlyBy VST3, opt-in ceiling and floor boundary reflections, and interactive browser-based 3D radar demo.
 
