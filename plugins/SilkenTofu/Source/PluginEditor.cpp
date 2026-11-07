@@ -431,8 +431,8 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
         g.fillRect(bounds);
     }
 
-    // 2. Top 1970s Wrinkle-Finish Black Enamel Header Bar with Worn Brass Trim
-    auto headerRect = juce::Rectangle<float>(44.0f, 6.0f, bounds.getWidth() - 88.0f, 46.0f);
+    // 2. Top 1970s Wrinkle-Finish Black Enamel Header Bar with Worn Brass Trim (inset inside x = 54..926)
+    auto headerRect = juce::Rectangle<float>(54.0f, 6.0f, bounds.getWidth() - 108.0f, 46.0f);
     g.setColour(juce::Colours::black.withAlpha(0.45f));
     g.fillRoundedRectangle(headerRect.translated(0.0f, 2.5f), 5.0f);
 
@@ -442,7 +442,7 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
     g.fillRoundedRectangle(headerRect, 5.0f);
 
     // Riveted Brass Nameplate on Left of Header (Pure ASCII, zero truncation)
-    auto badgeRect = juce::Rectangle<float>(52.0f, 11.0f, 388.0f, 36.0f);
+    auto badgeRect = juce::Rectangle<float>(62.0f, 11.0f, 382.0f, 36.0f);
     juce::ColourGradient brassGrad(juce::Colour(0xffd2b173), badgeRect.getX(), badgeRect.getY(),
                                    juce::Colour(0xff94733b), badgeRect.getRight(), badgeRect.getBottom(), false);
     g.setGradientFill(brassGrad);
@@ -460,12 +460,12 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
     }
 
     g.setColour(juce::Colour(0xff171108));
-    g.setFont(juce::FontOptions(18.5f, juce::Font::bold));
-    g.drawText("SILKEN TOFU   MODEL LA-2A / T4B", 62, 12, 368, 20, juce::Justification::centredLeft);
+    g.setFont(juce::FontOptions(18.0f, juce::Font::bold));
+    g.drawText("SILKEN TOFU   MODEL LA-2A / T4B", 72, 12, 362, 20, juce::Justification::centredLeft);
 
     g.setColour(juce::Colour(0xff362813));
-    g.setFont(juce::FontOptions(9.2f, juce::Font::bold));
-    g.drawText("SER. NO. 1974-0420  |  ELECTRO-OPTICAL LEVELING AMPLIFIER", 62, 29, 368, 14, juce::Justification::centredLeft);
+    g.setFont(juce::FontOptions(9.0f, juce::Font::bold));
+    g.drawText("SER. NO. 1974-0420  |  ELECTRO-OPTICAL LEVELING AMPLIFIER", 72, 29, 362, 14, juce::Justification::centredLeft);
 
     // 3. Draw Tightly Cropped 1970s Bakelite VU Meter + Dynamic Physical Needle
     if (!vuMeterBounds_.isEmpty())
@@ -610,7 +610,7 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
         const juce::String specText = (crystalChoice == 0) ? "TAU-1: 40 ms   |   MEMORY: 4.5 s"
                                     : (crystalChoice == 1) ? "TAU-1: 18 ms   |   MEMORY: 1.8 s"
                                                            : "TAU-1: 4 ms    |   MEMORY: 0.4 s";
-        auto specPill = juce::Rectangle<float>(202.0f, 266.0f, 214.0f, 22.0f);
+        auto specPill = juce::Rectangle<float>(206.0f, 266.0f, 214.0f, 22.0f);
         g.setColour(juce::Colour(0xff181512));
         g.fillRoundedRectangle(specPill, 3.5f);
         g.setColour(juce::Colour(0xff6e5d47));
@@ -658,9 +658,9 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
 
     const float botY = 304.0f;
     const float botH = 244.0f;
-    drawVintageSubplate({ 44.0f,  botY, 425.0f, botH }, "T4-BEAN SEMICONDUCTOR & ELECTRO-OPTICAL LAB", juce::Colour(0xff68c97a));
-    drawVintageSubplate({ 479.0f, botY, 262.0f, botH }, "OVERSAMPLED 12AX7A / 12BH7A & UTC IRON",      juce::Colour(0xffe08a2e));
-    drawVintageSubplate({ 751.0f, botY, 185.0f, botH }, "R37 SIDECHAIN & DUCKING",                     juce::Colour(0xffc99e4c));
+    drawVintageSubplate({ 54.0f,  botY, 415.0f, botH }, "T4-BEAN SEMICONDUCTOR & ELECTRO-OPTICAL LAB", juce::Colour(0xff68c97a));
+    drawVintageSubplate({ 478.0f, botY, 258.0f, botH }, "OVERSAMPLED 12AX7A / 12BH7A & UTC IRON",      juce::Colour(0xffe08a2e));
+    drawVintageSubplate({ 745.0f, botY, 181.0f, botH }, "R37 SIDECHAIN & DUCKING",                     juce::Colour(0xffc99e4c));
 
     // 6. Draw Live 1970s Amber CRT / Destriau Knee & Two-Trap Memory Scope inside Bottom of Card 1!
     if (!curveScopeBounds_.isEmpty())
@@ -817,24 +817,24 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
 
 void SilkenTofuAudioProcessorEditor::resized()
 {
-    // 1. Header Bar Controls (inset inside the 1970s rack ears x = 44..936)
-    presetBox_.setBounds(448, 15, 208, 28);
-    modeBox_.setBounds(662, 15, 132, 28);
-    oversamplingBox_.setBounds(800, 15, 130, 28);
+    // 1. Header Bar Controls (inset inside the 1970s faceplate x = 54..926, with seam at 43 and 936)
+    presetBox_.setBounds(450, 15, 202, 28);
+    modeBox_.setBounds(658, 15, 130, 28);
+    oversamplingBox_.setBounds(794, 15, 124, 28);
 
     // 2. Top Row: Classic Teletronix LA-2A Front Panel
-    // Left: Peak Reduction (Large Scalloped Bakelite Knob)
-    peakReductionLabel_.setBounds(46, 60, 146, 15);
-    peakReductionSlider_.setBounds(46, 75, 146, 156);
-    autoLevelBtn_.setBounds(52, 242, 134, 28);
+    // Left: Peak Reduction (Large Scalloped Bakelite Knob — inset at x = 54)
+    peakReductionLabel_.setBounds(54, 60, 142, 15);
+    peakReductionSlider_.setBounds(54, 75, 142, 156);
+    autoLevelBtn_.setBounds(58, 242, 134, 28);
 
     // Center-Left & Center-Right: Symmetrical 1970s VU Meter & T4-Bean Tube Inspection Windows
-    vuMeterBounds_    = { 202, 60, 280, 142 };
-    t4CanisterBounds_ = { 496, 60, 280, 142 };
+    vuMeterBounds_    = { 206, 60, 276, 142 };
+    t4CanisterBounds_ = { 496, 60, 276, 142 };
 
     // Center Row Under VU & Canister (y = 212..294): Labeled Crystal Selector + Balanced Mix & Trim Knobs
-    crystalLabel_.setBounds(204, 214, 210, 14);
-    crystalBox_.setBounds(202, 232, 214, 28);
+    crystalLabel_.setBounds(206, 214, 214, 14);
+    crystalBox_.setBounds(206, 232, 214, 28);
 
     mixLabel_.setBounds(452, 212, 118, 14);
     mixSlider_.setBounds(452, 226, 118, 72);
@@ -842,59 +842,59 @@ void SilkenTofuAudioProcessorEditor::resized()
     trimLabel_.setBounds(608, 212, 118, 14);
     trimSlider_.setBounds(608, 226, 118, 72);
 
-    // Right: Makeup Gain (Large Scalloped Bakelite Knob)
-    gainLabel_.setBounds(786, 60, 146, 15);
-    gainSlider_.setBounds(786, 75, 146, 156);
+    // Right: Makeup Gain (Large Scalloped Bakelite Knob — inset ending at x = 924)
+    gainLabel_.setBounds(782, 60, 142, 15);
+    gainSlider_.setBounds(782, 75, 142, 156);
 
-    // 3. Bottom Row Sub-Plates (y = 304 .. 548)
-    const int knobW = 80;
+    // 3. Bottom Row Sub-Plates (y = 304 .. 548, x = 54 .. 926)
+    const int knobW = 78;
     const int knobH = 96;
     const int c1Y1  = 334;
     const int c1Y2  = 462;
 
-    // Card 1: T4-Bean Semiconductor & Electro-Optical Lab (x = 44..469)
-    trapMemoryLabel_.setBounds(50,    c1Y1, knobW, 15);
-    trapMemorySlider_.setBounds(50,   c1Y1 + 15, knobW, knobH);
+    // Card 1: T4-Bean Semiconductor & Electro-Optical Lab (x = 54..469)
+    trapMemoryLabel_.setBounds(58,    c1Y1, knobW, 15);
+    trapMemorySlider_.setBounds(58,   c1Y1 + 15, knobW, knobH);
 
-    topologyLabel_.setBounds(133,     c1Y1, knobW, 15);
-    topologySlider_.setBounds(133,    c1Y1 + 15, knobW, knobH);
+    topologyLabel_.setBounds(139,     c1Y1, knobW, 15);
+    topologySlider_.setBounds(139,    c1Y1 + 15, knobW, knobH);
 
-    punchHoldoffLabel_.setBounds(216, c1Y1, knobW, 15);
-    punchHoldoffSlider_.setBounds(216, c1Y1 + 15, knobW, knobH);
+    punchHoldoffLabel_.setBounds(220, c1Y1, knobW, 15);
+    punchHoldoffSlider_.setBounds(220, c1Y1 + 15, knobW, knobH);
 
-    biasGlowLabel_.setBounds(299,     c1Y1, knobW, 15);
-    biasGlowSlider_.setBounds(299,    c1Y1 + 15, knobW, knobH);
+    biasGlowLabel_.setBounds(301,     c1Y1, knobW, 15);
+    biasGlowSlider_.setBounds(301,    c1Y1 + 15, knobW, knobH);
 
     cellAgeLabel_.setBounds(382,      c1Y1, knobW, 15);
     cellAgeSlider_.setBounds(382,     c1Y1 + 15, knobW, knobH);
 
-    // Bottom of Card 1: Live Two-Trap Release Trajectory CRT Scope (y = 456..532)
-    curveScopeBounds_ = { 56, c1Y2 - 4, 401, 74 };
+    // Bottom of Card 1: Live Two-Trap Release Trajectory CRT Scope (y = 458..532)
+    curveScopeBounds_ = { 66, c1Y2 - 4, 391, 74 };
 
-    // Card 2: Oversampled 12AX7A / 12BH7A & UTC Iron (x = 479..741)
-    tubeDriveLabel_.setBounds(487,   c1Y1, knobW, 15);
-    tubeDriveSlider_.setBounds(487,  c1Y1 + 15, knobW, knobH);
+    // Card 2: Oversampled 12AX7A / 12BH7A & UTC Iron (x = 478..736)
+    tubeDriveLabel_.setBounds(486,   c1Y1, knobW, 15);
+    tubeDriveSlider_.setBounds(486,  c1Y1 + 15, knobW, knobH);
 
-    bPlusSagLabel_.setBounds(570,    c1Y1, knobW, 15);
-    bPlusSagSlider_.setBounds(570,   c1Y1 + 15, knobW, knobH);
+    bPlusSagLabel_.setBounds(568,    c1Y1, knobW, 15);
+    bPlusSagSlider_.setBounds(568,   c1Y1 + 15, knobW, knobH);
 
-    millerAirLabel_.setBounds(653,   c1Y1, knobW, 15);
-    millerAirSlider_.setBounds(653,  c1Y1 + 15, knobW, knobH);
+    millerAirLabel_.setBounds(650,   c1Y1, knobW, 15);
+    millerAirSlider_.setBounds(650,  c1Y1 + 15, knobW, knobH);
 
-    fatCathodeBtn_.setBounds(489, c1Y2 - 4, 118, 28);
-    load600Btn_.setBounds(613,    c1Y2 - 4, 118, 28);
-    tubeScopeBounds_ = { 489, c1Y2 + 30, 242, 40 };
+    fatCathodeBtn_.setBounds(488, c1Y2 - 4, 116, 28);
+    load600Btn_.setBounds(610,    c1Y2 - 4, 116, 28);
+    tubeScopeBounds_ = { 488, c1Y2 + 30, 238, 40 };
 
-    // Card 3: R37 Sidechain & External Key Ducking (#3) (x = 751..936)
-    r37Label_.setBounds(760,   c1Y1, knobW, 15);
-    r37Slider_.setBounds(760,  c1Y1 + 15, knobW, knobH);
+    // Card 3: R37 Sidechain & External Key Ducking (#3) (x = 745..926)
+    r37Label_.setBounds(754,   c1Y1, knobW, 15);
+    r37Slider_.setBounds(754,  c1Y1 + 15, knobW, knobH);
 
-    scHpLabel_.setBounds(846,  c1Y1, knobW, 15);
-    scHpSlider_.setBounds(846, c1Y1 + 15, knobW, knobH);
+    scHpLabel_.setBounds(838,  c1Y1, knobW, 15);
+    scHpSlider_.setBounds(838, c1Y1 + 15, knobW, knobH);
 
-    extKeyBtn_.setBounds(762,   c1Y2 - 4,  162, 32);
-    scListenBtn_.setBounds(762, c1Y2 + 36, 162, 32);
+    extKeyBtn_.setBounds(756,   c1Y2 - 4,  158, 32);
+    scListenBtn_.setBounds(756, c1Y2 + 36, 158, 32);
 
-    // 4. Bottom Recessed 1970s Amber LED / Signal Manual Inspector Strip
-    infoStripBounds_ = { 44, 556, 892, 52 };
+    // 4. Bottom Recessed 1970s Amber LED / Signal Manual Inspector Strip (x = 54..926)
+    infoStripBounds_ = { 54, 556, 872, 52 };
 }
