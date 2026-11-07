@@ -10,6 +10,7 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 
 | Plugin | Type / Format | Status & Download Link | Supported OS |
 | :--- | :--- | :--- | :--- |
+| **Silken Tofu** | Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Oversampled Tube/Iron Suite (VST3, AU, Standalone) | [![SilkenTofu](https://github.com/kijjaz/audio-plugins/actions/workflows/silkentofu.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/silkentofu.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v1.0.0/SilkenTofu-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v1.0.0/SilkenTofu-Windows-x64.zip) | macOS, Windows |
 | **Fried Tofu** | WDF Diode Clipper & Analog Saturation (VST3, AU) | [![FriedTofu](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-v1.0.0/FriedTofu-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-v1.0.0/FriedTofu-Windows-x64.zip) • [Linux](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-v1.0.0/FriedTofu-Linux-x64.zip) | macOS, Windows, Linux |
 | **Fried Tofu Multiband** | 3-Band Linear-Phase WDF Diode Clipper (VST3, AU) | [![FriedTofuMultiband](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu_multiband.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/friedtofu_multiband.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-multiband-v1.0.0/FriedTofuMultiband-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-multiband-v1.0.0/FriedTofuMultiband-Windows-x64.zip) • [Linux](https://github.com/kijjaz/audio-plugins/releases/download/friedtofu-multiband-v1.0.0/FriedTofuMultiband-Linux-x64.zip) | macOS, Windows, Linux |
 | **AetherBeam Reverb** | 3D Ray-Tracing Acoustic Reverb (VST3, AU) | [![AetherBeam](https://github.com/kijjaz/audio-plugins/actions/workflows/aetherbeam.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/aetherbeam.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/aetherbeam-v1.0.0/AetherBeam-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/aetherbeam-v1.0.0/AetherBeam-Windows-x64.zip) • [Linux](https://github.com/kijjaz/audio-plugins/releases/download/aetherbeam-v1.0.0/AetherBeam-Linux-x64.zip) | macOS, Windows, Linux |
@@ -18,6 +19,8 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 | **Sympathetic Strings** | Dual-Polarization Waveguide & Resonator (VST3, AU) | [![SympatheticStrings](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/sympatheticstrings.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/sympatheticstrings-v0.0.2/SympatheticStrings-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/sympatheticstrings-v0.0.2/SympatheticStrings-Windows-x64.zip) | macOS, Windows |
 | **FlyBy** | 3D Binaural Spatial Panner (VST3, AU) | [![FlyBy](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/flyby.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/flyby-v1.0.0/FlyBy-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/flyby-v1.0.0/FlyBy-Windows-x64.zip) | macOS, Windows |
 | **Speka** | 1980s PC Speaker & PIT 8253 1-Bit Transducer Emulator (VST3, AU, Standalone) | [![Speka](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/speka.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/speka-v0.1.0/Speka-Windows-x64.zip) | macOS, Windows |
+| **Kindnes** | NES Ricoh 2A03 APU Synthesizer & Sound Design Suite (VST3, AU, Standalone) | [![Kindnes](https://github.com/kijjaz/audio-plugins/actions/workflows/kindnes.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/kindnes.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v1.0.0/Kindnes-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v1.0.0/Kindnes-Windows-x64.zip) | macOS, Windows |
+| **NLIR** | Non-Linear Impulse Response: WaveNet + S4 + Multi-Basis Convolver (VST3, AU, Standalone) | [![NLIR](https://github.com/kijjaz/audio-plugins/actions/workflows/nlir.yml/badge.svg)](https://github.com/kijjaz/audio-plugins/actions/workflows/nlir.yml) <br>📦 **[Direct Releases](https://github.com/kijjaz/audio-plugins/releases)**: [macOS](https://github.com/kijjaz/audio-plugins/releases/download/nlir-v1.0.0/NLIR-macOS-Universal.zip) • [Windows](https://github.com/kijjaz/audio-plugins/releases/download/nlir-v1.0.0/NLIR-Windows-x64.zip) | macOS, Windows |
 | **FlyByWeb** | Web Audio / AudioWorklet 3D Panner (JavaScript Library) | [Web Demo & Source](plugins/FlyByWeb/README.md) | Browser / Web Audio |
 
 > **💡 How to download pre-built plugins:**
@@ -27,6 +30,16 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 ---
 
 ## 🚀 Available Plugins & Details
+
+### 0. [Silken Tofu](plugins/SilkenTofu/README.md)
+* **Type**: Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Oversampled Tube/Iron Suite (VST3, AU, Standalone).
+* **Key Features**: White-box Destriau AC electroluminescent panel + Two-Trap CdS/CdSe/Silicon semiconductor carrier physics (60 ms fast release + multi-second history-dependent deep-trap tail), T4B Pre-Warmth (`Bias Glow`), Negative Trap Memory (`Optical Bloom`), Feedback/Feed-Forward topology morph, selectable `1x / 2x / 4x / 8x` polyphase oversampled `UTC HA-100X` + `12AX7A` (`Fat Ck` & `C2` grid-conduction shift) + `12BH7A` White Cathode Follower (`600Ω` load & `275V B+` rail sag) + `UTC A-24` output stage, `R37` HF emphasis, `SC Listen`, and True External Key Optical Ducking.
+* 📦 **[Direct 1-Click Downloads (GitHub Releases — No Login Required)](https://github.com/kijjaz/audio-plugins/releases)**:
+  - 🍎 **[Download SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v1.0.0/SilkenTofu-macOS-Universal.zip)** *(Universal: Apple Silicon arm64 & Intel — VST3, AU, Standalone App)*
+  - 🪟 **[Download SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v1.0.0/SilkenTofu-Windows-x64.zip)** *(Windows 64-bit VST3)*
+* ⚙️ **[View GitHub Actions CI Build Runs](https://github.com/kijjaz/audio-plugins/actions/workflows/silkentofu.yml)**
+
+---
 
 ### 1. [Fried Tofu](plugins/FriedTofu/README.md)
 * **Type**: Wave Digital Filter (WDF) Diode Clipper & Analog Saturation.
@@ -115,6 +128,26 @@ All plugins are continuously built for **macOS (Universal arm64 + x86_64)**, **W
 ### 9. [FlyByWeb (Open-Source Web Audio Library)](plugins/FlyByWeb/README.md)
 * **Type**: Zero-Dependency Web Audio 3D Spatial Audio Library & AudioWorklet Engine.
 * **Key Features**: Drop-in high-performance AudioWorklet DSP with zero build dependencies, Three.js / WebXR camera tracking integration, full feature parity with FlyBy VST3, opt-in ceiling and floor boundary reflections, and interactive browser-based 3D radar demo.
+
+---
+
+### 10. [Kindnes](plugins/Kindnes/README.md)
+* **Type**: High-Fidelity NES Ricoh 2A03 APU Synthesizer & FDS 2C33 Sound Design Suite (VST3, AU, Standalone).
+* **Key Features**: Cycle-accurate 2A03 APU emulation with PolyBLEP anti-aliased square waves (4 duty cycles + continuous PWM), 32-step 4-bit staircase triangle with authentic DC-offset pop attack, 15-bit Galois LFSR noise (Mode 0 white & Mode 1 metallic 93-step), Famicom Disk System (FDS 2C33) 64-step wavetable oscillator with 32-step hardware FM unit, tracker-style chiptune embellishments (pitch scoop, delayed vibrato bloom, duty cycle attack morph, pseudo-echo), supercharged 1-bit DPCM sampler with 8-pad drum machine, velocity-to-slew grit modulation, real-time through-audio crusher, authentic non-linear MOS resistor-ladder DAC mixing with TND ducking, analog motherboard filter stage (90 Hz / 440 Hz HPF + 14 kHz LPF), 8-voice polyphonic APU mode, stereo unison detune, tracker-style 60Hz/50Hz frame-sequencer macro arpeggiator, and Konami VRC6 cartridge expansion.
+* 📦 **[Direct 1-Click Downloads (GitHub Releases — No Login Required)](https://github.com/kijjaz/audio-plugins/releases)**:
+  - 🍎 **[Download Kindnes-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v1.0.0/Kindnes-macOS-Universal.zip)** *(Universal: Apple Silicon arm64 & Intel — VST3, AU, Standalone App)*
+  - 🪟 **[Download Kindnes-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v1.0.0/Kindnes-Windows-x64.zip)** *(Windows 64-bit VST3)*
+  - 📦 **[All GitHub Releases](https://github.com/kijjaz/audio-plugins/releases)**
+
+---
+
+### 11. [NLIR — Non-Linear Impulse Response](plugins/NLIR/README.md)
+* **Type**: Hybrid Neural WaveNet + S4 State-Space + Multi-Basis Volterra Convolver (VST3, AU, Standalone).
+* **Key Features**: Bridges the gap between NAM (short-memory non-linearity) and static IRs (linear long tails). Features a 4-layer Gated Dilated WaveNet + Diagonal S4D State-Space continuous-time core (`NeuralCore.h`), 4-Basis Volterra/Hammerstein harmonic decomposition (`H1 LIN`, `H3 ODD`, `H2 EVEN`, `S4 SAG`), 4-stage dispersive allpass chirp cascade for spring/plate dispersion, 8-line non-linear Hadamard FDN with tape wow/flutter, portable `.nlir` JSON profile loader/exporter, Python hardware capture & training scripts, and 8 factory `.nlir` profiles calibrated at `0.0 dB` unity master trim.
+* 📦 **[Direct 1-Click Downloads (GitHub Releases — No Login Required)](https://github.com/kijjaz/audio-plugins/releases)**:
+  - 🍎 **[Download NLIR-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/nlir-v1.0.0/NLIR-macOS-Universal.zip)** *(Universal: Apple Silicon arm64 & Intel — VST3, AU, Standalone App)*
+  - 🪟 **[Download NLIR-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/nlir-v1.0.0/NLIR-Windows-x64.zip)** *(Windows 64-bit VST3)*
+* ⚙️ **[View GitHub Actions CI Build Runs](https://github.com/kijjaz/audio-plugins/actions/workflows/nlir.yml)**
 
 ---
 

@@ -1,0 +1,134 @@
+name: Build SilkenTofu
+
+on:
+  push:
+    paths:
+      - 'plugins/SilkenTofu/**'
+      - '.github/workflows/silkentofu.yml'
+    branches: [ "main", "master" ]
+    tags: [ "silkentofu-*" ]
+  pull_request:
+    paths:
+      - 'plugins/SilkenTofu/**'
+      - '.github/workflows/silkentofu.yml'
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: cmake -S plugins/SilkenTofu -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      run: cmake --build build --config Release --parallel
+
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SilkenTofu-Windows-VST3
+        path: build/SilkenTofu_artefacts/Release/VST3/Silken Tofu.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3/AU/App
+    runs-on: macos-14
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: cmake -S plugins/SilkenTofu -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+
+    - name: Build
+      run: cmake --build build --config Release --parallel
+
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SilkenTofu-macOS-VST3
+        path: build/SilkenTofu_artefacts/Release/VST3/Silken Tofu.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SilkenTofu-macOS-AU
+        path: build/SilkenTofu_artefacts/Release/AU/Silken Tofu.component
+        if-no-files-found: error
+
+    - name: Upload Standalone App Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SilkenTofu-macOS-Standalone
+        path: build/SilkenTofu_artefacts/Release/Standalone/Silken Tofu.app
+        if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: SilkenTofu-Windows-VST3
+          path: windows_vst3/SilkenTofu.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: SilkenTofu-macOS-VST3
+          path: macos_bundle/SilkenTofu.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: SilkenTofu-macOS-AU
+          path: macos_bundle/SilkenTofu.component
+
+      - name: Download macOS Standalone
+        uses: actions/download-artifact@v4
+        with:
+          name: SilkenTofu-macOS-Standalone
+          path: macos_bundle/SilkenTofu.app
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          cd macos_bundle
+          zip -r ../release_pkgs/SilkenTofu-macOS-Universal.zip SilkenTofu.vst3 SilkenTofu.component SilkenTofu.app
+          cd ..
+          cd windows_vst3
+          zip -r ../release_pkgs/SilkenTofu-Windows-x64.zip SilkenTofu.vst3
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: silkentofu-v1.0.0
+          name: "Silken Tofu v1.0.0 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier"
+          body: |
+            ### Silken Tofu v1.0.0 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Oversampled Tube/Iron Suite
+
+            #### 📦 Direct 1-Click Downloads:
+            - **[SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v1.0.0/SilkenTofu-macOS-Universal.zip)** — VST3, AU (Component), and Standalone app for macOS (Universal: Apple Silicon arm64 & Intel x86_64).
+            - **[SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v1.0.0/SilkenTofu-Windows-x64.zip)** — VST3 64-bit for Windows.
+
+            #### 🌟 Key Features:
+            - **White-Box T4B Electro-Optical Physics:** Destriau AC electroluminescence law + Two-Trap CdS/CdSe/Silicon semiconductor carrier recombination (60 ms fast release + multi-second history-dependent deep-trap tail).
+            - **T4B Pre-Warmth (`Bias Glow`) & Negative Trap Memory (`Optical Bloom`):** Eliminates cold-start vocal overshoot or flips deep-trap coupling negative for reverse optical swell.
+            - **Oversampled Analog Tube & Transformer Chain (`1x / 2x / 4x / 8x`):** `UTC HA-100X` Permalloy $1/f$ flux hysteresis, `12AX7A` Koren triode with `C2` grid-conduction bias shift & `Fat Ck` cathode bypass cap mod, `12BH7A` White Cathode Follower with `600Ω` vintage console load, and shared `275V B+` power supply rail sag.
+            - **External Key Optical Ducking + R37 Tilt EQ + SC Listen:** Route an external key input directly into the T4B electroluminescent panel for two-stage optical sidechain ducking.
+          files: |
+            release_pkgs/SilkenTofu-macOS-Universal.zip
+            release_pkgs/SilkenTofu-Windows-x64.zip
+
