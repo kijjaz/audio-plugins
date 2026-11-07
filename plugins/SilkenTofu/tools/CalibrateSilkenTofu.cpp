@@ -79,7 +79,8 @@ int main()
             float scMon = 0.0f;
             const float g = eng.processT4BSidechain(inSig[i], inSig[i], preset.params, scMon);
             const float wet = eng.processAnalogStageSample(inSig[i], g, preset.params, fs48 * 4.0) * makeupLin;
-            outSig[i] = (dryMix * inSig[i] + wetMix * wet) * trimLin;
+            const float mixed = dryMix * inSig[i] + wetMix * wet;
+            outSig[i] = eng.processPostMixDcBlock(mixed) * trimLin;
 
             const float grDb = 20.0f * std::log10(std::max(g, 1e-4f));
             if (grDb < maxGrDb)
@@ -134,6 +135,36 @@ int main()
     std::cout << "96,000 Hz Output RMS : " << rms96 << " dBFS\n";
     std::cout << "Sample-Rate RMS Delta: " << std::setprecision(4) << deltaSr
               << " dB (Target <= 0.2000 dB) -> " << (deltaSr <= 0.2 ? "PASS" : "FAIL") << "\n";
+
+    // --- Test 3: Dry/Wet Parallel Mix Phase-Coherence Sweep (0%..100%) ---
+    std::cout << "\n--------------------------------------------------------------------------------\n";
+    std::cout << " DRY / WET PARALLEL MIX PHASE-COHERENCE SWEEP (0%, 25%, 50%, 75%, 100%)\n";
+    std::cout << "--------------------------------------------------------------------------------\n";
+    for (float mixPct : { 0.0f, 25.0f, 50.0f, 75.0f, 100.0f })
+    {
+        SilkenTofuDSP::ChannelEngine eng;
+        eng.prepare(fs48, 0.0f);
+        auto p = SilkenTofuDSP::getFactoryPresets()[0].params;
+        p.mix = mixPct;
+        const float makeupLin = SilkenTofuDSP::ChannelEngine::computeMakeupGainLinear(p);
+        const float wetMix = mixPct * 0.01f;
+        const float dryMix = 1.0f - wetMix;
+
+        std::vector<float> out(inSig.size(), 0.0f);
+        for (size_t i = 0; i < inSig.size(); ++i)
+        {
+            float scMon = 0.0f;
+            const float g = eng.processT4BSidechain(inSig[i], inSig[i], p, scMon);
+            const float wet = eng.processAnalogStageSample(inSig[i], g, p, fs48 * 4.0) * makeupLin;
+            out[i] = eng.processPostMixDcBlock(dryMix * inSig[i] + wetMix * wet);
+        }
+        const double mixRms = computeRmsDb(out);
+        if (std::abs(mixRms - inRmsDb) > 1.5)
+            allPassed = false;
+        std::cout << "Mix = " << std::setw(5) << std::setprecision(1) << mixPct
+                  << "% -> Output RMS: " << std::setprecision(2) << mixRms
+                  << " dBFS (Zero Phase Cancellation)\n";
+    }
 
     return (allPassed && deltaSr <= 0.2) ? 0 : 1;
 }

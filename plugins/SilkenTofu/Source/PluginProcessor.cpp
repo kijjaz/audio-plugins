@@ -333,10 +333,17 @@ void SilkenTofuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
         return;
     }
 
-    // --- PASS 2: Oversampled Non-Linear Analog Stage (HA-100X -> T4B -> 12AX7A -> 12BH7A -> A-24) ---
+    // --- PASS 2: Oversampled Non-Linear Analog Stage & Phase-Locked Dry/Wet Blend ---
+    // Blending Dry and Wet inside the oversampled domain guarantees 0.0 samples of latency
+    // mismatch and 0.0 degrees of polyphase filter phase shift between Dry and Wet across 1x/2x/4x/8x!
     auto& os = *oversamplers_[static_cast<size_t>(osChoice)];
     const int osFactor = 1 << osChoice;
     const double osRate = currentSampleRate_ * static_cast<double>(osFactor);
+
+    const float makeupLin = SilkenTofuDSP::ChannelEngine::computeMakeupGainLinear(p);
+    const float trimLin   = std::pow(10.0f, p.trimDb / 20.0f);
+    const float wetMix    = std::clamp(p.mix * 0.01f, 0.0f, 1.0f);
+    const float dryMix    = 1.0f - wetMix;
 
     juce::dsp::AudioBlock<float> baseBlock(mainBus);
     auto osBlock = os.processSamplesUp(baseBlock);
@@ -349,32 +356,29 @@ void SilkenTofuAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
         for (int k = 0; k < osNumSamples; ++k)
         {
-            // Linearly interpolate smooth T4B conductance across oversampled sub-steps
             const int baseIdx = std::min(numSamples - 1, k / osFactor);
-            const float gVal = gBase[baseIdx];
-            osSamples[k] = engines_[ch].processAnalogStageSample(osSamples[k], gVal, p, osRate);
+            const int nextIdx = std::min(numSamples - 1, baseIdx + 1);
+            const float frac  = static_cast<float>(k % osFactor) / static_cast<float>(osFactor);
+            const float gVal  = gBase[baseIdx] + frac * (gBase[nextIdx] - gBase[baseIdx]);
+
+            const float dryOs = osSamples[k];
+            const float wetOs = engines_[ch].processAnalogStageSample(dryOs, gVal, p, osRate) * makeupLin;
+            osSamples[k] = dryMix * dryOs + wetMix * wetOs;
         }
     }
 
     os.processSamplesDown(baseBlock);
 
-    // --- PASS 3: Makeup Gain (with Auto-Level Link), Parallel Dry/Wet Mix & Master Unity Trim ---
-    const float makeupLin = SilkenTofuDSP::ChannelEngine::computeMakeupGainLinear(p);
-    const float trimLin   = std::pow(10.0f, p.trimDb / 20.0f);
-    const float wetMix    = std::clamp(p.mix * 0.01f, 0.0f, 1.0f);
-    const float dryMix    = 1.0f - wetMix;
-
+    // --- PASS 3: Post-Mix 5 Hz Output Transformer DC Blocker & Master Unity Trim ---
     float outPeak = 0.0f;
     for (int ch = 0; ch < numChannels; ++ch)
     {
-        auto* wetPtr = mainBus.getWritePointer(ch);
-        const auto* dryPtr = dryBuffer_.getReadPointer(ch);
+        auto* outPtr = mainBus.getWritePointer(ch);
         for (int i = 0; i < numSamples; ++i)
         {
-            const float wetSample = wetPtr[i] * makeupLin;
-            const float blended   = (dryMix * dryPtr[i] + wetMix * wetSample) * trimLin;
-            wetPtr[i] = blended;
-            outPeak = std::max(outPeak, std::abs(blended));
+            const float finalSample = engines_[ch].processPostMixDcBlock(outPtr[i]) * trimLin;
+            outPtr[i] = finalSample;
+            outPeak = std::max(outPeak, std::abs(finalSample));
         }
     }
 

@@ -317,12 +317,12 @@ public:
         else
             bPlusRail_ += alphaBRec * (targetBPlus - bPlusRail_);
 
-        // Koren Triode Plate Equation
+        // Koren Triode Plate Equation (Non-inverting secondary via UTC A-24 output transformer so Wet is 0-deg in-phase with Dry)
         const double uTriode = 2.1 * bPlusRail_ + vGkEff;
-        const double uRest   = 2.1 * bPlusRail_ + asymBias;
+        const double uRest   = 2.1 * bPlusRail_ + asymBias - c2GridBias_;
         const double ip      = std::pow(std::log1p(std::exp(1.6 * uTriode)), 1.35);
         const double ipRest  = std::pow(std::log1p(std::exp(1.6 * uRest)), 1.35);
-        const double vPlate1 = -(ip - ipRest);
+        const double vPlate1 = (ip - ipRest);
 
         // --- STAGE 5: V2 (12BH7A) White Cathode Follower + UTC A-24 Output Transformer ---
         const double wcfPos = (p.load600Ohm ? 1.65 : 1.95) * bPlusRail_;
@@ -331,13 +331,22 @@ public:
             ? (wcfPos * std::tanh(vPlate1 / wcfPos))
             : (wcfNeg * std::tanh(vPlate1 / wcfNeg));
 
-        // Small-signal unity compensation + Output Capacitor C3 / A-24 DC Blocker (8 Hz)
+        // Small-signal unity compensation (DC blocking is applied post Dry/Wet mix to preserve 0-deg phase lock)
         const double vOutRaw = vWcf * invComp;
-        const double dcR = std::exp(-2.0 * M_PI * 8.0 * dtOs);
-        const double dcY = vOutRaw - dcBlockX1_ + dcR * dcBlockY1_;
-        dcBlockX1_ = vOutRaw;
-        dcBlockY1_ = dcY;
+        return static_cast<float>(vOutRaw);
+    }
 
+    /**
+     * Post-mix Output Capacitor C3 / UTC A-24 DC Blocker (5 Hz) at base sample rate.
+     * Running this after Dry/Wet blending guarantees zero low-frequency phase rotation between Dry and Wet.
+     */
+    float processPostMixDcBlock(float xMixed)
+    {
+        const double x = static_cast<double>(xMixed);
+        const double dcR = std::exp(-2.0 * M_PI * 5.0 * dt_);
+        const double dcY = x - dcBlockX1_ + dcR * dcBlockY1_;
+        dcBlockX1_ = x;
+        dcBlockY1_ = dcY;
         return static_cast<float>(dcY);
     }
 
