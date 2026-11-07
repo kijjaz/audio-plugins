@@ -114,14 +114,14 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: silkentofu-v0.0.1
-          name: "Silken Tofu v0.0.1 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier"
+          tag_name: silkentofu-v0.0.2
+          name: "Silken Tofu v0.0.2 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier"
           body: |
-            ### Silken Tofu v0.0.1 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Oversampled Tube/Iron Suite
+            ### Silken Tofu v0.0.2 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Oversampled Tube/Iron Suite
 
             #### 📦 Direct 1-Click Downloads:
-            - **[SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.1/SilkenTofu-macOS-Universal.zip)** — VST3, AU (Component), and Standalone app for macOS (Universal: Apple Silicon arm64 & Intel x86_64).
-            - **[SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.1/SilkenTofu-Windows-x64.zip)** — VST3 64-bit for Windows.
+            - **[SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.2/SilkenTofu-macOS-Universal.zip)** — VST3, AU (Component), and Standalone app for macOS (Universal: Apple Silicon arm64 & Intel x86_64).
+            - **[SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.2/SilkenTofu-Windows-x64.zip)** — VST3 64-bit for Windows.
 
             #### 🌟 Key Features:
             - **White-Box T4B Electro-Optical Physics:** Destriau AC electroluminescence law + Two-Trap CdS/CdSe/Silicon semiconductor carrier recombination (60 ms fast release + multi-second history-dependent deep-trap tail).

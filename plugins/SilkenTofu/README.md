@@ -8,8 +8,8 @@ Whereas **Fried Tofu** is a crispy WDF diode clipper, **Silken Tofu** is its sil
 
 ## 📦 Direct 1-Click Downloads (GitHub Releases — No Login Required)
 
-* 🍎 **[Download SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.1/SilkenTofu-macOS-Universal.zip)** *(Universal: Apple Silicon `arm64` & Intel `x86_64` — VST3, AU, Standalone App)*
-* 🪟 **[Download SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.1/SilkenTofu-Windows-x64.zip)** *(Windows 64-bit VST3)*
+* 🍎 **[Download SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.2/SilkenTofu-macOS-Universal.zip)** *(Universal: Apple Silicon `arm64` & Intel `x86_64` — VST3, AU, Standalone App)*
+* 🪟 **[Download SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.2/SilkenTofu-Windows-x64.zip)** *(Windows 64-bit VST3)*
 * ⚙️ **[View GitHub Actions CI Build Runs](https://github.com/kijjaz/audio-plugins/actions/workflows/silkentofu.yml)**
 
 ---

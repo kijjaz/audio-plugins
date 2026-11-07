@@ -31,19 +31,25 @@ SilkenTofuAudioProcessorEditor::SilkenTofuAudioProcessorEditor(SilkenTofuAudioPr
     crystalBox_.addItemList({ "Vintage CdS (LA-2A)", "CdSe Vactrol (LA-3A)", "Fast Silicon (FET-Opto)" }, 1);
     addAndMakeVisible(crystalBox_);
 
+    crystalLabel_.setText("T4B PHOTOCELL CRYSTAL", juce::dontSendNotification);
+    crystalLabel_.setJustificationType(juce::Justification::centred);
+    crystalLabel_.setFont(juce::FontOptions(10.2f, juce::Font::bold));
+    crystalLabel_.setColour(juce::Label::textColourId, juce::Colour(0xff1e1711));
+    addAndMakeVisible(crystalLabel_);
+
     oversamplingBox_.addItemList({ "1x (Off)", "2x Polyphase", "4x Polyphase", "8x Polyphase" }, 1);
     addAndMakeVisible(oversamplingBox_);
 
-    // 2. Knobs Setup (Warm 1970s Tungsten/Amber/Phosphor Accents + Units)
-    const juce::Colour colGreen(0xff68c97a);
-    const juce::Colour colAmber(0xffe08a2e);
-    const juce::Colour colRed(0xffd4573b);
-    const juce::Colour colBrass(0xffc99e4c);
+    // 2. Knobs Setup (High-Contrast Warm 1970s Tungsten/Amber/Phosphor Accents + Units)
+    const juce::Colour colGreen(0xff52d669);
+    const juce::Colour colAmber(0xffff9d2e);
+    const juce::Colour colRed(0xffe8563a);
+    const juce::Colour colGold(0xfff0a830);
 
     setupKnob(peakReductionSlider_, peakReductionLabel_, "PEAK REDUCTION", colGreen);
     setupKnob(gainSlider_,          gainLabel_,          "MAKEUP GAIN",    colAmber);
-    setupKnob(mixSlider_,           mixLabel_,           "DRY / WET MIX",  colBrass);
-    setupKnob(trimSlider_,          trimLabel_,          "MASTER TRIM",    colBrass);
+    setupKnob(mixSlider_,           mixLabel_,           "DRY / WET MIX",  colGold);
+    setupKnob(trimSlider_,          trimLabel_,          "MASTER TRIM",    colGold);
 
     setupKnob(trapMemorySlider_,    trapMemoryLabel_,    "TRAP MEMORY",    colGreen);
     setupKnob(topologySlider_,      topologyLabel_,      "FB / FF MORPH",  colGreen);
@@ -55,8 +61,8 @@ SilkenTofuAudioProcessorEditor::SilkenTofuAudioProcessorEditor(SilkenTofuAudioPr
     setupKnob(bPlusSagSlider_,      bPlusSagLabel_,      "B+ RAIL SAG",    colRed);
     setupKnob(millerAirSlider_,     millerAirLabel_,     "MILLER AIR",     colAmber);
 
-    setupKnob(r37Slider_,           r37Label_,           "R37 EMPHASIS",   colBrass);
-    setupKnob(scHpSlider_,          scHpLabel_,          "SC WARM-CUT",    colBrass);
+    setupKnob(r37Slider_,           r37Label_,           "R37 EMPHASIS",   colGold);
+    setupKnob(scHpSlider_,          scHpLabel_,          "SC WARM-CUT",    colGold);
 
     // 3. Toggle Buttons
     for (auto* btn : { &autoLevelBtn_, &fatCathodeBtn_, &load600Btn_, &extKeyBtn_, &scListenBtn_ })
@@ -120,10 +126,15 @@ SilkenTofuAudioProcessorEditor::~SilkenTofuAudioProcessorEditor()
 void SilkenTofuAudioProcessorEditor::setupKnob(juce::Slider& slider, juce::Label& label,
                                                const juce::String& text, juce::Colour arcCol)
 {
-    slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 68, 17);
-    slider.setColour(juce::Slider::rotarySliderFillColourId, arcCol);
+    slider.setLookAndFeel(&lnf_);
     addAndMakeVisible(slider);
+    slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    slider.setColour(juce::Slider::rotarySliderFillColourId,    arcCol);
+    slider.setColour(juce::Slider::textBoxBackgroundColourId,   juce::Colour(0xff181512));
+    slider.setColour(juce::Slider::textBoxTextColourId,         juce::Colour(0xffffd27d));
+    slider.setColour(juce::Slider::textBoxOutlineColourId,      juce::Colour(0xff6e5d47));
+    slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 68, 17);
+    slider.lookAndFeelChanged();
 
     label.setText(text, juce::dontSendNotification);
     label.setJustificationType(juce::Justification::centred);
@@ -151,6 +162,7 @@ void SilkenTofuAudioProcessorEditor::timerCallback()
     repaint(vuMeterBounds_.expanded(4));
     repaint(t4CanisterBounds_.expanded(4));
     repaint(curveScopeBounds_.expanded(2));
+    repaint(tubeScopeBounds_.expanded(2));
     repaint(infoStripBounds_.expanded(2));
 }
 
@@ -460,15 +472,30 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
     {
         auto vu = vuMeterBounds_.toFloat();
         g.setColour(juce::Colours::black.withAlpha(0.55f));
-        g.fillRoundedRectangle(vu.translated(2.0f, 4.0f), 8.0f);
+        g.fillRoundedRectangle(vu.translated(2.0f, 4.0f), 10.0f);
 
         if (vuMeterImg_.isValid())
         {
-            g.drawImage(vuMeterImg_, vu, juce::RectanglePlacement::stretchToFit);
-        }
+            juce::Graphics::ScopedSaveState clipState(g);
+            juce::Path bezelClip;
+            bezelClip.addRoundedRectangle(vu, 12.0f);
+            g.reduceClipRegion(bezelClip);
 
-        // Dynamic Physical Blued-Steel Needle Pivoting Inside the Cropped Meter Window
-        auto glassWindow = vu.reduced(vu.getWidth() * 0.11f, vu.getHeight() * 0.16f);
+            const int sw = vuMeterImg_.getWidth();
+            const int sh = vuMeterImg_.getHeight();
+            g.drawImage(vuMeterImg_,
+                        static_cast<int>(vu.getX()), static_cast<int>(vu.getY()),
+                        static_cast<int>(vu.getWidth()), static_cast<int>(vu.getHeight()),
+                        22, 18, sw - 44, sh - 36);
+        }
+        g.setColour(juce::Colour(0xff141210));
+        g.drawRoundedRectangle(vu, 12.0f, 2.4f);
+
+        // Dynamic Physical Blued-Steel Needle Pivoting Inside the Cropped Glass Opening
+        auto glassWindow = juce::Rectangle<float>(vu.getX() + vu.getWidth() * 0.10f,
+                                                  vu.getY() + vu.getHeight() * 0.14f,
+                                                  vu.getWidth() * 0.80f,
+                                                  vu.getHeight() * 0.645f);
         {
             juce::Graphics::ScopedSaveState state(g);
             g.reduceClipRegion(glassWindow.toNearestInt());
@@ -478,24 +505,25 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
 
             const float grClamped  = std::clamp(smoothGrDb_, -20.0f, 0.0f);
             const float needleNorm = std::pow((grClamped + 20.0f) / 20.0f, 1.38f);
-            const float needleAng  = -0.68f + needleNorm * 0.86f;
+            // -0.72 rad = -20 VU, +0.235 rad = dead-on 0 VU mark
+            const float needleAng  = -0.72f + needleNorm * 0.955f;
 
             const float nx = pivot.x + std::sin(needleAng) * needleLen;
             const float ny = pivot.y - std::cos(needleAng) * needleLen;
 
-            g.setColour(juce::Colours::black.withAlpha(0.32f));
-            g.drawLine(pivot.x + 3.0f, pivot.y + 2.0f, nx + 3.5f, ny + 2.5f, 2.6f);
+            g.setColour(juce::Colours::black.withAlpha(0.18f));
+            g.drawLine(pivot.x + 2.0f, pivot.y + 1.5f, nx + 2.2f, ny + 1.8f, 2.2f);
 
             g.setColour(juce::Colour(0xff181411));
-            g.drawLine(pivot.x, pivot.y, nx, ny, 2.2f);
+            g.drawLine(pivot.x, pivot.y, nx, ny, 2.1f);
 
             juce::Path spade;
-            spade.addTriangle(0.0f, -needleLen * 0.96f, -3.4f, -needleLen * 0.83f, 3.4f, -needleLen * 0.83f);
+            spade.addTriangle(0.0f, -needleLen * 0.96f, -3.2f, -needleLen * 0.84f, 3.2f, -needleLen * 0.84f);
             g.fillPath(spade, juce::AffineTransform::rotation(needleAng).translated(pivot.x, pivot.y));
         }
 
         // Recessed Amber Readout Pill at Bottom-Right of Bezel
-        auto pill = juce::Rectangle<float>(vu.getRight() - 80.0f, vu.getBottom() - 22.0f, 70.0f, 17.0f);
+        auto pill = juce::Rectangle<float>(vu.getRight() - 78.0f, vu.getBottom() - 21.0f, 68.0f, 16.0f);
         g.setColour(juce::Colour(0xe614110e));
         g.fillRoundedRectangle(pill, 3.0f);
         g.setColour(juce::Colour(0xff8c7248));
@@ -510,12 +538,24 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
     {
         auto can = t4CanisterBounds_.toFloat();
         g.setColour(juce::Colours::black.withAlpha(0.55f));
-        g.fillRoundedRectangle(can.translated(2.0f, 4.0f), 8.0f);
+        g.fillRoundedRectangle(can.translated(2.0f, 4.0f), 10.0f);
 
         if (t4WindowImg_.isValid())
         {
-            g.drawImage(t4WindowImg_, can, juce::RectanglePlacement::stretchToFit);
+            juce::Graphics::ScopedSaveState clipState(g);
+            juce::Path canClip;
+            canClip.addRoundedRectangle(can, 10.0f);
+            g.reduceClipRegion(canClip);
+
+            const int sw = t4WindowImg_.getWidth();
+            const int sh = t4WindowImg_.getHeight();
+            g.drawImage(t4WindowImg_,
+                        static_cast<int>(can.getX()), static_cast<int>(can.getY()),
+                        static_cast<int>(can.getWidth()), static_cast<int>(can.getHeight()),
+                        6, 6, sw - 12, sh - 12);
         }
+        g.setColour(juce::Colour(0xff141210));
+        g.drawRoundedRectangle(can, 10.0f, 2.2f);
 
         // A. Left & Center Vacuum Tubes (12AX7 & 12BH7A) Filament Glow reacts to B+ Rail Voltage & Tube Drive
         const float driveNorm = std::clamp((static_cast<float>(tubeDriveSlider_.getValue()) + 6.0f) / 24.0f, 0.0f, 1.0f);
@@ -559,6 +599,25 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
         g.drawText("N1 TRAP: " + juce::String(n1Pct) + "%   |   N2 MEMORY: " + juce::String(n2Pct) +
                    "%   |   B+ RAIL: " + juce::String(bPlusInt) + " V",
                    strip.toNearestInt(), juce::Justification::centred);
+    }
+
+    // 4B. Recessed Semiconductor Spec Pill Below Crystal Selector (aligns bottom with Mix/Trim readout boxes)
+    {
+        const int crystalChoice = crystalBox_.getSelectedId() - 1;
+        const juce::Colour specCol = (crystalChoice == 0) ? juce::Colour(0xff7aff89)
+                                   : (crystalChoice == 1) ? juce::Colour(0xffffb84d)
+                                                          : juce::Colour(0xff4de8ff);
+        const juce::String specText = (crystalChoice == 0) ? "TAU-1: 40 ms   |   MEMORY: 4.5 s"
+                                    : (crystalChoice == 1) ? "TAU-1: 18 ms   |   MEMORY: 1.8 s"
+                                                           : "TAU-1: 4 ms    |   MEMORY: 0.4 s";
+        auto specPill = juce::Rectangle<float>(202.0f, 266.0f, 214.0f, 22.0f);
+        g.setColour(juce::Colour(0xff181512));
+        g.fillRoundedRectangle(specPill, 3.5f);
+        g.setColour(juce::Colour(0xff6e5d47));
+        g.drawRoundedRectangle(specPill, 3.5f, 1.0f);
+        g.setColour(specCol);
+        g.setFont(juce::FontOptions(9.8f, juce::Font::bold));
+        g.drawText(specText, specPill.toNearestInt(), juce::Justification::centred);
     }
 
     // 5. Section Sub-Panels (1970s Engraved Anodized Sub-Plates with Corner Screws & Edge Wear)
@@ -664,6 +723,57 @@ void SilkenTofuAudioProcessorEditor::paint(juce::Graphics& g)
         g.drawText("TWO-TRAP RELEASE TRAJECTORY", sc.reduced(8.0f, 4.0f).toNearestInt(), juce::Justification::topRight);
     }
 
+    // 6B. Draw Live Tube & Iron Harmonic Transfer Curve & B+ Sag Scope inside Bottom of Card 2!
+    if (!tubeScopeBounds_.isEmpty())
+    {
+        auto ts = tubeScopeBounds_.toFloat();
+        g.setColour(juce::Colour(0xff161311));
+        g.fillRoundedRectangle(ts, 4.0f);
+        g.setColour(juce::Colour(0xff5e5143));
+        g.drawRoundedRectangle(ts, 4.0f, 1.2f);
+
+        const float driveNorm = std::clamp((static_cast<float>(tubeDriveSlider_.getValue()) + 6.0f) / 24.0f, 0.0f, 1.0f);
+        const float sagPct    = std::clamp((275.0f - smoothBPlus_) / 45.0f, 0.0f, 1.0f);
+        const bool  is600     = load600Btn_.getToggleState();
+        const bool  isFat     = fatCathodeBtn_.getToggleState();
+
+        // Plot live asymmetric 12AX7A + 12BH7A WCF saturation transfer curve
+        juce::Path xferPath;
+        const int nPts = 40;
+        const float waveW = ts.getWidth() * 0.48f;
+        for (int i = 0; i < nPts; ++i)
+        {
+            const float u = static_cast<float>(i) / static_cast<float>(nPts - 1);
+            const float xIn = (u * 2.0f - 1.0f) * (0.75f + 2.2f * driveNorm);
+            const float posLim = is600 ? 0.82f : 1.0f;
+            const float negLim = (is600 ? 0.65f : 0.85f) * (isFat ? 0.85f : 1.0f);
+            const float ySat = (xIn >= 0.0f) ? (posLim * std::tanh(xIn / posLim))
+                                             : (negLim * std::tanh(xIn / negLim));
+            const float px = ts.getX() + 8.0f + u * (waveW - 12.0f);
+            const float py = ts.getCentreY() - ySat * (ts.getHeight() * 0.38f);
+            if (i == 0)
+                xferPath.startNewSubPath(px, py);
+            else
+                xferPath.lineTo(px, py);
+        }
+        g.setColour(juce::Colour(0xffff7a45));
+        g.strokePath(xferPath, juce::PathStrokeType(1.8f));
+
+        // Right side of Card 2 scope: Live H2/H3 Harmonic & B+ Rail Status Readout
+        auto rightBox = juce::Rectangle<float>(ts.getX() + waveW + 4.0f, ts.getY() + 3.0f,
+                                               ts.getWidth() - waveW - 10.0f, ts.getHeight() - 6.0f);
+        g.setColour(juce::Colour(0xffffb84d));
+        g.setFont(juce::FontOptions(9.5f, juce::Font::bold));
+        const juce::String modeStr = juce::String(isFat ? "H2 FAT " : "H2/H3 ") + (is600 ? "| 600 OHM" : "| 10K LOAD");
+        g.drawText(modeStr, rightBox.removeFromTop(14.0f).toNearestInt(), juce::Justification::centredRight);
+
+        g.setColour(juce::Colour(0xffc9bfb0));
+        g.setFont(juce::FontOptions(9.0f, juce::Font::plain));
+        const int sagV = static_cast<int>(std::round(smoothBPlus_));
+        g.drawText("B+ RAIL: " + juce::String(sagV) + "V (SAG " + juce::String( static_cast<int>(sagPct * 100.0f) ) + "%)",
+                   rightBox.toNearestInt(), juce::Justification::centredRight);
+    }
+
     // 7. Bottom Recessed 1970s Amber LED / Signal Manual Inspector Strip (#1)
     if (!infoStripBounds_.isEmpty())
     {
@@ -716,32 +826,31 @@ void SilkenTofuAudioProcessorEditor::resized()
     // Left: Peak Reduction (Large Scalloped Bakelite Knob)
     peakReductionLabel_.setBounds(46, 60, 146, 15);
     peakReductionSlider_.setBounds(46, 75, 146, 156);
-    autoLevelBtn_.setBounds(52, 240, 134, 28);
+    autoLevelBtn_.setBounds(52, 242, 134, 28);
 
-    // Center-Left: Tightly Cropped 1970s Illuminated VU Meter
-    vuMeterBounds_ = { 200, 62, 272, 144 };
+    // Center-Left & Center-Right: Symmetrical 1970s VU Meter & T4-Bean Tube Inspection Windows
+    vuMeterBounds_    = { 202, 60, 280, 142 };
+    t4CanisterBounds_ = { 496, 60, 280, 142 };
 
-    // Center-Right: Tightly Cropped 1970s T4-Bean & Tube Inspection Window
-    t4CanisterBounds_ = { 484, 62, 294, 144 };
+    // Center Row Under VU & Canister (y = 212..294): Labeled Crystal Selector + Balanced Mix & Trim Knobs
+    crystalLabel_.setBounds(204, 214, 210, 14);
+    crystalBox_.setBounds(202, 232, 214, 28);
 
-    // Under VU & Canister: Crystal Chemistry Selector + Full-Sized Mix & Master Unity Trim Knobs
-    crystalBox_.setBounds(200, 232, 206, 28);
+    mixLabel_.setBounds(452, 212, 118, 14);
+    mixSlider_.setBounds(452, 226, 118, 72);
 
-    mixLabel_.setBounds(438, 209, 110, 14);
-    mixSlider_.setBounds(438, 222, 110, 76);
-
-    trimLabel_.setBounds(578, 209, 110, 14);
-    trimSlider_.setBounds(578, 222, 110, 76);
+    trimLabel_.setBounds(608, 212, 118, 14);
+    trimSlider_.setBounds(608, 226, 118, 72);
 
     // Right: Makeup Gain (Large Scalloped Bakelite Knob)
     gainLabel_.setBounds(786, 60, 146, 15);
     gainSlider_.setBounds(786, 75, 146, 156);
 
-    // 3. Bottom Row Sub-Plates (y = 304 .. 606)
+    // 3. Bottom Row Sub-Plates (y = 304 .. 548)
     const int knobW = 80;
-    const int knobH = 98;
+    const int knobH = 96;
     const int c1Y1  = 334;
-    const int c1Y2  = 464;
+    const int c1Y2  = 462;
 
     // Card 1: T4-Bean Semiconductor & Electro-Optical Lab (x = 44..469)
     trapMemoryLabel_.setBounds(50,    c1Y1, knobW, 15);
@@ -759,8 +868,8 @@ void SilkenTofuAudioProcessorEditor::resized()
     cellAgeLabel_.setBounds(382,      c1Y1, knobW, 15);
     cellAgeSlider_.setBounds(382,     c1Y1 + 15, knobW, knobH);
 
-    // Bottom of Card 1: Live Two-Trap Release Trajectory CRT Scope (fills the bottom of Card 1!)
-    curveScopeBounds_ = { 58, c1Y2 - 6, 397, 52 };
+    // Bottom of Card 1: Live Two-Trap Release Trajectory CRT Scope (y = 456..532)
+    curveScopeBounds_ = { 56, c1Y2 - 4, 401, 74 };
 
     // Card 2: Oversampled 12AX7A / 12BH7A & UTC Iron (x = 479..741)
     tubeDriveLabel_.setBounds(487,   c1Y1, knobW, 15);
@@ -772,8 +881,9 @@ void SilkenTofuAudioProcessorEditor::resized()
     millerAirLabel_.setBounds(653,   c1Y1, knobW, 15);
     millerAirSlider_.setBounds(653,  c1Y1 + 15, knobW, knobH);
 
-    fatCathodeBtn_.setBounds(489, c1Y2 + 6, 118, 32);
-    load600Btn_.setBounds(613,    c1Y2 + 6, 118, 32);
+    fatCathodeBtn_.setBounds(489, c1Y2 - 4, 118, 28);
+    load600Btn_.setBounds(613,    c1Y2 - 4, 118, 28);
+    tubeScopeBounds_ = { 489, c1Y2 + 30, 242, 40 };
 
     // Card 3: R37 Sidechain & External Key Ducking (#3) (x = 751..936)
     r37Label_.setBounds(760,   c1Y1, knobW, 15);
@@ -782,8 +892,8 @@ void SilkenTofuAudioProcessorEditor::resized()
     scHpLabel_.setBounds(846,  c1Y1, knobW, 15);
     scHpSlider_.setBounds(846, c1Y1 + 15, knobW, knobH);
 
-    extKeyBtn_.setBounds(762,   c1Y2 - 2, 162, 28);
-    scListenBtn_.setBounds(762, c1Y2 + 32, 162, 28);
+    extKeyBtn_.setBounds(762,   c1Y2 - 4,  162, 32);
+    scListenBtn_.setBounds(762, c1Y2 + 36, 162, 32);
 
     // 4. Bottom Recessed 1970s Amber LED / Signal Manual Inspector Strip
     infoStripBounds_ = { 44, 556, 892, 52 };

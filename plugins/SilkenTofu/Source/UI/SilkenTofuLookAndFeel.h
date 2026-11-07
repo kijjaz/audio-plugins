@@ -42,18 +42,23 @@ public:
         const bool isLargeBakelite = (radius > 34.0f);
 
         // 1. Vintage Silkscreened Dial Ticks & Worn Halo around knob
-        const float wearR = radius * 0.88f;
+        const float wearR = radius * 0.90f;
         juce::ColourGradient wearHalo(juce::Colour(0x281e160c), centre.x, centre.y,
                                       juce::Colour(0x001e160c), centre.x + wearR, centre.y + wearR, true);
         g.setGradientFill(wearHalo);
         g.fillEllipse(centre.x - wearR, centre.y - wearR, wearR * 2.0f, wearR * 2.0f);
+
+        // 2. Deep 1970s Hardware Drop Shadow (drawn BEFORE ticks and value arc so shadow never covers the right-side arc!)
+        const float knobR = radius * 0.71f;
+        g.setColour(juce::Colours::black.withAlpha(0.50f));
+        g.fillEllipse(centre.x - knobR + 2.0f, centre.y - knobR + 3.2f, knobR * 2.0f, knobR * 2.0f);
 
         const int numTicks = isLargeBakelite ? 11 : 9;
         for (int i = 0; i < numTicks; ++i)
         {
             const float t = static_cast<float>(i) / static_cast<float>(numTicks - 1);
             const float tickAngle = rotaryStartAngle + t * (rotaryEndAngle - rotaryStartAngle);
-            const float rIn  = radius * 0.81f;
+            const float rIn  = radius * 0.80f;
             const float rOut = radius * 0.96f;
             const float sx = std::sin(tickAngle);
             const float cy = -std::cos(tickAngle);
@@ -64,17 +69,18 @@ public:
                        (i == 0 || i == numTicks / 2 || i == numTicks - 1) ? 2.2f : 1.3f);
         }
 
-        // 2. Subtle Warm Backlit Value Arc
-        juce::Path activeArc;
-        activeArc.addCentredArc(centre.x, centre.y, radius * 0.88f, radius * 0.88f,
-                                0.0f, rotaryStartAngle, angle, true);
-        g.setColour(slider.findColour(juce::Slider::rotarySliderFillColourId).withAlpha(0.88f));
-        g.strokePath(activeArc, juce::PathStrokeType(2.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        // 3. Recessed Track Groove + Bright Warm Backlit Value Arc (drawn over shadow, never occluded)
+        juce::Path trackArc;
+        trackArc.addCentredArc(centre.x, centre.y, radius * 0.85f, radius * 0.85f,
+                               0.0f, rotaryStartAngle, rotaryEndAngle, true);
+        g.setColour(juce::Colour(0xff1c1712).withAlpha(0.55f));
+        g.strokePath(trackArc, juce::PathStrokeType(3.2f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
-        // 3. Deep 1970s Hardware Drop Shadow
-        const float knobR = radius * 0.74f;
-        g.setColour(juce::Colours::black.withAlpha(0.54f));
-        g.fillEllipse(centre.x - knobR + 2.5f, centre.y - knobR + 4.5f, knobR * 2.0f, knobR * 2.0f);
+        juce::Path activeArc;
+        activeArc.addCentredArc(centre.x, centre.y, radius * 0.85f, radius * 0.85f,
+                                0.0f, rotaryStartAngle, angle, true);
+        g.setColour(slider.findColour(juce::Slider::rotarySliderFillColourId));
+        g.strokePath(activeArc, juce::PathStrokeType(2.8f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
         // 4. Scalloped / Knurled 1970s Bakelite Skirt
         juce::ColourGradient bodyGrad(juce::Colour(0xff38322d), centre.x - knobR * 0.55f, centre.y - knobR * 0.65f,

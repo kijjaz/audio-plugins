@@ -27,6 +27,7 @@ private:
     juce::ComboBox oversamplingBox_;
     juce::ComboBox modeBox_;
     juce::ComboBox crystalBox_;
+    juce::Label    crystalLabel_;
 
     // 1. Classic Teletronix Front Panel Knobs
     juce::Slider peakReductionSlider_, gainSlider_, mixSlider_, trimSlider_;
@@ -76,6 +77,7 @@ private:
     juce::Rectangle<int> vuMeterBounds_;
     juce::Rectangle<int> t4CanisterBounds_;
     juce::Rectangle<int> curveScopeBounds_;
+    juce::Rectangle<int> tubeScopeBounds_;
     juce::Rectangle<int> infoStripBounds_;
 
     // Live Hover / Drag Signal Manual Readout State
