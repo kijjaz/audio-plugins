@@ -1,0 +1,139 @@
+name: Build Kindnes
+
+on:
+  push:
+    paths:
+      - 'plugins/Kindnes/**'
+      - '.github/workflows/kindnes.yml'
+    branches: [ "main", "master" ]
+    tags: [ "kindnes-*" ]
+  pull_request:
+    paths:
+      - 'plugins/Kindnes/**'
+      - '.github/workflows/kindnes.yml'
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows VST3
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/Kindnes -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Kindnes-Windows-VST3
+        path: build/Kindnes_artefacts/Release/VST3/Kindnes.vst3
+        if-no-files-found: error
+
+  build-macos:
+    name: Build macOS VST3/AU/Standalone
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -S plugins/Kindnes -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      
+    - name: Build
+      run: cmake --build build --config Release --parallel
+      
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Kindnes-macOS-VST3
+        path: build/Kindnes_artefacts/Release/VST3/Kindnes.vst3
+        if-no-files-found: error
+
+    - name: Upload AU Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Kindnes-macOS-AU
+        path: build/Kindnes_artefacts/Release/AU/Kindnes.component
+        if-no-files-found: error
+
+    - name: Upload Standalone Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Kindnes-macOS-Standalone
+        path: build/Kindnes_artefacts/Release/Standalone/Kindnes.app
+        if-no-files-found: error
+
+  release:
+    name: Publish Direct Download Release
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: Kindnes-Windows-VST3
+          path: windows_vst3/Kindnes.vst3
+
+      - name: Download macOS VST3
+        uses: actions/download-artifact@v4
+        with:
+          name: Kindnes-macOS-VST3
+          path: macos_bundle/Kindnes.vst3
+
+      - name: Download macOS AU
+        uses: actions/download-artifact@v4
+        with:
+          name: Kindnes-macOS-AU
+          path: macos_bundle/Kindnes.component
+
+      - name: Download macOS Standalone
+        uses: actions/download-artifact@v4
+        with:
+          name: Kindnes-macOS-Standalone
+          path: macos_bundle/Kindnes.app
+
+      - name: Package Zip Bundles
+        run: |
+          mkdir -p release_pkgs
+          # Zip macOS Universal Bundle
+          cd macos_bundle
+          zip -r ../release_pkgs/Kindnes-macOS-Universal.zip Kindnes.vst3 Kindnes.component Kindnes.app
+          cd ..
+          # Zip Windows VST3 Bundle
+          cd windows_vst3
+          zip -r ../release_pkgs/Kindnes-Windows-x64.zip Kindnes.vst3
+          cd ..
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: kindnes-v0.0.2
+          name: "Kindnes v0.0.2 — NES 2A03 APU, FDS 2C33 & VRC6 Synthesizer"
+          body: |
+            ### Kindnes v0.0.2 — High-Fidelity NES 2A03 APU, FDS 2C33 & VRC6 Synthesizer Suite
+            
+            #### 📦 Direct Downloads:
+            - **[Kindnes-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.2/Kindnes-macOS-Universal.zip)** — VST3, AU (Audio Unit), and Standalone App for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[Kindnes-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.2/Kindnes-Windows-x64.zip)** — VST3 64-bit for Windows.
+            
+            #### 🌟 What's New in v0.0.2 (Dn-FamiTracker Hardware Synthesis Upgrades):
+            - **Authentic FDS 2C33 Hardware FM Modulator & RC Lowpass**: 64-step 3-bit hardware modulation table (`{0, +1, +2, +4, Reset, -4, -2, -1}`), 7-bit signed `_counter` (`-64..+63`), exact 2C33 fixed-point pitch multiplier & wrap-around math, Auto-FM chromatic harmonic tracking, and the Famicom Disk System RAM Adapter post-DAC 1-pole RC lowpass filter (~2.4 kHz).
+            - **Authentic Konami VRC6 8-Bit Wrapping Sawtooth & 16-Step Pulse**: True 14-step 8-bit wrapping accumulator (`(k * accumRate) & 0xFF`, top 5 bits `accum >> 3`) with PolyBLEP staircase anti-aliasing, authentic 8-bit wrap-around double-saw overdrive at high saw volumes, and `1/16` (`6.25%`) thin pulse accompaniment.
+            - **Sub-Cycle Time-Averaged 2A03 LFSR Noise (`nsfplay` Engine)**: Eliminates point-sampling aliasing at high noise shift rates (periods `0..3` up to `447 kHz`) by weighting sub-sample LFSR transitions (`accum / accum_clocks`).
+            - **Band-Limited Staircase PolyBLEP**: Sub-sample PolyBLEP edge corrections on the 32-step 4-bit Triangle, 64-step 6-bit FDS wavetable, and 14-step VRC6 Sawtooth, plus true 180° inverted Duty 3 (`75%`) phase on Pulse 1 & 2.
+            - **32-Voice 4-Bank Hybrid NES Drum Machine & Easy Drum UX**: 
+              - 32 built-in drum, percussion & SFX voices across 4 banks: **Bank 1 (Classic NES Master Kit)**, **Bank 2 (VRC6 & FDS Synth Drums)**, **Bank 3 (Sunsoft & Konami 1-Bit ROM Kit)**, and **Bank 4 (Retro Arcade Vocal & SFX Kit)**.
+              - 8 real-time glowing pads with dynamic bank switching, Open Hi-Hat choking when Closed Hat triggers, 1-click `AUTO BEAT` audition, and smart split-keyboard mode (`< C2` plays drums, `C2+` plays melodic synth).
+            - **32 Studio-Calibrated Factory Presets**: Spanning `[DRUMS]`, `[LEAD]`, `[BASS]`, `[ARP]`, `[KEYS]`, `[PAD]`, and `[DPCM]/[SFX]`, all resting at `trim = 0.0 dB` and verified sample-rate invariant at 44.1 kHz, 48 kHz, and 96 kHz.
+          files: |
+            release_pkgs/Kindnes-macOS-Universal.zip
+            release_pkgs/Kindnes-Windows-x64.zip
