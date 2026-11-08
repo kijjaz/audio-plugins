@@ -114,21 +114,21 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: silkentofu-v0.0.2
-          name: "Silken Tofu v0.0.2 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier"
+          tag_name: silkentofu-v0.0.4
+          name: "Silken Tofu v0.0.4 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier"
           body: |
-            ### Silken Tofu v0.0.2 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Oversampled Tube/Iron Suite
+            ### Silken Tofu v0.0.4 — Teletronix LA-2A & T4B Electro-Optical Leveling Amplifier + Mid-Side & Oversampled Tube/Iron Suite
 
             #### 📦 Direct 1-Click Downloads:
-            - **[SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.2/SilkenTofu-macOS-Universal.zip)** — VST3, AU (Component), and Standalone app for macOS (Universal: Apple Silicon arm64 & Intel x86_64).
-            - **[SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.2/SilkenTofu-Windows-x64.zip)** — VST3 64-bit for Windows.
+            - **[SilkenTofu-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.4/SilkenTofu-macOS-Universal.zip)** — VST3, AU (Component), and Standalone app for macOS (Universal: Apple Silicon arm64 & Intel x86_64).
+            - **[SilkenTofu-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/silkentofu-v0.0.4/SilkenTofu-Windows-x64.zip)** — VST3 64-bit for Windows.
 
-            #### 🌟 Key Features:
-            - **White-Box T4B Electro-Optical Physics:** Destriau AC electroluminescence law + Two-Trap CdS/CdSe/Silicon semiconductor carrier recombination (60 ms fast release + multi-second history-dependent deep-trap tail).
-            - **T4B Pre-Warmth (`Bias Glow`) & Negative Trap Memory (`Optical Bloom`):** Eliminates cold-start vocal overshoot or flips deep-trap coupling negative for reverse optical swell.
-            - **Oversampled Analog Tube & Transformer Chain (`1x / 2x / 4x / 8x`):** `UTC HA-100X` Permalloy $1/f$ flux hysteresis, `12AX7A` Koren triode with `C2` grid-conduction bias shift & `Fat Ck` cathode bypass cap mod, `12BH7A` White Cathode Follower with `600Ω` vintage console load, and shared `275V B+` power supply rail sag.
-            - **External Key Optical Ducking + R37 Tilt EQ + SC Listen:** Route an external key input directly into the T4B electroluminescent panel for two-stage optical sidechain ducking.
+            #### 🌟 What's New in v0.0.4:
+            - **Independent Mid-Side (`M/S`) Mastering Mode + `Solo Mid / Side` + `Copy M>S`:** Full dual parameter banks (`MID` and `SIDE`) so you can run different T4B crystals, Peak Reduction, Tube/Iron drive, and sidechain filters on Center vs. Stereo Width, plus instant `Solo Mid` / `Solo Side` auditioning.
+            - **Dual-Needle (`Mid/L` + `Side/R`) Illuminated VU Meter (`[GR | OUT | IN]`):** Switch between Gain Reduction (`dB`), Output VU (`0 VU = -18 dBFS`), and Input VU, with a translucent companion ghost needle tracking the secondary channel whenever `M/S` is active or `Stereo Link < 99%`.
+            - **Real-Time Scrolling `GR` + Deep-Trap ($N_2$) CRT History Trace:** Live 60 FPS phosphor strip-chart overlaid on the Two-Trap release trajectory scope in Card 1 (click scope to toggle overlay).
+            - **`A / B` State Comparison (`[A | B | A>B]`) & Zero-Latency-Jump Soft Bypass (`BYP`):** Instant full-state A/B comparison and phase-coherent oversampled bypass crossfading that preserves DAW PDC latency without clicks.
+            - **Sample-Accurate Parameter Smoothing & Closed-Loop `12AX7A / B+` Feedback Coupling:** 1-pole exponential knob smoothing (`12 ms`), oversampled $C^1$-continuous T4B envelope interpolation, and closed-loop coupling from `12AX7A` harmonic bloom & `275V B+` sag back into the `6AQ5` EL panel drive.
           files: |
             release_pkgs/SilkenTofu-macOS-Universal.zip
             release_pkgs/SilkenTofu-Windows-x64.zip
-

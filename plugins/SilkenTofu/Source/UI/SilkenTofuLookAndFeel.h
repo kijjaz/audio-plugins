@@ -179,9 +179,40 @@ public:
         }
 
         g.setColour(on ? juce::Colour(0xfffff2d6) : juce::Colour(0xffdcd0bc));
-        g.setFont(juce::FontOptions(10.5f, juce::Font::bold));
+        g.setFont(juce::FontOptions(10.2f, juce::Font::bold));
         b.removeFromLeft(19.0f);
-        b.removeFromRight(4.0f);
+        b.removeFromRight(3.0f);
         g.drawFittedText(button.getButtonText(), b.toNearestInt(), juce::Justification::centred, 1);
+    }
+
+    void drawButtonBackground(juce::Graphics& g, juce::Button& button,
+                              const juce::Colour& /*backgroundColour*/,
+                              bool shouldDrawButtonAsHighlighted,
+                              bool shouldDrawButtonAsDown) override
+    {
+        auto b = button.getLocalBounds().toFloat().reduced(1.5f);
+        g.setColour(juce::Colours::black.withAlpha(0.45f));
+        g.fillRoundedRectangle(b.translated(0.0f, 1.8f), 4.0f);
+
+        const juce::Colour topCol = shouldDrawButtonAsDown        ? juce::Colour(0xff191613)
+                                  : shouldDrawButtonAsHighlighted ? juce::Colour(0xff38322c)
+                                                                  : juce::Colour(0xff2a2520);
+        const juce::Colour botCol = shouldDrawButtonAsDown        ? juce::Colour(0xff120f0d)
+                                                                  : juce::Colour(0xff171411);
+        juce::ColourGradient grad(topCol, b.getX(), b.getY(), botCol, b.getX(), b.getBottom(), false);
+        g.setGradientFill(grad);
+        g.fillRoundedRectangle(b, 4.0f);
+
+        g.setColour(shouldDrawButtonAsHighlighted ? juce::Colour(0xffb59663) : juce::Colour(0xff786852));
+        g.drawRoundedRectangle(b, 4.0f, 1.2f);
+    }
+
+    void drawButtonText(juce::Graphics& g, juce::TextButton& button,
+                        bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/) override
+    {
+        g.setFont(juce::FontOptions(9.8f, juce::Font::bold));
+        g.setColour(button.findColour(juce::TextButton::textColourOffId));
+        g.drawFittedText(button.getButtonText(), button.getLocalBounds().reduced(4, 1),
+                         juce::Justification::centred, 1);
     }
 };

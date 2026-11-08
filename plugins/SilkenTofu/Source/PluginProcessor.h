@@ -43,16 +43,30 @@ public:
 
     juce::AudioProcessorValueTreeState& getAPVTS() { return apvts_; }
 
-    // Live UI Telemetry Accessors (Thread-safe atomics)
-    float getGainReductionDb() const { return telemetryGrDb_.load(std::memory_order_relaxed); }
-    float getElLuminescence() const  { return telemetryLum_.load(std::memory_order_relaxed); }
-    float getShallowTrapN1() const   { return telemetryN1_.load(std::memory_order_relaxed); }
-    float getDeepTrapN2() const      { return telemetryN2_.load(std::memory_order_relaxed); }
-    float getBPlusVolts() const      { return telemetryBPlus_.load(std::memory_order_relaxed); }
-    float getInputPeakDb() const     { return telemetryInDb_.load(std::memory_order_relaxed); }
-    float getOutputPeakDb() const    { return telemetryOutDb_.load(std::memory_order_relaxed); }
+    // Live UI Telemetry Accessors (Thread-safe atomics, channel 0 = Left/Mid, channel 1 = Right/Side)
+    float getGainReductionDb(int ch = 0) const { return telemetryGrDb_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
+    float getElLuminescence(int ch = 0) const  { return telemetryLum_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
+    float getShallowTrapN1(int ch = 0) const   { return telemetryN1_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
+    float getDeepTrapN2(int ch = 0) const      { return telemetryN2_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
+    float getBPlusVolts(int ch = 0) const      { return telemetryBPlus_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
+    float getInputPeakDb(int ch = 0) const     { return telemetryInDb_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
+    float getOutputPeakDb(int ch = 0) const    { return telemetryOutDb_[std::clamp(ch, 0, 1)].load(std::memory_order_relaxed); }
 
-    SilkenTofuDSP::Parameters readCurrentParameters() const;
+    int getVuMode() const;
+    void setVuMode(int mode);
+
+    // 0 = L/R Stereo, 1 = M/S (Editing Mid), 2 = M/S (Editing Side)
+    int getChannelRoutingMode() const;
+    void setChannelRoutingMode(int mode);
+    void copyMidToSide();
+
+    // A/B State Comparison Slots (0 = Slot A, 1 = Slot B)
+    int getActiveABSlot() const { return activeABSlot_; }
+    void setActiveABSlot(int slot);
+    void copyActiveSlotToOther();
+
+    SilkenTofuDSP::Parameters readCurrentParameters() const { return readChannelParameters(0); }
+    SilkenTofuDSP::Parameters readChannelParameters(int channelIndex) const;
     void applyPreset(int presetIndex);
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -60,26 +74,29 @@ public:
 private:
     juce::AudioProcessorValueTreeState apvts_;
     int currentPresetIndex_ = 0;
+    int activeABSlot_ = 0;
+    int abPresetIndex_[2] { 0, 0 };
+    juce::ValueTree abStates_[2];
     double currentSampleRate_ = 48000.0;
+    int lastReportedLatency_ = -1;
 
-    // Stereo / Dual-Canister T4B + Tube/Transformer Engines
+    // Stereo / Mid-Side Dual-Canister T4B + Tube/Transformer Engines (0 = Left/Mid, 1 = Right/Side)
     SilkenTofuDSP::ChannelEngine engines_[2];
+    SilkenTofuDSP::SmoothedParam smStereoLink_;
 
     // Selectable Polyphase Oversamplers (index 0 = 1x, 1 = 2x, 2 = 4x, 3 = 8x)
     std::array<std::unique_ptr<juce::dsp::Oversampling<float>>, 4> oversamplers_;
-    juce::AudioBuffer<float> dryBuffer_;
     juce::AudioBuffer<float> t4bGainBuffer_;
     juce::AudioBuffer<float> scMonitorBuffer_;
 
-    // Atomic UI Telemetry
-    std::atomic<float> telemetryGrDb_  { 0.0f };
-    std::atomic<float> telemetryLum_   { 0.0f };
-    std::atomic<float> telemetryN1_    { 0.0f };
-    std::atomic<float> telemetryN2_    { 0.0f };
-    std::atomic<float> telemetryBPlus_ { 275.0f };
-    std::atomic<float> telemetryInDb_  { -60.0f };
-    std::atomic<float> telemetryOutDb_ { -60.0f };
+    // Atomic UI Telemetry per channel (0 = Left/Mid, 1 = Right/Side)
+    std::atomic<float> telemetryGrDb_[2]  { { 0.0f },   { 0.0f } };
+    std::atomic<float> telemetryLum_[2]   { { 0.0f },   { 0.0f } };
+    std::atomic<float> telemetryN1_[2]    { { 0.0f },   { 0.0f } };
+    std::atomic<float> telemetryN2_[2]    { { 0.0f },   { 0.0f } };
+    std::atomic<float> telemetryBPlus_[2] { { 275.0f }, { 275.0f } };
+    std::atomic<float> telemetryInDb_[2]  { { -60.0f }, { -60.0f } };
+    std::atomic<float> telemetryOutDb_[2] { { -60.0f }, { -60.0f } };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SilkenTofuAudioProcessor)
 };
-

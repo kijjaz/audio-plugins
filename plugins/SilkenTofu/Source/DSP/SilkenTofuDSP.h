@@ -3,9 +3,9 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <cmath>
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -46,6 +46,7 @@ struct Parameters
     // 5. Global Mix & Unity Trim (AGENTS.md Rule 2: 0.0 dB on all factory presets)
     float mix             = 100.0f;  // 0.0 .. 100.0% Dry/Wet parallel compression
     float trimDb          = 0.0f;    // -12.0 .. +12.0 dB Master Output Trim (0.0 dB default)
+    bool  bypass          = false;   // Phase-locked oversampled soft bypass
 };
 
 struct Telemetry
@@ -55,12 +56,66 @@ struct Telemetry
     float shallowTrapN1   = 0.0f;    // Shallow carrier density N1(t)
     float deepTrapN2      = 0.0f;    // Deep lattice trap density N2(t)
     float bPlusVolts      = 275.0f;  // Instantaneous B+ rail voltage (275V rest -> ~225V sag)
-    float outputVuDb      = -60.0f;  // Output level in dBFS
+    float inputVuDb       = -60.0f;  // Ballistic Input level in dBFS
+    float outputVuDb      = -60.0f;  // Ballistic Output level in dBFS
+};
+
+/**
+ * Sample-accurate 1-pole exponential parameter smoother (12 ms time constant)
+ * Eliminates block-boundary stepping and zipper noise during fast knob turns or DAW automation.
+ */
+struct SmoothedParam
+{
+    double current = 0.0;
+    double target  = 0.0;
+
+    void reset(double val) noexcept
+    {
+        current = target = val;
+    }
+
+    inline double step(double alpha) noexcept
+    {
+        current += alpha * (target - current);
+        return current;
+    }
+};
+
+/**
+ * Precomputed block/oversampled-rate filter coefficients for the non-linear analog stage.
+ * Avoids redundant std::exp() calls inside the 8x oversampled inner loop.
+ */
+struct AnalogStageCoeffs
+{
+    double omegaXfmr        = 0.0;
+    double leakXfmr         = 0.0;
+    double alphaMiller      = 0.0;
+    double alphaGridCharge  = 0.0;
+    double alphaGridRelease = 0.0;
+    double alphaBDrop       = 0.0;
+    double alphaBRec        = 0.0;
+    double smoothAlphaOs    = 0.0;
+    double alphaGainOs      = 0.0;
+
+    void update(double osSampleRate) noexcept
+    {
+        const double dtOs = 1.0 / std::max(22050.0, osSampleRate);
+        omegaXfmr        = 2.0 * M_PI * 65.0 * dtOs;
+        leakXfmr         = std::exp(-2.0 * M_PI * 12.0 * dtOs);
+        alphaMiller      = 1.0 - std::exp(-2.0 * M_PI * 4800.0 * dtOs);
+        alphaGridCharge  = 1.0 - std::exp(-dtOs / 0.0015);
+        alphaGridRelease = 1.0 - std::exp(-dtOs / 0.045);
+        alphaBDrop       = 1.0 - std::exp(-dtOs / 0.008);
+        alphaBRec        = 1.0 - std::exp(-dtOs / 0.120);
+        smoothAlphaOs    = 1.0 - std::exp(-dtOs / 0.012);
+        alphaGainOs      = 1.0 - std::exp(-dtOs / 0.00018); // C1-smooth oversampled T4B gain filter
+    }
 };
 
 /**
  * Pure C++17 Zero-Allocation White-Box Engine for the Teletronix LA-2A & T4B Cell.
- * Exact sample-rate invariance (44.1 kHz to 384 kHz) via continuous-time dt = 1/fs scaling.
+ * Exact sample-rate invariance (44.1 kHz to 384 kHz) via continuous-time dt = 1/fs scaling,
+ * with per-sample parameter smoothing across all continuous controls.
  */
 class ChannelEngine
 {
@@ -70,6 +125,8 @@ public:
         fs_ = std::max(22050.0, sampleRate);
         dt_ = 1.0 / fs_;
         tol_ = channelToleranceOffset; // Subtle stereo canister tolerance
+        paramSmoothAlpha_ = 1.0 - std::exp(-dt_ / 0.012); // 12 ms sample-accurate knob smoothing
+        vuBallisticAlpha_ = 1.0 - std::exp(-dt_ / 0.120); // Smooth VU meter RMS integration
         reset();
     }
 
@@ -79,6 +136,8 @@ public:
         n2_ = 0.0;
         rLdr_ = 2000000.0;
         lastGainLin_ = 1.0;
+        gOsSmooth_ = 1.0;
+        lastTubeHarmonicEnv_ = 0.0;
         acEnv_ = 0.0;
         punchEnv_ = 0.0;
         scHpX1_ = 0.0;
@@ -93,6 +152,62 @@ public:
         millerLp_ = 0.0;
         dcBlockX1_ = 0.0;
         dcBlockY1_ = 0.0;
+
+        inVuSq_  = 1e-10;
+        outVuSq_ = 1e-10;
+        smoothInitialized_ = false;
+    }
+
+    /**
+     * Updates target values for sample-accurate parameter smoothers at the start of a block.
+     */
+    void setTargets(const Parameters& p) noexcept
+    {
+        const double makeupTarget = static_cast<double>(computeMakeupGainLinear(p));
+        const double driveTarget  = std::pow(10.0, static_cast<double>(p.tubeIronDriveDb) / 20.0);
+        const double wetTarget    = std::clamp(static_cast<double>(p.mix) * 0.01, 0.0, 1.0);
+        const double trimTarget   = std::pow(10.0, static_cast<double>(p.trimDb) / 20.0);
+        const double bypTarget    = p.bypass ? 1.0 : 0.0;
+
+        if (!smoothInitialized_)
+        {
+            smPeakReduction_.reset(p.peakReduction);
+            smTrapMemory_.reset(p.trapMemory);
+            smTopologyMorph_.reset(p.topologyMorph);
+            smPunchHoldoff_.reset(p.punchHoldoffMs);
+            smBiasGlow_.reset(p.biasGlow);
+            smCellAge_.reset(p.cellAge);
+            smR37Emphasis_.reset(p.r37Emphasis);
+            smScHighPassHz_.reset(p.scHighPassHz);
+
+            smDriveLin_.reset(driveTarget);
+            smBPlusSag_.reset(p.bPlusSag);
+            smMillerAir_.reset(p.millerAir);
+            smMakeupLin_.reset(makeupTarget);
+            smWetMix_.reset(wetTarget);
+            smTrimLin_.reset(trimTarget);
+            smBypass_.reset(bypTarget);
+            smoothInitialized_ = true;
+        }
+        else
+        {
+            smPeakReduction_.target = p.peakReduction;
+            smTrapMemory_.target    = p.trapMemory;
+            smTopologyMorph_.target = p.topologyMorph;
+            smPunchHoldoff_.target  = p.punchHoldoffMs;
+            smBiasGlow_.target      = p.biasGlow;
+            smCellAge_.target       = p.cellAge;
+            smR37Emphasis_.target   = p.r37Emphasis;
+            smScHighPassHz_.target  = p.scHighPassHz;
+
+            smDriveLin_.target      = driveTarget;
+            smBPlusSag_.target      = p.bPlusSag;
+            smMillerAir_.target     = p.millerAir;
+            smMakeupLin_.target     = makeupTarget;
+            smWetMix_.target        = wetTarget;
+            smTrimLin_.target       = trimTarget;
+            smBypass_.target        = bypTarget;
+        }
     }
 
     /**
@@ -101,13 +216,27 @@ public:
      */
     float processT4BSidechain(float mainIn, float keyIn, const Parameters& p, float& outScMonitor)
     {
-        const double age = std::clamp(static_cast<double>(p.cellAge) * 0.01, 0.0, 1.0);
-        const double mem = std::clamp(static_cast<double>(p.trapMemory) * 0.01, -0.5, 2.0);
-        const double biasGlowNorm = std::clamp(static_cast<double>(p.biasGlow) * 0.01, 0.0, 1.0);
+        if (!smoothInitialized_)
+            setTargets(p);
+
+        // Track ballistic input VU level
+        inVuSq_ += vuBallisticAlpha_ * (static_cast<double>(mainIn) * static_cast<double>(mainIn) - inVuSq_);
+
+        // Sample-accurate smoothing of all T4B & sidechain parameters
+        const double prVal      = smPeakReduction_.step(paramSmoothAlpha_);
+        const double trapVal    = smTrapMemory_.step(paramSmoothAlpha_);
+        const double topoVal    = smTopologyMorph_.step(paramSmoothAlpha_);
+        const double punchValMs = smPunchHoldoff_.step(paramSmoothAlpha_);
+        const double biasVal    = smBiasGlow_.step(paramSmoothAlpha_);
+        const double ageVal     = smCellAge_.step(paramSmoothAlpha_);
+        const double r37Val     = smR37Emphasis_.step(paramSmoothAlpha_);
+        const double scHpValHz  = smScHighPassHz_.step(paramSmoothAlpha_);
+
+        const double age = std::clamp(ageVal * 0.01, 0.0, 1.0);
+        const double mem = std::clamp(trapVal * 0.01, -0.5, 2.0);
+        const double biasGlowNorm = std::clamp(biasVal * 0.01, 0.0, 1.0);
 
         // 1. Resting Dark Resistance & Pre-Warmth Bias Glow (#4)
-        // Ambient bias glow keeps a baseline carrier population n_bias in the crystal traps,
-        // eliminating cold-start first-syllable overshoot!
         const double nBias = 0.045 * biasGlowNorm;
         const double rDark = 2000000.0 * (1.0 + 0.50 * age) * (1.0 + 0.03 * tol_);
         const double r7 = 68000.0;
@@ -126,14 +255,16 @@ public:
         lastGainLin_ = gNow;
 
         // 2. Topology Morph (0% Vintage Feedback <-> 100% Feed-Forward <-> 125% Negative-Ratio)
-        // If External Sidechain (#3) is active, keyIn drives the T4B directly (with optional feedback blend)
-        const double eta = std::clamp(static_cast<double>(p.topologyMorph) * 0.01, 0.0, 1.25);
+        // Includes closed-loop 12AX7A tube harmonic feedback when feedback topology (eta < 1.0) is active!
+        const double eta = std::clamp(topoVal * 0.01, 0.0, 1.25);
+        const double fbWeight = std::max(0.0, 1.0 - eta);
+        const double tubeFbBoost = 1.0 + 0.12 * fbWeight * lastTubeHarmonicEnv_;
         const double rawTap = p.extSidechain
-            ? ((1.0 - 0.5 * eta) * (static_cast<double>(keyIn) * gNow) + 0.5 * eta * static_cast<double>(keyIn))
-            : ((1.0 - eta) * (static_cast<double>(mainIn) * gNow) + eta * static_cast<double>(mainIn));
+            ? ((1.0 - 0.5 * eta) * (static_cast<double>(keyIn) * gNow * tubeFbBoost) + 0.5 * eta * static_cast<double>(keyIn))
+            : ((1.0 - eta) * (static_cast<double>(mainIn) * gNow * tubeFbBoost) + eta * static_cast<double>(mainIn));
 
         // 3. Sidechain High-Pass Filter (20 Hz .. 350 Hz)
-        const double fcHp = std::clamp(static_cast<double>(p.scHighPassHz), 20.0, 350.0);
+        const double fcHp = std::clamp(scHpValHz, 20.0, 350.0);
         const double rHp = std::exp(-2.0 * M_PI * fcHp * dt_);
         const double hpOut = rawTap - scHpX1_ + rHp * scHpY1_;
         scHpX1_ = rawTap;
@@ -143,7 +274,7 @@ public:
         const double alphaR37 = 1.0 - std::exp(-2.0 * M_PI * 1250.0 * dt_);
         r37Lp_ += alphaR37 * (hpOut - r37Lp_);
         const double hfShelf = hpOut - r37Lp_;
-        const double r37Boost = (static_cast<double>(p.r37Emphasis) * 0.01) * 2.2;
+        const double r37Boost = (r37Val * 0.01) * 2.2;
         const double scFiltered = hpOut + r37Boost * hfShelf;
 
         // Capacitive EL panel displacement boost (I = C dV/dt subtly brightens on sibilance)
@@ -154,26 +285,23 @@ public:
         outScMonitor = static_cast<float>(scDriven);
 
         // 5. 6AQ5A Beam Power Pentode + NE-2 Neon Lamp Soft Clamping (~165V peak)
-        const double prNorm = std::clamp(static_cast<double>(p.peakReduction) * 0.01, 0.0, 1.0);
-        // Authentic 100k Audio-Taper Peak Reduction Pot:
-        // Smooth gentle control from 0..60, then high-gain exponential throw from 60..100 so even quiet
-        // unmastered mixes (-26 dBFS RMS like Singto Numchoke) can be driven to -12..-18 dB GR!
+        // Coupled to the shared 275V B+ supply rail so heavy B+ sag gently softens the 6AQ5 screen swing!
+        const double prNorm = std::clamp(prVal * 0.01, 0.0, 1.0);
         const double prExp = prNorm * (0.28 + 0.72 * prNorm * (1.0 + 2.8 * prNorm * prNorm));
-        const double scGain = prExp * (p.limitMode ? 520.0 : 410.0);
+        const double bPlusScreenMod = 0.88 + 0.12 * bPlusRail_;
+        const double scGain = prExp * (p.limitMode ? 520.0 : 410.0) * bPlusScreenMod;
         double vSc = 165.0 * std::tanh((std::abs(scDriven) * scGain) / 165.0);
 
         // 6. Transient Punch Holdoff (Inductor choke across EL Panel drive: 0..30 ms)
-        // Peak-rectify the AC EL voltage (0.2ms charge / 18ms smooth AC bridge hold) so half-wave AC zero-crossings
-        // don't pull the EL voltage down when Punch Holdoff is active!
         const double alphaAc = 1.0 - std::exp(-dt_ / 0.018);
         if (vSc > acEnv_)
             acEnv_ += (1.0 - std::exp(-dt_ / 0.0002)) * (vSc - acEnv_);
         else
             acEnv_ += alphaAc * (vSc - acEnv_);
 
-        if (p.punchHoldoffMs > 0.1f)
+        if (punchValMs > 0.1)
         {
-            const double tauHold = static_cast<double>(p.punchHoldoffMs) * 0.001;
+            const double tauHold = punchValMs * 0.001;
             const double alphaHold = 1.0 - std::exp(-dt_ / std::max(tauHold, 0.0002));
             if (acEnv_ > punchEnv_)
                 punchEnv_ += alphaHold * (acEnv_ - punchEnv_);
@@ -247,18 +375,26 @@ public:
     }
 
     /**
-     * Step 2: Processes the Non-Linear Analog Signal Path (can be called at 1x, 2x, 4x, or 8x oversampled rate!):
-     *   UTC HA-100X Input Transformer -> T4B Attenuation + Dynamic Miller Air ->
-     *   V1 12AX7A Triode (with C2 Grid-Current Shift & Fat Ck Mod) ->
-     *   V2 12BH7A White Cathode Follower (with B+ Rail Sag & 600-Ohm Load) -> UTC A-24 Output Transformer.
+     * Step 2: Processes the Non-Linear Analog Signal Path & Phase-Locked Dry/Wet Blend
+     * inside the oversampled domain (1x, 2x, 4x, or 8x) with C1-continuous gain envelope
+     * filtering, closed-loop tube feedback tracking, and click-free oversampled bypass.
      */
-    float processAnalogStageSample(float xIn, float t4bGainLin, const Parameters& p, double osSampleRate)
+    float processAnalogAndMixOsSample(float dryOs, float t4bGainLin, const Parameters& p, const AnalogStageCoeffs& c)
     {
-        const double dtOs = 1.0 / std::max(22050.0, osSampleRate);
-        const double driveLin = std::pow(10.0, static_cast<double>(p.tubeIronDriveDb) / 20.0);
-        const double v1Gain = p.fatCathodeCap ? 1.45 : 1.0;
+        const double driveLin   = smDriveLin_.step(c.smoothAlphaOs);
+        const double sagAmount  = std::clamp(smBPlusSag_.step(c.smoothAlphaOs) * 0.01, 0.0, 1.0);
+        const double millerVal  = smMillerAir_.step(c.smoothAlphaOs);
+        const double makeupLin  = smMakeupLin_.step(c.smoothAlphaOs);
+        const double wetMix     = smWetMix_.step(c.smoothAlphaOs);
+        const double dryMix     = 1.0 - wetMix;
+        const double bypCross   = smBypass_.step(c.smoothAlphaOs);
+
+        // C1-continuous oversampled T4B envelope interpolation (eliminates linear slope corners)
+        gOsSmooth_ += c.alphaGainOs * (static_cast<double>(t4bGainLin) - gOsSmooth_);
+        const double gSmooth = gOsSmooth_;
+
+        const double v1Gain   = p.fatCathodeCap ? 1.45 : 1.0;
         const double asymBias = (p.fatCathodeCap ? -1.05 : -1.25) + 0.02 * tol_;
-        const double sagAmount = std::clamp(static_cast<double>(p.bPlusSag) * 0.01, 0.0, 1.0);
 
         // Small-signal unity calibration of the Koren triode + WCF stage (AGENTS.md Rule 2)
         constexpr double eps = 1e-4;
@@ -270,10 +406,8 @@ public:
         const double invComp = 1.0 / (std::max(smallSigGain, 1e-4) * std::pow(driveLin, 0.78));
 
         // --- STAGE 1: UTC HA-100X Input Transformer (Permalloy 1/f Flux Hysteresis) ---
-        const double vin = static_cast<double>(xIn) * driveLin;
-        const double omegaXfmr = 2.0 * M_PI * 65.0 * dtOs;
-        const double leakXfmr = std::exp(-2.0 * M_PI * 12.0 * dtOs);
-        phiIn_ = leakXfmr * phiIn_ + omegaXfmr * vin;
+        const double vin = static_cast<double>(dryOs) * driveLin;
+        phiIn_ = c.leakXfmr * phiIn_ + c.omegaXfmr * vin;
         const double dphi = phiIn_ - phiInPrev_;
         phiInPrev_ = phiIn_;
         const double signDphi = (dphi >= 0.0) ? 1.0 : -1.0;
@@ -281,43 +415,38 @@ public:
         const double vXfmrIn = vin + 0.22 * fluxSat;
 
         // --- STAGE 2: T4B Voltage Divider Attenuation + Dynamic Miller Grid Impedance Air ---
-        const double vDiv = vXfmrIn * static_cast<double>(t4bGainLin);
-        const double alphaMiller = 1.0 - std::exp(-2.0 * M_PI * 4800.0 * dtOs);
-        millerLp_ += alphaMiller * (vDiv - millerLp_);
+        const double vDiv = vXfmrIn * gSmooth;
+        millerLp_ += c.alphaMiller * (vDiv - millerLp_);
         const double hfMiller = vDiv - millerLp_;
-        const double grDepth = std::clamp(1.0 - static_cast<double>(t4bGainLin), 0.0, 0.85);
-        const double millerTilt = (static_cast<double>(p.millerAir) * 0.01) * grDepth * 1.35;
+        const double grDepth = std::clamp(1.0 - gSmooth, 0.0, 0.85);
+        const double millerTilt = (millerVal * 0.01) * grDepth * 1.35;
         const double vGridIn = vDiv + millerTilt * hfMiller;
 
         // --- STAGE 3: V1 (12AX7A) Grounded-Cathode Triode + C2 Grid Conduction Sag ---
         const double vGk = vGridIn * v1Gain + asymBias - c2GridBias_;
-        const double alphaGridCharge = 1.0 - std::exp(-dtOs / 0.0015);
-        const double alphaGridRelease = 1.0 - std::exp(-dtOs / 0.045);
 
         double vGkEff = vGk;
         if (vGk > -0.25)
         {
             const double gridExcess = vGk + 0.25;
-            c2GridBias_ += alphaGridCharge * (0.35 * gridExcess - c2GridBias_);
+            c2GridBias_ += c.alphaGridCharge * (0.35 * gridExcess - c2GridBias_);
             vGkEff = -0.25 + 0.65 * std::tanh(gridExcess / 0.65);
         }
         else
         {
-            c2GridBias_ *= (1.0 - alphaGridRelease);
+            c2GridBias_ *= (1.0 - c.alphaGridRelease);
         }
 
         // --- STAGE 4: Shared B+ Power Supply Rail Sag (R29 = 4.7k / C7A Filter Cap) ---
         const double scLoad = grDepth * 0.14 * sagAmount;
         const double instantDemand = scLoad + 0.08 * sagAmount * std::min(std::abs(vGkEff - asymBias), 2.5);
         const double targetBPlus = std::max(0.76, 1.0 - instantDemand);
-        const double alphaBDrop = 1.0 - std::exp(-dtOs / 0.008);
-        const double alphaBRec  = 1.0 - std::exp(-dtOs / 0.120);
         if (targetBPlus < bPlusRail_)
-            bPlusRail_ += alphaBDrop * (targetBPlus - bPlusRail_);
+            bPlusRail_ += c.alphaBDrop * (targetBPlus - bPlusRail_);
         else
-            bPlusRail_ += alphaBRec * (targetBPlus - bPlusRail_);
+            bPlusRail_ += c.alphaBRec * (targetBPlus - bPlusRail_);
 
-        // Koren Triode Plate Equation (Non-inverting secondary via UTC A-24 output transformer so Wet is 0-deg in-phase with Dry)
+        // Koren Triode Plate Equation (Non-inverting secondary via UTC A-24 output transformer)
         const double uTriode = 2.1 * bPlusRail_ + vGkEff;
         const double uRest   = 2.1 * bPlusRail_ + asymBias - c2GridBias_;
         const double ip      = std::pow(std::log1p(std::exp(1.6 * uTriode)), 1.35);
@@ -331,15 +460,55 @@ public:
             ? (wcfPos * std::tanh(vPlate1 / wcfPos))
             : (wcfNeg * std::tanh(vPlate1 / wcfNeg));
 
-        // Small-signal unity compensation (DC blocking is applied post Dry/Wet mix to preserve 0-deg phase lock)
-        const double vOutRaw = vWcf * invComp;
-        return static_cast<float>(vOutRaw);
+        const double vLinearCal = vWcf * invComp;
+        // Track non-linear harmonic difference for closed-loop T4B feedback coupling
+        const double harmDiff = std::abs(vLinearCal - vDiv);
+        lastTubeHarmonicEnv_ += c.smoothAlphaOs * (std::min(harmDiff, 1.5) - lastTubeHarmonicEnv_);
+
+        const double wetOs = vLinearCal * makeupLin;
+        const double activeOut = dryMix * static_cast<double>(dryOs) + wetMix * wetOs;
+        return static_cast<float>((1.0 - bypCross) * activeOut + bypCross * static_cast<double>(dryOs));
     }
 
     /**
-     * Post-mix Output Capacitor C3 / UTC A-24 DC Blocker (5 Hz) at base sample rate.
+     * Backward-compatible wrapper for single-sample wet stage evaluation.
+     */
+    float processAnalogStageSample(float xIn, float t4bGainLin, const Parameters& p, double osSampleRate)
+    {
+        setTargets(p);
+        gOsSmooth_ = static_cast<double>(t4bGainLin);
+        AnalogStageCoeffs c;
+        c.update(osSampleRate);
+        Parameters wetOnly = p;
+        wetOnly.mix = 100.0f;
+        wetOnly.gainDb = 0.0f;
+        wetOnly.autoLevel = false;
+        wetOnly.bypass = false;
+        smMakeupLin_.reset(1.0);
+        smWetMix_.reset(1.0);
+        smBypass_.reset(0.0);
+        return processAnalogAndMixOsSample(xIn, t4bGainLin, wetOnly, c);
+    }
+
+    /**
+     * Post-mix Output Capacitor C3 / UTC A-24 DC Blocker (5 Hz) + Smoothed Master Trim at base sample rate.
      * Running this after Dry/Wet blending guarantees zero low-frequency phase rotation between Dry and Wet.
      */
+    float processPostMixDcBlockAndTrim(float xMixed)
+    {
+        const double trimLin = smTrimLin_.step(paramSmoothAlpha_);
+        const double bypCross = smBypass_.current;
+        const double effectiveTrim = (1.0 - bypCross) * trimLin + bypCross * 1.0;
+        const double x = static_cast<double>(xMixed);
+        const double dcR = std::exp(-2.0 * M_PI * 5.0 * dt_);
+        const double dcY = (x - dcBlockX1_ + dcR * dcBlockY1_) * effectiveTrim;
+        dcBlockX1_ = x;
+        dcBlockY1_ = dcY;
+
+        outVuSq_ += vuBallisticAlpha_ * (dcY * dcY - outVuSq_);
+        return static_cast<float>(dcY);
+    }
+
     float processPostMixDcBlock(float xMixed)
     {
         const double x = static_cast<double>(xMixed);
@@ -347,6 +516,7 @@ public:
         const double dcY = x - dcBlockX1_ + dcR * dcBlockY1_;
         dcBlockX1_ = x;
         dcBlockY1_ = dcY;
+        outVuSq_ += vuBallisticAlpha_ * (dcY * dcY - outVuSq_);
         return static_cast<float>(dcY);
     }
 
@@ -358,12 +528,16 @@ public:
         double totalDb = static_cast<double>(p.gainDb);
         if (p.autoLevel)
         {
-            // Smooth empirical inverse curve of the Destriau T4B attenuation at nominal -14.4 dBFS program level
             const double prNorm = std::clamp(static_cast<double>(p.peakReduction) * 0.01, 0.0, 1.0);
             const double autoDb = (std::pow(prNorm, 1.45) * 9.5 + std::pow(prNorm, 2.8) * 8.5) * (p.limitMode ? 1.22 : 1.0);
             totalDb += autoDb;
         }
         return static_cast<float>(std::pow(10.0, totalDb / 20.0));
+    }
+
+    void setEffectiveGainReductionLin(double gLin) noexcept
+    {
+        lastGainLin_ = std::clamp(gLin, 0.04, 1.4);
     }
 
     Telemetry getTelemetry() const
@@ -374,6 +548,8 @@ public:
         t.shallowTrapN1   = static_cast<float>(n1_);
         t.deepTrapN2      = static_cast<float>(n2_);
         t.bPlusVolts      = static_cast<float>(bPlusRail_ * 275.0);
+        t.inputVuDb       = static_cast<float>(10.0 * std::log10(std::max(inVuSq_, 1e-10)));
+        t.outputVuDb      = static_cast<float>(10.0 * std::log10(std::max(outVuSq_, 1e-10)));
         return t;
     }
 
@@ -381,12 +557,22 @@ private:
     double fs_ = 48000.0;
     double dt_ = 1.0 / 48000.0;
     double tol_ = 0.0;
+    double paramSmoothAlpha_ = 0.002;
+    double vuBallisticAlpha_ = 0.0002;
+    bool   smoothInitialized_ = false;
+
+    // Sample-accurate parameter smoothers
+    SmoothedParam smPeakReduction_, smTrapMemory_, smTopologyMorph_, smPunchHoldoff_;
+    SmoothedParam smBiasGlow_, smCellAge_, smR37Emphasis_, smScHighPassHz_;
+    SmoothedParam smDriveLin_, smBPlusSag_, smMillerAir_, smMakeupLin_, smWetMix_, smTrimLin_, smBypass_;
 
     // T4B & Sidechain states
     double n1_ = 0.0;
     double n2_ = 0.0;
     double rLdr_ = 2000000.0;
     double lastGainLin_ = 1.0;
+    double gOsSmooth_ = 1.0;
+    double lastTubeHarmonicEnv_ = 0.0;
     float  lastLum_ = 0.0f;
     double acEnv_ = 0.0;
     double punchEnv_ = 0.0;
@@ -403,6 +589,10 @@ private:
     double millerLp_ = 0.0;
     double dcBlockX1_ = 0.0;
     double dcBlockY1_ = 0.0;
+
+    // Ballistic VU states
+    double inVuSq_  = 1e-10;
+    double outVuSq_ = 1e-10;
 };
 
 struct FactoryPreset
@@ -410,50 +600,70 @@ struct FactoryPreset
     const char* name;
     const char* category;
     Parameters params;
+    bool isMidSide = false;
+    float stereoLink = 80.0f;
+    Parameters sideParams {};
 };
 
-inline const std::array<FactoryPreset, 8>& getFactoryPresets()
+inline const std::array<FactoryPreset, 9>& getFactoryPresets()
 {
-    static const std::array<FactoryPreset, 8> presets = {{
+    static const std::array<FactoryPreset, 9> presets = {{
         {
             "1. 1965 Pasadena Vocal Silk",
             "Vintage LA-2A",
-            { 42.0f, 1.5f, false, true,   0, 100.0f, 0.0f, 2.5f, 20.0f, 15.0f,   2.5f, false, false, 40.0f, 15.0f,   55.0f, 65.0f, false, false,   100.0f, 0.0f }
+            { 42.0f, 1.5f, false, true,   0, 100.0f, 0.0f, 2.5f, 20.0f, 15.0f,   2.5f, false, false, 40.0f, 15.0f,   55.0f, 65.0f, false, false,   100.0f, 0.0f, false },
+            false, 80.0f, {}
         },
         {
             "2. Warm Motown Bass Iron (600 Ohm)",
             "Bass & Low End",
-            { 44.0f, 4.7f, true,  true,   0, 135.0f, 15.0f, 6.0f, 35.0f, 30.0f,  6.5f, true,  true,  65.0f, -25.0f,  30.0f, 90.0f, false, false,   100.0f, 0.0f }
+            { 44.0f, 4.7f, true,  true,   0, 135.0f, 15.0f, 6.0f, 35.0f, 30.0f,  6.5f, true,  true,  65.0f, -25.0f,  30.0f, 90.0f, false, false,   100.0f, 0.0f, false },
+            false, 100.0f, {}
         },
         {
             "3. Punchy CdSe Drum Bus (LA-3A Mod)",
             "Drums & Transients",
-            { 45.0f, 1.4f, false, true,   1, 45.0f,  55.0f, 12.0f, 15.0f, 10.0f, 5.0f, false, true,  55.0f, 25.0f,   45.0f, 110.0f, false, false,  100.0f, 0.0f }
+            { 45.0f, 1.4f, false, true,   1, 45.0f,  55.0f, 12.0f, 15.0f, 10.0f, 5.0f, false, true,  55.0f, 25.0f,   45.0f, 110.0f, false, false,  100.0f, 0.0f, false },
+            false, 75.0f, {}
         },
         {
             "4. Silicon Snap Limiter (FET-Opto Hybrid)",
             "Modern Limiting",
-            { 38.0f, 3.7f, true,  true,   2, 20.0f,  75.0f, 4.0f,  25.0f, 0.0f,  4.0f, true,  false, 35.0f, 40.0f,   60.0f, 80.0f, false, false,   100.0f, 0.0f }
+            { 38.0f, 3.7f, true,  true,   2, 20.0f,  75.0f, 4.0f,  25.0f, 0.0f,  4.0f, true,  false, 35.0f, 40.0f,   60.0f, 80.0f, false, false,   100.0f, 0.0f, false },
+            false, 90.0f, {}
         },
         {
             "5. Reverse Optical Bloom (Negative Trap)",
             "Creative Sound Design",
-            { 46.0f, 2.8f, false, true,   0, -45.0f, 95.0f, 8.0f, 10.0f, 20.0f,  7.5f, true,  true,  75.0f, 50.0f,   50.0f, 55.0f, false, false,   100.0f, 0.0f }
+            { 46.0f, 2.8f, false, true,   0, -45.0f, 95.0f, 8.0f, 10.0f, 20.0f,  7.5f, true,  true,  75.0f, 50.0f,   50.0f, 55.0f, false, false,   100.0f, 0.0f, false },
+            false, 60.0f, {}
         },
         {
             "6. Molten White-Cathode Tube Overdrive",
             "Harmonic Saturation",
-            { 34.0f, 5.2f, false, true,   1, 80.0f,  25.0f, 5.0f,  30.0f, 45.0f, 13.5f, true, true,  85.0f, -35.0f,  40.0f, 45.0f, false, false,   100.0f, 0.0f }
+            { 34.0f, 5.2f, false, true,   1, 80.0f,  25.0f, 5.0f,  30.0f, 45.0f, 13.5f, true, true,  85.0f, -35.0f,  40.0f, 45.0f, false, false,   100.0f, 0.0f, false },
+            false, 50.0f, {}
         },
         {
             "7. External Optical Key Ducker",
             "Sidechain & Mixing",
-            { 42.0f, 6.1f, true,  true,   0, 90.0f,  60.0f, 0.5f,  40.0f, 10.0f, 2.0f, false, false, 30.0f, 10.0f,   50.0f, 40.0f, true,  false,   100.0f, 0.0f }
+            { 42.0f, 6.1f, true,  true,   0, 90.0f,  60.0f, 0.5f,  40.0f, 10.0f, 2.0f, false, false, 30.0f, 10.0f,   50.0f, 40.0f, true,  false,   100.0f, 0.0f, false },
+            false, 100.0f, {}
         },
         {
             "8. Master Bus Luminous Glue",
             "Mastering",
-            { 32.0f, 1.0f, false, true,   0, 115.0f, 10.0f, 10.0f, 50.0f, 10.0f, 1.5f, false, false, 25.0f, 35.0f,   65.0f, 95.0f, false, false,   100.0f, 0.0f }
+            { 32.0f, 1.0f, false, true,   0, 115.0f, 10.0f, 10.0f, 50.0f, 10.0f, 1.5f, false, false, 25.0f, 35.0f,   65.0f, 95.0f, false, false,   100.0f, 0.0f, false },
+            false, 85.0f, {}
+        },
+        {
+            "9. Mid-Side Mastering Sculptor (M/S)",
+            "Mid-Side Mastering",
+            // MID Channel: Tight warm CdS vocal/bass control with 95 Hz SC Warm-Cut & rich Fat Ck H2
+            { 44.0f, 2.25f, false, true,  0, 110.0f, 15.0f, 6.0f,  30.0f, 15.0f, 3.5f, true,  false, 35.0f, 10.0f,   50.0f, 95.0f, false, false,   100.0f, 0.0f, false },
+            true, 25.0f,
+            // SIDE Channel: Fast CdSe Vactrol with +55% Miller Air, 160 Hz SC HPF, & gentle stereo width bloom
+            { 30.0f, 2.2f, false, true,   1, -20.0f, 0.0f,  10.0f, 40.0f, 10.0f, 4.5f, false, true,  25.0f, 55.0f,   65.0f, 160.0f, false, false,  100.0f, 0.0f, false }
         }
     }};
     return presets;
