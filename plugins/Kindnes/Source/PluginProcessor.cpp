@@ -261,8 +261,28 @@ void KindnesAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
 
     updateEngineParameters();
 
+    int numSamples = buffer.getNumSamples();
+    float* channelL = buffer.getWritePointer(0);
+    float* channelR = (totalNumOutputChannels > 1) ? buffer.getWritePointer(1) : channelL;
+
+    const float* inL = (totalNumInputChannels > 0) ? buffer.getReadPointer(0) : nullptr;
+    const float* inR = (totalNumInputChannels > 1) ? buffer.getReadPointer(1) : inL;
+
+    // Sample-accurate sub-block MIDI slicing to eliminate dropped/missing notes
+    int timePos = 0;
     for (const auto metadata : midiMessages)
     {
+        const int msgSample = std::clamp(metadata.samplePosition, 0, numSamples);
+        const int samplesToProcess = msgSample - timePos;
+
+        if (samplesToProcess > 0)
+        {
+            const float* subInL = (inL != nullptr) ? (inL + timePos) : nullptr;
+            const float* subInR = (inR != nullptr) ? (inR + timePos) : nullptr;
+            engine_.processBlock(subInL, subInR, channelL + timePos, channelR + timePos, samplesToProcess);
+            timePos = msgSample;
+        }
+
         const auto msg = metadata.getMessage();
         if (msg.isNoteOn())
         {
@@ -274,23 +294,33 @@ void KindnesAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
         }
         else if (msg.isAllNotesOff() || msg.isAllSoundOff())
         {
-            engine_.reset();
+            engine_.allNotesOff();
         }
         else if (msg.isPitchWheel())
         {
             float semitones = (static_cast<float>(msg.getPitchWheelValue() - 8192) / 8192.0f) * 2.0f;
             engine_.setPitchBend(semitones);
         }
+        else if (msg.isController())
+        {
+            if (msg.getControllerNumber() == 64) // Sustain pedal
+            {
+                engine_.setSustainPedal(msg.getControllerValue() >= 64);
+            }
+            else if (msg.getControllerNumber() == 120 || msg.getControllerNumber() == 123)
+            {
+                engine_.allNotesOff();
+            }
+        }
     }
 
-    int numSamples = buffer.getNumSamples();
-    float* channelL = buffer.getWritePointer(0);
-    float* channelR = (totalNumOutputChannels > 1) ? buffer.getWritePointer(1) : channelL;
-
-    const float* inL = (totalNumInputChannels > 0) ? buffer.getReadPointer(0) : nullptr;
-    const float* inR = (totalNumInputChannels > 1) ? buffer.getReadPointer(1) : inL;
-
-    engine_.processBlock(inL, inR, channelL, channelR, numSamples);
+    if (timePos < numSamples)
+    {
+        const int remaining = numSamples - timePos;
+        const float* subInL = (inL != nullptr) ? (inL + timePos) : nullptr;
+        const float* subInR = (inR != nullptr) ? (inR + timePos) : nullptr;
+        engine_.processBlock(subInL, subInR, channelL + timePos, channelR + timePos, remaining);
+    }
 
     // Master Trim (default 0.0 dB)
     float trimDb = *apvts_.getRawParameterValue("masterTrim");
@@ -394,6 +424,7 @@ void KindnesAudioProcessor::loadPreset(int index)
 
     // MANDATORY STANDARD: Master trim strictly 0.0 dB
     setParam("masterTrim", 0.0f);
+    setParam("drumMidiMode", 0.0f);
 
     // Sync DSP engine immediately
     engine_.getDPCM().setDemoBeatEnabled(false);
@@ -553,7 +584,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout KindnesAudioProcessor::creat
         }, 1));
 
     params.push_back(std::make_unique<juce::AudioParameterChoice>("drumMidiMode", "Drum MIDI Play Mode",
-        juce::StringArray{ "Audition Button Only", "MIDI Note 36 (C1 Kick / D1 Snare)", "Tuned Chromatic Synth" }, 1));
+        juce::StringArray{ "Audition Button Only", "MIDI Note 36 (C1 Kick / D1 Snare)", "Tuned Chromatic Synth" }, 0));
 
     // Easy Macros (0.0 to 1.0)
     params.push_back(std::make_unique<juce::AudioParameterFloat>("drumMacroPunch", "Punch (Pitch Drop)",

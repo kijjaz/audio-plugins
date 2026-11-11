@@ -59,12 +59,12 @@ struct PolyVoice
 class KindnesEngine
 {
 public:
-    static constexpr int kMaxPolyVoices = 8;
+    static constexpr int kMaxPolyVoices = 16;
 
     enum class PlayMode
     {
         ClassicAPU = 0, // Authentic monophonic split
-        Polyphonic = 1, // 8-voice APU chords
+        Polyphonic = 1, // 16-voice APU chords
         UnisonStereo = 2 // Detuned stereo APU lead/pad
     };
 
@@ -95,6 +95,8 @@ public:
         activeKeyCount_ = 0;
         fdsMidiNote_ = -1;
         heldNotes_.clear();
+        sustainedNotes_.clear();
+        sustainPedal_ = false;
         polyScaleSmooth_ = 1.0f;
         drumNoiseEnv_ = 0.0f;
         drumTriEnv_ = 0.0f;
@@ -658,21 +660,26 @@ public:
         }
 
         // 1B. Split Keyboard Drum Mode (when melodic oscillators are active):
-        // Notes below C2 (noteNumber < 48, e.g. C1..B1) trigger the 8 Drum Pads exclusively without droning synth notes!
-        if (dpcmDrumPadMode_ && noteNumber < 48)
+        // Notes below C2 (noteNumber < 36, e.g. C1..B1) trigger the 8 Drum Pads exclusively without droning synth notes!
+        if (dpcmDrumPadMode_ && noteNumber < 36)
         {
             int pad = mapMidiNoteToDrumPad(noteNumber);
             triggerHybridDrumPad(pad, velocity);
             return;
         }
 
-        activeKeyCount_++;
-
         // Track held notes stack (most recent at back)
         auto it = std::find(heldNotes_.begin(), heldNotes_.end(), noteNumber);
         if (it != heldNotes_.end())
             heldNotes_.erase(it);
         heldNotes_.push_back(noteNumber);
+
+        // If this note was sustained by pedal, remove it since it's actively held
+        auto sit = std::find(sustainedNotes_.begin(), sustainedNotes_.end(), noteNumber);
+        if (sit != sustainedNotes_.end())
+            sustainedNotes_.erase(sit);
+
+        activeKeyCount_ = static_cast<int>(heldNotes_.size());
 
         arp_.setHeldNotes(heldNotes_);
         arp_.trigger();
@@ -707,7 +714,7 @@ public:
 
             updateVoiceFrequencies(v);
 
-            if (!wasActive)
+            if (!wasActive || v.ampEnv.getState() == ADSREnvelope::State::Release)
             {
                 if (p1Vol_ > 0) v.pulse1.triggerEnvelope();
                 if (p2Vol_ > 0) v.pulse2.triggerEnvelope();
@@ -728,7 +735,11 @@ public:
             v.velocity = velocity;
             v.targetFreq = midiToFreq(static_cast<float>(noteNumber));
 
-            if (!wasActive)
+            // CRITICAL FIX: True legato ONLY when ANOTHER note is currently held down!
+            // If heldNotes_.size() <= 1 or voice was in Release, this is a fresh note stroke!
+            bool isLegato = (heldNotes_.size() > 1) && wasActive && (v.ampEnv.getState() != ADSREnvelope::State::Release);
+
+            if (!isLegato)
             {
                 v.currentFreq = v.targetFreq;
                 updateVoiceFrequencies(v);
@@ -752,18 +763,12 @@ public:
                     if (triVol_ > 0) v.triangle.triggerNote();
                 }
                 updateVoiceFrequencies(v);
+                if (v.ampEnv.getState() == ADSREnvelope::State::Release)
+                    v.ampEnv.noteOn();
             }
 
             if (noiseVol_ > 0)
                 noise_.gate(true);
-
-            if (!dpcmDrumPadMode_ && !dpcmChromatic_ && noteNumber >= 84)
-            {
-                if (noteNumber == 84) dpcm_.selectBuiltinSample(0); // Kick
-                else if (noteNumber == 86) dpcm_.selectBuiltinSample(1); // Snare
-                else if (noteNumber == 88) dpcm_.selectBuiltinSample(4); // Tom
-                dpcm_.triggerNote();
-            }
         }
         else
         {
@@ -792,6 +797,9 @@ public:
 
     void noteOff(int noteNumber) noexcept
     {
+        if (customDrum_.midiMode == 2 || (customDrum_.midiMode == 1 && (noteNumber == 36 || noteNumber == 38)))
+            return;
+
         if (isPureDrumKitMode())
         {
             auto it = std::find(heldNotes_.begin(), heldNotes_.end(), noteNumber);
@@ -805,21 +813,32 @@ public:
             return;
         }
 
-        if (dpcmDrumPadMode_ && noteNumber < 48)
+        if (dpcmDrumPadMode_ && noteNumber < 36)
             return;
-
-        if (activeKeyCount_ > 0)
-            activeKeyCount_--;
 
         auto it = std::find(heldNotes_.begin(), heldNotes_.end(), noteNumber);
         if (it != heldNotes_.end())
             heldNotes_.erase(it);
 
+        activeKeyCount_ = static_cast<int>(heldNotes_.size());
         arp_.setHeldNotes(heldNotes_);
 
+        // Sustain pedal holds notes sounding until pedal is released
+        if (sustainPedal_)
+        {
+            if (std::find(sustainedNotes_.begin(), sustainedNotes_.end(), noteNumber) == sustainedNotes_.end())
+                sustainedNotes_.push_back(noteNumber);
+            return;
+        }
+
+        releaseNote(noteNumber);
+    }
+
+    void releaseNote(int noteNumber) noexcept
+    {
         if (arp_.isEnabled())
         {
-            if (heldNotes_.empty())
+            if (heldNotes_.empty() && sustainedNotes_.empty())
             {
                 voices_[0].ampEnv.noteOff();
                 if (!useAdsrEnv_)
@@ -834,7 +853,7 @@ public:
                 if (fdsMidiNote_ == noteNumber)
                     fdsMidiNote_ = -1;
             }
-            else
+            else if (!heldNotes_.empty())
             {
                 // Continue arpeggiating remaining held notes
                 voices_[0].midiNote = heldNotes_.front();
@@ -846,7 +865,7 @@ public:
         }
         else if (playMode_ == PlayMode::ClassicAPU)
         {
-            if (heldNotes_.empty())
+            if (heldNotes_.empty() && sustainedNotes_.empty())
             {
                 // All notes released
                 voices_[0].ampEnv.noteOff();
@@ -862,7 +881,7 @@ public:
                 if (fdsMidiNote_ == noteNumber)
                     fdsMidiNote_ = -1;
             }
-            else
+            else if (!heldNotes_.empty())
             {
                 // Fall back to most recently pressed held note (Last Note Priority)!
                 int fallbackNote = heldNotes_.back();
@@ -872,6 +891,8 @@ public:
                 if (glideTime_ <= 0.001f)
                     v.currentFreq = v.targetFreq;
                 updateVoiceFrequencies(v);
+                if (v.ampEnv.getState() == ADSREnvelope::State::Release)
+                    v.ampEnv.noteOn();
             }
         }
         else
@@ -892,7 +913,7 @@ public:
                 }
             }
 
-            if (heldNotes_.empty() || activeKeyCount_ == 0)
+            if (heldNotes_.empty() && sustainedNotes_.empty())
             {
                 noise_.gate(false);
                 embellishments_.noteOff();
@@ -900,6 +921,44 @@ public:
                     fdsMidiNote_ = -1;
             }
         }
+    }
+
+    void setSustainPedal(bool down) noexcept
+    {
+        sustainPedal_ = down;
+        if (!sustainPedal_)
+        {
+            for (int note : sustainedNotes_)
+            {
+                if (std::find(heldNotes_.begin(), heldNotes_.end(), note) == heldNotes_.end())
+                {
+                    releaseNote(note);
+                }
+            }
+            sustainedNotes_.clear();
+        }
+    }
+
+    void allNotesOff() noexcept
+    {
+        heldNotes_.clear();
+        sustainedNotes_.clear();
+        activeKeyCount_ = 0;
+        sustainPedal_ = false;
+        for (auto& v : voices_)
+        {
+            v.ampEnv.noteOff();
+            if (!useAdsrEnv_)
+            {
+                v.active = false;
+                v.pulse1.setVolume(0);
+                v.pulse2.setVolume(0);
+                v.triangle.setEnabled(false);
+            }
+        }
+        noise_.gate(false);
+        embellishments_.noteOff();
+        fdsMidiNote_ = -1;
     }
 
     void setPitchBend(float semitones) noexcept
@@ -1566,7 +1625,7 @@ private:
 
         // 3. Voice in release phase (prefer voice with lowest envelope level)
         int bestReleaseIdx = -1;
-        float lowestGain = 1.0f;
+        float lowestGain = 1e9f;
         for (size_t i = 0; i < voices_.size(); ++i)
         {
             if (voices_[i].ampEnv.getState() == ADSREnvelope::State::Release)
@@ -1587,7 +1646,7 @@ private:
         uint32_t maxAge = 0;
         for (size_t i = 0; i < voices_.size(); ++i)
         {
-            if (voices_[i].noteAge > maxAge)
+            if (voices_[i].noteAge >= maxAge)
             {
                 maxAge = voices_[i].noteAge;
                 oldestIdx = static_cast<int>(i);
@@ -1605,6 +1664,8 @@ private:
     float glideTime_{ 0.0f };
 
     std::vector<int> heldNotes_;
+    std::vector<int> sustainedNotes_;
+    bool sustainPedal_{ false };
     float polyScaleSmooth_{ 1.0f };
 
     std::array<PolyVoice, kMaxPolyVoices> voices_;

@@ -41,12 +41,19 @@ public:
     void noteOn() noexcept
     {
         state_ = State::Attack;
+        if (currentValue_ < 0.001f)
+            currentValue_ = 0.0f;
     }
 
     void noteOff() noexcept
     {
         if (state_ != State::Idle)
+        {
             state_ = State::Release;
+            // Prevent ultra-short note-on/off from vanishing on sample 0
+            if (currentValue_ < 0.05f)
+                currentValue_ = 0.05f;
+        }
     }
 
     void reset() noexcept
