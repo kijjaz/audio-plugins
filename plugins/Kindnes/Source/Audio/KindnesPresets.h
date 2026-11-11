@@ -15,7 +15,7 @@ struct Preset
     int playMode{ 1 };          // 0: Classic APU, 1: Poly, 2: Unison Stereo
     bool authenticDAC{ true };   // True: Non-linear resistive DAC
     bool analogFilter{ true };   // True: Motherboard HPF + LPF
-    float filterTone{ 0.5f };    // 0: Bright, 0.5: Authentic NES, 1: Dark CRT
+    float filterTone{ 0.5f };    // 0: Bright, 0.5: Authentic 8-Bit APU, 1: Dark CRT
 
     // Resonant Filter
     int filterMode{ 0 };        // 0: LP, 1: HP, 2: BP, 3: Notch, 4: Bypass
@@ -100,14 +100,14 @@ inline const std::vector<Preset>& getFactoryPresets()
         // CATEGORY 1: DRUM KITS & RHYTHM GROOVES (01 - 04)
         // =====================================================================
         {
-            "01. [DRUMS] NES Master Arcade Beat (Hold Key)", "Drums",
+            "01. [DRUMS] Master Arcade Beat (Hold Key)", "Drums",
             0, true, true, 0.45f,
             0, 18000.0f, 0.707f,
             false, 1.0f, 150.0f, 1.0f, 50.0f,
             5.0f, 0.0f, 0.0f, 0.0f,
             2, 1, 0.5f, 0, 0, 0, 0, 0, 0, // Pitched oscs muted -> Pure Drum Kit across all keys!
             0, false, 2, 15, 15, true, 0.4f, false,
-            true, 2, 0, { 0 }, // Arp enabled in Pure Drum Kit -> holding any key runs 16th-note NES Beat!
+            true, 2, 0, { 0 }, // Arp enabled in Pure Drum Kit -> holding any key runs 16th-note 8-Bit Beat!
             false, 0,
             false, 0, 0, 6.0f, 0.0f, 0, true,
             0.0f, 50.0f, 0.0f, 0.0f, false, false, 4, 0.5f,
@@ -142,7 +142,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             4.0f, 0.3f, 0.0f
         },
         {
-            "04. [DRUMS] Sunsoft 1-Bit ROM Kit (Bank 3)", "Drums",
+            "04. [DRUMS] Vintage 1-Bit ROM Kit (Bank 3)", "Drums",
             0, true, true, 0.45f,
             0, 17000.0f, 1.0f,
             false, 1.0f, 180.0f, 1.0f, 80.0f,
@@ -188,7 +188,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             0.0f, 0.0f, 0.0f
         },
         {
-            "07. [LEAD] Akumajou VRC6 Saw Lead", "Leads",
+            "07. [LEAD] Gothic VRC6 Saw Lead", "Leads",
             0, true, true, 0.40f,
             0, 17500.0f, 0.9f,
             true, 2.0f, 160.0f, 0.8f, 140.0f,
@@ -196,7 +196,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             0, 1, 0.5f, 11, 8, 10, 0, 0, 0,
             0, false, 2, 15, 13, false, 0.0f, false,
             false, 0, 0, { 0 },
-            true, 13, // Clean 14-step Konami VRC6 sawtooth + 1/16 thin pulse
+            true, 13, // Clean 14-step VRC6 sawtooth + 1/16 thin pulse
             false, 0, 15, 6.0f, 0.0f, 0, true,
             -1.0f, 25.0f, 140.0f, 12.0f, false, true, 5, 0.45f,
             4.0f, 0.35f, 0.0f
@@ -216,7 +216,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             7.0f, 0.5f, 0.0f
         },
         {
-            "09. [LEAD] FDS 2C33 Zelda Title Synth", "Leads",
+            "09. [LEAD] 2C33 Heroic Fantasy Synth", "Leads",
             0, true, true, 0.50f,
             0, 16000.0f, 0.8f,
             true, 3.0f, 160.0f, 0.78f, 130.0f,
@@ -225,12 +225,12 @@ inline const std::vector<Preset>& getFactoryPresets()
             0, false, 2, 15, 13, false, 0.0f, false,
             false, 0, 0, { 0 },
             false, 0,
-            true, 7, 15, 5.5f, 0.22f, 0, true, // Wave 7 (Zelda Title) + 2C33 hardware vibrato
+            true, 7, 15, 5.5f, 0.22f, 0, true, // Wave 7 (Heroic Fantasy Title) + 2C33 hardware vibrato
             -1.0f, 30.0f, 100.0f, 10.0f, false, false, 4, 0.5f,
             0.0f, 0.0f, 0.0f
         },
         {
-            "10. [LEAD] Sunsoft Gotham Screamer", "Leads",
+            "10. [LEAD] 8-Bit Gotham Screamer", "Leads",
             0, true, true, 0.35f,
             0, 15000.0f, 1.8f, // Resonant bite
             true, 1.0f, 180.0f, 0.75f, 110.0f,
@@ -276,7 +276,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             0.0f, 0.0f, 0.0f
         },
         {
-            "13. [BASS] Sunsoft Silius DPCM + Tri Bass", "Bass",
+            "13. [BASS] 1-Bit DPCM + Stepped Tri Bass", "Bass",
             0, true, true, 0.45f,
             0, 16000.0f, 0.9f,
             true, 1.5f, 180.0f, 0.65f, 100.0f,
@@ -290,7 +290,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             0.0f, 0.0f, 0.0f
         },
         {
-            "14. [BASS] Konami VRC6 Sawtooth Bass", "Bass",
+            "14. [BASS] VRC6 Sawtooth Bass", "Bass",
             0, true, true, 0.45f,
             0, 11000.0f, 1.3f,
             true, 1.0f, 140.0f, 0.55f, 70.0f,
@@ -424,7 +424,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             14.0f, 0.55f, 0.0f
         },
         {
-            "23. [KEYS] Famicom Disk Funk Clavinet", "Keys",
+            "23. [KEYS] 2C33 Disk Funk Clavinet", "Keys",
             1, true, true, 0.35f,
             2, 2400.0f, 1.6f, // Bandpass funkbite
             true, 1.0f, 150.0f, 0.35f, 90.0f,
@@ -484,7 +484,7 @@ inline const std::vector<Preset>& getFactoryPresets()
             5.0f, 0.7f, 0.0f
         },
         {
-            "27. [PAD] Metroid Brinstar FDS Choir", "Pads & Poly",
+            "27. [PAD] Alien Space 2C33 Choir", "Pads & Poly",
             1, true, true, 0.50f,
             0, 12000.0f, 1.1f,
             true, 90.0f, 400.0f, 0.80f, 400.0f,

@@ -1,0 +1,41 @@
+// ============================================================================
+// 2A03 32-Step Staircase Triangle (DAC Pop) (96 kHz, 24-bit)
+// ============================================================================
+<global>
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+<group>
+loop_mode=loop_continuous
+amp_veltrack=0
+<region> sample=samples/waveforms/tri32_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=38498 loop_end=123629
+<region> sample=samples/waveforms/tri32_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39013 loop_end=125407
+<region> sample=samples/waveforms/tri32_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=40344 loop_end=125447
+<region> sample=samples/waveforms/tri32_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=40144 loop_end=125671
+<region> sample=samples/waveforms/tri32_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=38863 loop_end=125459
+<region> sample=samples/waveforms/tri32_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=39322 loop_end=124485
+<region> sample=samples/waveforms/tri32_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38529 loop_end=124672
+<region> sample=samples/waveforms/tri32_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38616 loop_end=125016
+<region> sample=samples/waveforms/tri32_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=39048 loop_end=124911
+<region> sample=samples/waveforms/tri32_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38859 loop_end=124637
+<region> sample=samples/waveforms/tri32_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38658 loop_end=124800
+<region> sample=samples/waveforms/tri32_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38726 loop_end=124689
+<region> sample=samples/waveforms/tri32_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38405 loop_end=124636
+<region> sample=samples/waveforms/tri32_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38628 loop_end=124715
+<region> sample=samples/waveforms/tri32_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38464 loop_end=124866
+<region> sample=samples/waveforms/tri32_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38562 loop_end=124744
+<region> sample=samples/waveforms/tri32_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38451 loop_end=124864
+<region> sample=samples/waveforms/tri32_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38512 loop_end=124753
+<region> sample=samples/waveforms/tri32_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38497 loop_end=124768
+<region> sample=samples/waveforms/tri32_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38480 loop_end=124771
+<region> sample=samples/waveforms/tri32_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38474 loop_end=124796
+<region> sample=samples/waveforms/tri32_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38454 loop_end=124772
+<region> sample=samples/waveforms/tri32_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38448 loop_end=124784
+<region> sample=samples/waveforms/tri32_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38439 loop_end=124785
+<region> sample=samples/waveforms/tri32_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38440 loop_end=124807
+<region> sample=samples/waveforms/tri32_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38425 loop_end=124782
+<region> sample=samples/waveforms/tri32_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38423 loop_end=124792
+<region> sample=samples/waveforms/tri32_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38419 loop_end=124792
+<region> sample=samples/waveforms/tri32_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38400 loop_end=124790

@@ -1,0 +1,41 @@
+// ============================================================================
+// VRC6 8-Bit Overdrive Wrap Saw (96 kHz, 24-bit)
+// ============================================================================
+<global>
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+<group>
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=40490 loop_end=125620
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=40687 loop_end=124613
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=39677 loop_end=124779
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=39582 loop_end=125109
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39859 loop_end=124987
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38925 loop_end=125322
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=39233 loop_end=124338
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=39208 loop_end=124735
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38812 loop_end=124675
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38660 loop_end=125056
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38491 loop_end=124633
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38585 loop_end=124985
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38654 loop_end=124885
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38528 loop_end=124924
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38640 loop_end=124782
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38492 loop_end=124891
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38575 loop_end=124805
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38462 loop_end=124858
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38455 loop_end=124856
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38445 loop_end=124845
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38444 loop_end=124766
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38429 loop_end=124825
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38427 loop_end=124828
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38422 loop_end=124822
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38425 loop_end=124792
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38413 loop_end=124808
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38413 loop_end=124814
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38410 loop_end=124810
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38415 loop_end=124806

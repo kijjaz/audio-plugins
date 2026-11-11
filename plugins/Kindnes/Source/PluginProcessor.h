@@ -46,6 +46,8 @@ public:
     juce::String getCustomArpPatternString() const;
     juce::String getArpPatternStringForCurrentSetting() const;
 
+    void triggerCustomDrum(float velocity = 1.0f) { engine_.triggerCustomDrum(velocity); }
+
 private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     void updateEngineParameters();

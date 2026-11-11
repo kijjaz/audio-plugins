@@ -9,7 +9,7 @@ namespace KindnesDSP
 {
 
 /**
- * Konami VRC6 Audio Expansion Emulation (Dn-FamiTracker / nsfplay nes_vrc6 model).
+ * VRC6 Audio Expansion Emulation (Dn-FamiTracker / nsfplay vrc6 model).
  * 
  * Featured in Japanese Famicom classics like Castlevania III (Akumajou Densetsu),
  * Esper Dream 2, and Madara.

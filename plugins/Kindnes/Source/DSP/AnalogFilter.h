@@ -7,12 +7,12 @@ namespace KindnesDSP
 {
 
 /**
- * NES Motherboard Analog Audio Output Filtering.
+ * 8-Bit Motherboard Analog Audio Output Filtering.
  * 
  * Accurately models the multi-stage analog signal path between the 2A03 DAC
  * and the RCA audio out jack:
  * 1. 1st-order HPF @ 90 Hz (DC decoupling and sub-rumble blocker)
- * 2. 1st-order HPF @ 440 Hz (low-end tilt creating the classic NES punch)
+ * 2. 1st-order HPF @ 440 Hz (low-end tilt creating classic 8-bit punch)
  * 3. 3-pole Low-Pass Filter @ ~14 kHz (anti-imaging and vintage warmth)
  */
 class AnalogFilter

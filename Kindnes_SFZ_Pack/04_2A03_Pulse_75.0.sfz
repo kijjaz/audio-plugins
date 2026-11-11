@@ -1,0 +1,41 @@
+// ============================================================================
+// 2A03 Pulse 75.0% (Duty 3 / 180 deg) (96 kHz, 24-bit)
+// ============================================================================
+<global>
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+<group>
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/pulse75_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39967 loop_end=125097
+<region> sample=samples/waveforms/pulse75_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=40248 loop_end=124173
+<region> sample=samples/waveforms/pulse75_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=39307 loop_end=124410
+<region> sample=samples/waveforms/pulse75_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=39272 loop_end=124799
+<region> sample=samples/waveforms/pulse75_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39598 loop_end=124726
+<region> sample=samples/waveforms/pulse75_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38706 loop_end=125103
+<region> sample=samples/waveforms/pulse75_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=39049 loop_end=125192
+<region> sample=samples/waveforms/pulse75_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=39054 loop_end=124581
+<region> sample=samples/waveforms/pulse75_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38682 loop_end=124545
+<region> sample=samples/waveforms/pulse75_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38551 loop_end=124947
+<region> sample=samples/waveforms/pulse75_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38400 loop_end=124541
+<region> sample=samples/waveforms/pulse75_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38508 loop_end=124908
+<region> sample=samples/waveforms/pulse75_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38590 loop_end=124820
+<region> sample=samples/waveforms/pulse75_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38475 loop_end=124870
+<region> sample=samples/waveforms/pulse75_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38595 loop_end=124737
+<region> sample=samples/waveforms/pulse75_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38454 loop_end=124854
+<region> sample=samples/waveforms/pulse75_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38544 loop_end=124774
+<region> sample=samples/waveforms/pulse75_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38436 loop_end=124831
+<region> sample=samples/waveforms/pulse75_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38433 loop_end=124834
+<region> sample=samples/waveforms/pulse75_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38427 loop_end=124827
+<region> sample=samples/waveforms/pulse75_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38429 loop_end=124843
+<region> sample=samples/waveforms/pulse75_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38417 loop_end=124812
+<region> sample=samples/waveforms/pulse75_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38416 loop_end=124818
+<region> sample=samples/waveforms/pulse75_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38413 loop_end=124813
+<region> sample=samples/waveforms/pulse75_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38418 loop_end=124785
+<region> sample=samples/waveforms/pulse75_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38407 loop_end=124803
+<region> sample=samples/waveforms/pulse75_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38408 loop_end=124810
+<region> sample=samples/waveforms/pulse75_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38406 loop_end=124806
+<region> sample=samples/waveforms/pulse75_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38412 loop_end=124803

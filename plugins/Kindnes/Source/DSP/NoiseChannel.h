@@ -49,6 +49,7 @@ public:
         envelopeStartFlag_ = false;
 
         enabled_ = true;
+        gated_ = true;
     }
 
     void setSampleRate(double sampleRate) noexcept

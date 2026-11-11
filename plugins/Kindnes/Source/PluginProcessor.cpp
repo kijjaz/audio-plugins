@@ -211,6 +211,43 @@ void KindnesAudioProcessor::updateEngineParameters()
     engine_.setFDSPresetMod(fdsModTable);
     bool fdsStepped = *apvts_.getRawParameterValue("fdsSteppedDac") > 0.5f;
     engine_.setFDSSteppedDAC(fdsStepped);
+
+    // Advanced Algorithmic Drum Designer
+    KindnesDSP::KindnesEngine::CustomDrumParams cDrum;
+    cDrum.designMode = static_cast<int>(*apvts_.getRawParameterValue("drumDesignMode"));
+    cDrum.templateId = static_cast<int>(*apvts_.getRawParameterValue("drumTemplate"));
+    cDrum.midiMode = static_cast<int>(*apvts_.getRawParameterValue("drumMidiMode"));
+    cDrum.macroPunch = *apvts_.getRawParameterValue("drumMacroPunch");
+    cDrum.macroBody = *apvts_.getRawParameterValue("drumMacroBody");
+    cDrum.macroSnappy = *apvts_.getRawParameterValue("drumMacroSnappy");
+    cDrum.macroGrit = *apvts_.getRawParameterValue("drumMacroGrit");
+
+    cDrum.pitchCurve = static_cast<int>(*apvts_.getRawParameterValue("drumPitchCurve"));
+    cDrum.pitchTimeMs = *apvts_.getRawParameterValue("drumPitchTimeMs");
+    cDrum.fmRateHz = *apvts_.getRawParameterValue("drumFmRateHz");
+    cDrum.fmDepthHz = *apvts_.getRawParameterValue("drumFmDepthHz");
+
+    cDrum.bodyStartPitchHz = *apvts_.getRawParameterValue("drumBodyStartPitch");
+    cDrum.bodyEndPitchHz = *apvts_.getRawParameterValue("drumBodyEndPitch");
+    cDrum.bodyDecayMs = *apvts_.getRawParameterValue("drumBodyDecayMs");
+    cDrum.bodyWaveform = static_cast<int>(*apvts_.getRawParameterValue("drumBodyWave"));
+    cDrum.bodyLevel = *apvts_.getRawParameterValue("drumBodyLevel");
+
+    cDrum.clickType = static_cast<int>(*apvts_.getRawParameterValue("drumClickType"));
+    cDrum.clickLevel = *apvts_.getRawParameterValue("drumClickLevel");
+
+    cDrum.noiseMode = static_cast<int>(*apvts_.getRawParameterValue("drumNoiseMode"));
+    cDrum.noisePeriod = static_cast<int>(*apvts_.getRawParameterValue("drumNoisePeriod"));
+    cDrum.noiseDecayMs = *apvts_.getRawParameterValue("drumNoiseDecayMs");
+    cDrum.noisePattern = static_cast<int>(*apvts_.getRawParameterValue("drumNoisePattern"));
+    cDrum.noiseLevel = *apvts_.getRawParameterValue("drumNoiseLevel");
+
+    cDrum.dpcmDeltaStep = static_cast<int>(*apvts_.getRawParameterValue("drumDpcmDelta"));
+    cDrum.dpcmRateIndex = static_cast<int>(*apvts_.getRawParameterValue("drumDpcmRate"));
+    cDrum.dpcmGrit = *apvts_.getRawParameterValue("drumDpcmGrit");
+    cDrum.dpcmBlend = *apvts_.getRawParameterValue("drumDpcmBlend");
+    cDrum.dpcmSampleVoice = static_cast<int>(*apvts_.getRawParameterValue("drumDpcmVoice"));
+    engine_.setCustomDrumParams(cDrum);
 }
 
 void KindnesAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -425,12 +462,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout KindnesAudioProcessor::creat
     // DPCM Sampler & 32-Voice Drum ROM
     params.push_back(std::make_unique<juce::AudioParameterChoice>("dpcmSample", "DPCM Sample",
         juce::StringArray{
-            "01. Sunsoft Punch Kick", "02. Mega Crisp Snare", "03. Closed Hi-Hat", "04. Open Hi-Hat",
+            "01. Punch Bass Drum", "02. Mega Crisp Snare", "03. Closed Hi-Hat", "04. Open Hi-Hat",
             "05. 8-Bit Hand Clap", "06. High Rack Tom", "07. Low Floor Tom", "08. Arcade Crash Cymbal",
             "09. VRC6 Overdriven Kick", "10. 93-Step Metallic Snare", "11. Chiptune Rimshot", "12. 8-Bit Arcade Cowbell",
             "13. FDS 2C33 FM Simmons Tom", "14. Gated Boss Battle Snare", "15. Chiptune Shaker", "16. FDS Metallic Ride Bell",
             "17. 1-Bit Slap Bass (Pop)", "18. 1-Bit Slap Bass (Thumb)", "19. Orchestra Hit (Major)", "20. Orchestra Hit (Minor)",
-            "21. Konami 1-Bit Timpani", "22. 2A03 Deep Sub-Boom Kick", "23. Slope-Overload Fuzz Snare", "24. 1-Bit Vinyl Scratch",
+            "21. Dramatic 1-Bit Timpani", "22. 2A03 Deep Sub-Boom Kick", "23. Slope-Overload Fuzz Snare", "24. 1-Bit Vinyl Scratch",
             "25. Speech: KINDNES", "26. Speech: POWER UP", "27. Retro Laser Zapper", "28. Coin Chime (B5-E6)",
             "29. Jump Spring Boing", "30. Boss Explosion Rumble", "31. UFO Warp Siren", "32. Power-Down Glitch",
             "33. User Sample"
@@ -484,7 +521,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout KindnesAudioProcessor::creat
     params.push_back(std::make_unique<juce::AudioParameterChoice>("fdsWave", "FDS Wavetable",
         juce::StringArray{
             "01. Sine", "02. Triangle", "03. Sawtooth", "04. 25% Pulse",
-            "05. FDS Organ", "06. FDS Bell", "07. Formant Aah", "08. Zelda Title Lead"
+            "05. FDS Organ", "06. FDS Bell", "07. Formant Aah", "08. Heroic Fantasy Lead"
         }, 0));
     params.push_back(std::make_unique<juce::AudioParameterInt>("fdsVol", "FDS Vol", 0, 15, 15));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("fdsModSpeed", "FDS FM Speed",
@@ -498,6 +535,83 @@ juce::AudioProcessorValueTreeState::ParameterLayout KindnesAudioProcessor::creat
     // Master Trim (default strictly 0.0 dB)
     params.push_back(std::make_unique<juce::AudioParameterFloat>("masterTrim", "Master Trim",
         juce::NormalisableRange<float>(-24.0f, 12.0f), 0.0f));
+
+    // =========================================================================
+    // Advanced Drum Sound Design Parameters (Easy Macros vs Flexible Deep)
+    // =========================================================================
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumDesignMode", "Drum Design Mode",
+        juce::StringArray{ "Easy (Macro)", "Flexible (Deep)" }, 0));
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumTemplate", "Drum Template",
+        juce::StringArray{
+            "Custom User Drum",
+            "01. Punch Kick", "02. Mega Snare", "03. Closed Hi-Hat", "04. Open Hi-Hat",
+            "05. 8-Bit Hand Clap", "06. High Rack Tom", "07. Low Floor Tom", "08. Arcade Crash Cymbal",
+            "09. VRC6 Overdriven Kick", "10. 93-Step Metallic Snare", "11. Chiptune Rimshot", "12. 8-Bit Arcade Cowbell",
+            "13. FDS FM Simmons Tom", "14. Gated Boss Battle Snare", "15. Laser Zapper FX",
+            "16. Boss Defeat Cataclysm", "17. Comic Spring Boing"
+        }, 1));
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumMidiMode", "Drum MIDI Play Mode",
+        juce::StringArray{ "Audition Button Only", "MIDI Note 36 (C1 Kick / D1 Snare)", "Tuned Chromatic Synth" }, 1));
+
+    // Easy Macros (0.0 to 1.0)
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumMacroPunch", "Punch (Pitch Drop)",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.70f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumMacroBody", "Body Length (Decay)",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.50f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumMacroSnappy", "Snappy (Noise Burst)",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.40f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumMacroGrit", "1-Bit Grit (Slew Distortion)",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.20f));
+
+    // Flexible / Deep Controls
+    // Tonal Body & Pitch Curves
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumPitchCurve", "Pitch Modulation Curve",
+        juce::StringArray{ "Exponential Drop", "Dual-Stage Click Dive", "Laser Linear Sweep", "Pitch Scoop Rise", "FM Chirp Modulation" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumPitchTimeMs", "Pitch Sweep Time",
+        juce::NormalisableRange<float>(5.0f, 300.0f, 1.0f, 0.5f), 60.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumFmRateHz", "FM Modulation Rate",
+        juce::NormalisableRange<float>(10.0f, 300.0f, 1.0f, 0.5f), 120.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumFmDepthHz", "FM Modulation Depth",
+        juce::NormalisableRange<float>(0.0f, 400.0f, 1.0f, 0.5f), 150.0f));
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumBodyStartPitch", "Body Start Freq",
+        juce::NormalisableRange<float>(30.0f, 800.0f, 1.0f, 0.5f), 215.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumBodyEndPitch", "Body End Freq",
+        juce::NormalisableRange<float>(20.0f, 300.0f, 1.0f, 0.5f), 47.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumBodyDecayMs", "Body Decay Time",
+        juce::NormalisableRange<float>(10.0f, 1000.0f, 1.0f, 0.4f), 120.0f));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumBodyWave", "Body Waveform",
+        juce::StringArray{ "2A03 4-Bit Triangle", "Saturated Sine", "VRC6 Saw Overdrive", "2A03 25% Pulse" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumBodyLevel", "Body Level",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.95f));
+
+    // Transient Click Layer
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumClickType", "Transient Click Type",
+        juce::StringArray{ "Off", "2A03 Impulse Spike", "Square Pop", "Noise Snap" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumClickLevel", "Click Level",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.40f));
+
+    // Noise Layer
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumNoiseMode", "Noise LFSR Mode",
+        juce::StringArray{ "Mode 0: White Noise (32767-step)", "Mode 1: Metallic Timbre (93-step)" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterInt>("drumNoisePeriod", "Noise Pitch Period", 0, 15, 3));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumNoiseDecayMs", "Noise Decay Time",
+        juce::NormalisableRange<float>(5.0f, 4000.0f, 1.0f, 0.4f), 80.0f));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("drumNoisePattern", "Noise Envelope Pattern",
+        juce::StringArray{ "Single Fast Burst", "Multi-Flam Clap (3 Bursts)", "Gated Snare Plateau", "Low-Rumble Swell (Explosion)", "Glitch Frame Stutter" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumNoiseLevel", "Noise Level",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.50f));
+
+    // DPCM Hardware Crusher & Blend
+    params.push_back(std::make_unique<juce::AudioParameterInt>("drumDpcmDelta", "DPCM Delta Step", 1, 8, 2));
+    params.push_back(std::make_unique<juce::AudioParameterInt>("drumDpcmRate", "DPCM Rate Index", 0, 15, 15));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumDpcmGrit", "DPCM Slope Overload Grit",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.20f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("drumDpcmBlend", "Synth vs DPCM Blend",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.50f));
+    params.push_back(std::make_unique<juce::AudioParameterInt>("drumDpcmVoice", "DPCM Paired ROM Voice", 0, 31, 0));
 
     return { params.begin(), params.end() };
 }

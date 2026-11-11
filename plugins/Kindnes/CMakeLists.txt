@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(Kindnes VERSION 0.0.2 LANGUAGES CXX C)
+project(Kindnes VERSION 0.0.4 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,6 +24,7 @@ FetchContent_MakeAvailable(juce)
 # --- Plugin Definition ---
 juce_add_plugin(Kindnes
     COMPANY_NAME "Kijjaz"
+    VERSION "0.0.4"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE

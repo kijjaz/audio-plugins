@@ -12,7 +12,7 @@ namespace KindnesDSP
 {
 
 /**
- * Nintendo FDS (Famicom Disk System) 2C33 Wavetable & FM Sound Generator.
+ * FDS 2C33 Wavetable & FM Sound Generator.
  * 
  * Recreates the legendary expansion chip featured in Zelda 1, Metroid, Kid Icarus,
  * and Castlevania II (FDS version), upgraded with the exact Dn-FamiTracker / Mesen
@@ -171,10 +171,10 @@ public:
                 }
                 break;
 
-            case 7: // Vintage Zelda 1 Title Lead
+            case 7: // Vintage Heroic Fantasy Lead
                 for (size_t i = 0; i < kWavetableSize; ++i)
                 {
-                    // Classic Zelda overdriven stepped wave
+                    // Classic Heroic Fantasy overdriven stepped wave
                     float a1 = static_cast<float>(i) * 6.2831853f / 64.0f;
                     float s = std::tanh(std::sin(a1) * 2.5f);
                     float norm = (s + 1.0f) * 0.5f * 63.0f;

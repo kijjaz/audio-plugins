@@ -112,28 +112,47 @@ jobs:
           cd windows_vst3
           zip -r ../release_pkgs/Kindnes-Windows-x64.zip Kindnes.vst3
           cd ..
+          # Copy SFZ Sample Pack if present
+          if [ -f "Kindnes-SFZ-Pack-96k-24bit.zip" ]; then
+            cp Kindnes-SFZ-Pack-96k-24bit.zip release_pkgs/
+          fi
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: kindnes-v0.0.2
-          name: "Kindnes v0.0.2 — NES 2A03 APU, FDS 2C33 & VRC6 Synthesizer"
+          tag_name: kindnes-v0.0.4
+          name: "Kindnes v0.0.4 — Multi-Curve Pitch Engine, Transient Clicks & Chromatic Drum Synth"
+          fail_on_unmatched_files: false
           body: |
-            ### Kindnes v0.0.2 — High-Fidelity NES 2A03 APU, FDS 2C33 & VRC6 Synthesizer Suite
+            ### Kindnes v0.0.4 — High-Fidelity 8-Bit 2A03 APU, FDS 2C33 & VRC6 Synthesizer Suite & Advanced Drum Designer
             
             #### 📦 Direct Downloads:
-            - **[Kindnes-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.2/Kindnes-macOS-Universal.zip)** — VST3, AU (Audio Unit), and Standalone App for macOS (Apple Silicon arm64 & Intel x86_64).
-            - **[Kindnes-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.2/Kindnes-Windows-x64.zip)** — VST3 64-bit for Windows.
+            - **[Kindnes-macOS-Universal.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.4/Kindnes-macOS-Universal.zip)** — VST3, AU (Audio Unit), and Standalone App for macOS (Apple Silicon arm64 & Intel x86_64).
+            - **[Kindnes-Windows-x64.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.4/Kindnes-Windows-x64.zip)** — VST3 64-bit for Windows.
+            - **[Kindnes-SFZ-Pack-96k-24bit.zip](https://github.com/kijjaz/audio-plugins/releases/download/kindnes-v0.0.4/Kindnes-SFZ-Pack-96k-24bit.zip)** — Complete 96kHz 24-bit SFZ Sample Pack containing 11 basic waveform instruments, 61 chromatic drum/sfx voices, and 36 arcade game speech voices.
             
-            #### 🌟 What's New in v0.0.2 (Dn-FamiTracker Hardware Synthesis Upgrades):
-            - **Authentic FDS 2C33 Hardware FM Modulator & RC Lowpass**: 64-step 3-bit hardware modulation table (`{0, +1, +2, +4, Reset, -4, -2, -1}`), 7-bit signed `_counter` (`-64..+63`), exact 2C33 fixed-point pitch multiplier & wrap-around math, Auto-FM chromatic harmonic tracking, and the Famicom Disk System RAM Adapter post-DAC 1-pole RC lowpass filter (~2.4 kHz).
-            - **Authentic Konami VRC6 8-Bit Wrapping Sawtooth & 16-Step Pulse**: True 14-step 8-bit wrapping accumulator (`(k * accumRate) & 0xFF`, top 5 bits `accum >> 3`) with PolyBLEP staircase anti-aliasing, authentic 8-bit wrap-around double-saw overdrive at high saw volumes, and `1/16` (`6.25%`) thin pulse accompaniment.
-            - **Sub-Cycle Time-Averaged 2A03 LFSR Noise (`nsfplay` Engine)**: Eliminates point-sampling aliasing at high noise shift rates (periods `0..3` up to `447 kHz`) by weighting sub-sample LFSR transitions (`accum / accum_clocks`).
-            - **Band-Limited Staircase PolyBLEP**: Sub-sample PolyBLEP edge corrections on the 32-step 4-bit Triangle, 64-step 6-bit FDS wavetable, and 14-step VRC6 Sawtooth, plus true 180° inverted Duty 3 (`75%`) phase on Pulse 1 & 2.
-            - **32-Voice 4-Bank Hybrid NES Drum Machine & Easy Drum UX**: 
-              - 32 built-in drum, percussion & SFX voices across 4 banks: **Bank 1 (Classic NES Master Kit)**, **Bank 2 (VRC6 & FDS Synth Drums)**, **Bank 3 (Sunsoft & Konami 1-Bit ROM Kit)**, and **Bank 4 (Retro Arcade Vocal & SFX Kit)**.
-              - 8 real-time glowing pads with dynamic bank switching, Open Hi-Hat choking when Closed Hat triggers, 1-click `AUTO BEAT` audition, and smart split-keyboard mode (`< C2` plays drums, `C2+` plays melodic synth).
-            - **32 Studio-Calibrated Factory Presets**: Spanning `[DRUMS]`, `[LEAD]`, `[BASS]`, `[ARP]`, `[KEYS]`, `[PAD]`, and `[DPCM]/[SFX]`, all resting at `trim = 0.0 dB` and verified sample-rate invariant at 44.1 kHz, 48 kHz, and 96 kHz.
+            #### 🌟 What's New in v0.0.4:
+            - **Multi-Curve Pitch Modulation Engine**:
+              - 5 pitch envelope shapes: Exponential Drop, Dual-Stage Click Dive (steep transient punch), Laser Linear Sweep, Pitch Scoop Rise (comic spring/boing), and FM Chirp Modulation (Simmons toms/UFO warps).
+              - Dedicated Pitch Sweep Time knob ($5\text{ ms}\dots 300\text{ ms}$) and FM Rate/Depth controls.
+            - **Dedicated Transient Click Layer**:
+              - 4 transient attack modes: Off, 2A03 Impulse Spike, Square Pop, and Noise Snap with level control to slice through dense chiptune mixes.
+            - **Expanded Noise Patterns & Extended Decays (Explosion Engine)**:
+              - Added Low-Rumble Swell and Glitch Frame Stutter patterns.
+              - Noise decay extended up to $4.0\text{ seconds}$ for dramatic cinematic boss defeats.
+            - **Direct DAW MIDI Integration & Tuned Chromatic Synth Mode**:
+              - Trigger custom drums on Note 36 (C1 Kick) & Note 38 (D1 Snare), or switch to *Tuned Chromatic Synth* to play tuned 8-bit 808 sub-bass, tuned toms, and lasers across the entire keyboard!
+              - **Live Audition Pad**: Real-time audition button for testing drum tweaks instantly.
+              - **15 Instant Algorithmic Drum Presets**: One-click recall for Kicks, Snares, Claps, Toms, Cymbals, Cowbells, and Lasers.
+            - **Expanded 61-Voice Drum & SFX SFZ Library**:
+              - Graded explosions (short pops, medium arcade bombs, large sub rumbles, and dramatic 2.6s & 3.6s boss cataclysms).
+              - Physical turntable vinyl scratch modeling with forward/backward velocity scrubbing.
+              - Authentic Fairlight CMI tutti orchestra hits with brass bite and bass drum punch.
+              - Crisp, resonant chiptune maraca / shaker centered at 6.2 kHz.
+            - **36 Authentic Vintage 8-Bit Arcade Game Speech Voices**:
+              - 1-Bit DPCM delta modulation speech library mapped chromatically across 3 octaves (C3 to B5 in `8Bit_Game_Speech.sfz`).
+            - **32 Studio-Calibrated Factory Presets**: All resting at `trim = 0.0 dB` (unity gain) and verified sample-rate invariant at 44.1 kHz, 48 kHz, and 96 kHz.
           files: |
             release_pkgs/Kindnes-macOS-Universal.zip
             release_pkgs/Kindnes-Windows-x64.zip
+            release_pkgs/Kindnes-SFZ-Pack-96k-24bit.zip

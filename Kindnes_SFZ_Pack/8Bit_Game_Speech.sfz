@@ -1,0 +1,232 @@
+// ====================================================================
+// Kindnes 8-Bit Vintage Arcade Game Speech Library (96kHz, 24-bit)
+// Cycle-accurate 1-Bit DPCM Delta Modulation & Hardware Speech Silicon
+// Key Range: C3 (Note 48) - B5 (Note 83) across 36 chromatic pads
+// ====================================================================
+
+<control>
+default_path=samples/speech/
+
+<global>
+loop_mode=one_shot
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.1
+
+// Note 48: Game start! (Start)
+<region>
+sample=01_Game_Start.wav
+key=48
+pitch_keycenter=48
+
+// Note 49: Ready... Go! (Start)
+<region>
+sample=02_Ready_Go.wav
+key=49
+pitch_keycenter=49
+
+// Note 50: Ready... Fight! (Combat)
+<region>
+sample=03_Ready_Fight.wav
+key=50
+pitch_keycenter=50
+
+// Note 51: Round One! (Combat)
+<region>
+sample=04_Round_One.wav
+key=51
+pitch_keycenter=51
+
+// Note 52: Round Two! (Combat)
+<region>
+sample=05_Round_Two.wav
+key=52
+pitch_keycenter=52
+
+// Note 53: Final Round! (Combat)
+<region>
+sample=06_Final_Round.wav
+key=53
+pitch_keycenter=53
+
+// Note 54: Fight! (Combat)
+<region>
+sample=07_Fight.wav
+key=54
+pitch_keycenter=54
+
+// Note 55: You win! (Victory)
+<region>
+sample=08_You_Win.wav
+key=55
+pitch_keycenter=55
+
+// Note 56: You lose! (Defeat)
+<region>
+sample=09_You_Lose.wav
+key=56
+pitch_keycenter=56
+
+// Note 57: Victory! (Victory)
+<region>
+sample=10_Victory.wav
+key=57
+pitch_keycenter=57
+
+// Note 58: Flawless victory! (Victory)
+<region>
+sample=11_Flawless_Victory.wav
+key=58
+pitch_keycenter=58
+
+// Note 59: Perfect! (Victory)
+<region>
+sample=12_Perfect.wav
+key=59
+pitch_keycenter=59
+
+// Note 60: Stage clear! (Stage)
+<region>
+sample=13_Stage_Clear.wav
+key=60
+pitch_keycenter=60
+
+// Note 61: Mission accomplished! (Stage)
+<region>
+sample=14_Mission_Accomplished.wav
+key=61
+pitch_keycenter=61
+
+// Note 62: Mission failed! (Defeat)
+<region>
+sample=15_Mission_Failed.wav
+key=62
+pitch_keycenter=62
+
+// Note 63: Game over! (Defeat)
+<region>
+sample=16_Game_Over.wav
+key=63
+pitch_keycenter=63
+
+// Note 64: Continue? (Arcade)
+<region>
+sample=17_Continue.wav
+key=64
+pitch_keycenter=64
+
+// Note 65: Insert coin! (Arcade)
+<region>
+sample=18_Insert_Coin.wav
+key=65
+pitch_keycenter=65
+
+// Note 66: Player One, ready! (Start)
+<region>
+sample=19_Player_One_Ready.wav
+key=66
+pitch_keycenter=66
+
+// Note 67: Select your hero! (Arcade)
+<region>
+sample=20_Select_Your_Hero.wav
+key=67
+pitch_keycenter=67
+
+// Note 68: Level up! (Power)
+<region>
+sample=21_Level_Up.wav
+key=68
+pitch_keycenter=68
+
+// Note 69: Power up! (Power)
+<region>
+sample=22_Power_Up.wav
+key=69
+pitch_keycenter=69
+
+// Note 70: Extra life! (Power)
+<region>
+sample=23_Extra_Life.wav
+key=70
+pitch_keycenter=70
+
+// Note 71: Speed up! (Power)
+<region>
+sample=24_Speed_Up.wav
+key=71
+pitch_keycenter=71
+
+// Note 72: Shield activated! (Power)
+<region>
+sample=25_Shield_Activated.wav
+key=72
+pitch_keycenter=72
+
+// Note 73: Warning! Warning! (Alert)
+<region>
+sample=26_Warning.wav
+key=73
+pitch_keycenter=73
+
+// Note 74: Danger! (Alert)
+<region>
+sample=27_Danger.wav
+key=74
+pitch_keycenter=74
+
+// Note 75: Intruder alert! Destroy! (Alert)
+<region>
+sample=28_Intruder_Alert.wav
+key=75
+pitch_keycenter=75
+
+// Note 76: Boss approaching! (Alert)
+<region>
+sample=29_Boss_Approaching.wav
+key=76
+pitch_keycenter=76
+
+// Note 77: Emergency! Evacuate! (Alert)
+<region>
+sample=30_Emergency_Evacuate.wav
+key=77
+pitch_keycenter=77
+
+// Note 78: Time extended! (Arcade)
+<region>
+sample=31_Time_Extended.wav
+key=78
+pitch_keycenter=78
+
+// Note 79: Hurry up! (Arcade)
+<region>
+sample=32_Hurry_Up.wav
+key=79
+pitch_keycenter=79
+
+// Note 80: Bonus stage! (Stage)
+<region>
+sample=33_Bonus_Stage.wav
+key=80
+pitch_keycenter=80
+
+// Note 81: Hyper drive engaged! (Power)
+<region>
+sample=34_Hyper_Drive.wav
+key=81
+pitch_keycenter=81
+
+// Note 82: Kindnes online! (System)
+<region>
+sample=35_Kindnes_Online.wav
+key=82
+pitch_keycenter=82
+
+// Note 83: Good luck, Commander! (Start)
+<region>
+sample=36_Good_Luck.wav
+key=83
+pitch_keycenter=83
+

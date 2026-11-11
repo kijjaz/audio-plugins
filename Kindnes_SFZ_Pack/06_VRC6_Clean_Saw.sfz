@@ -1,0 +1,41 @@
+// ============================================================================
+// VRC6 14-Step Clean Sawtooth (96 kHz, 24-bit)
+// ============================================================================
+<global>
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+<group>
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/vrc6_saw_clean_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=40491 loop_end=125621
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=40688 loop_end=124614
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=39678 loop_end=124780
+<region> sample=samples/waveforms/vrc6_saw_clean_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=39583 loop_end=125110
+<region> sample=samples/waveforms/vrc6_saw_clean_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39860 loop_end=124988
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38926 loop_end=125323
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=39234 loop_end=124339
+<region> sample=samples/waveforms/vrc6_saw_clean_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=39209 loop_end=124736
+<region> sample=samples/waveforms/vrc6_saw_clean_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38813 loop_end=124676
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38661 loop_end=125057
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38492 loop_end=124634
+<region> sample=samples/waveforms/vrc6_saw_clean_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38586 loop_end=124986
+<region> sample=samples/waveforms/vrc6_saw_clean_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38655 loop_end=124886
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38529 loop_end=124925
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38641 loop_end=124783
+<region> sample=samples/waveforms/vrc6_saw_clean_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38493 loop_end=124892
+<region> sample=samples/waveforms/vrc6_saw_clean_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38576 loop_end=124806
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38463 loop_end=124859
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38456 loop_end=124857
+<region> sample=samples/waveforms/vrc6_saw_clean_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38446 loop_end=124846
+<region> sample=samples/waveforms/vrc6_saw_clean_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38445 loop_end=124767
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38430 loop_end=124826
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38428 loop_end=124829
+<region> sample=samples/waveforms/vrc6_saw_clean_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38423 loop_end=124823
+<region> sample=samples/waveforms/vrc6_saw_clean_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38426 loop_end=124793
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38414 loop_end=124809
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38414 loop_end=124815
+<region> sample=samples/waveforms/vrc6_saw_clean_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38411 loop_end=124811
+<region> sample=samples/waveforms/vrc6_saw_clean_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38416 loop_end=124807

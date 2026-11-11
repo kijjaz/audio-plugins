@@ -39,12 +39,12 @@ public:
         frequency_ = 220.0f;
         currentStepOutput_ = 0;
         
-        linearCounter_ = 0;
+        linearCounter_ = 127;
         linearReloadValue_ = 127;
         linearReloadFlag_ = false;
-        controlFlag_ = false; // Halt / loop flag
+        controlFlag_ = true; // Halt / loop flag: maintains linear counter when active
 
-        lengthCounter_ = 0;
+        lengthCounter_ = 255;
         enabled_ = true;
         steppedDacMode_ = true;
     }

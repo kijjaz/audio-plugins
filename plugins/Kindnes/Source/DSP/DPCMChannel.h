@@ -453,9 +453,9 @@ private:
         constexpr float kTwoPi = 6.28318530718f;
 
         // =====================================================================
-        // BANK 1 (00..07): CLASSIC NES MASTER DRUM KIT
+        // BANK 1 (00..07): CLASSIC 8-BIT MASTER DRUM KIT
         // =====================================================================
-        // 00 (01). Sunsoft Punch Kick
+        // 00 (01). Punch Bass Drum
         {
             std::vector<float> pcm(3400);
             float ph = 0.0f;
@@ -470,7 +470,7 @@ private:
                 float body = std::tanh(std::sin(ph * kTwoPi) * 2.3f) * std::exp(-t * 3.2f);
                 pcm[i] = std::clamp(body * 0.95f + click * 0.45f, -1.0f, 1.0f);
             }
-            addBuiltin("01. Sunsoft Punch Kick", pcm);
+            addBuiltin("01. Punch Bass Drum", pcm);
         }
 
         // 01 (02). Mega Crisp Snare
@@ -585,7 +585,7 @@ private:
         }
 
         // =====================================================================
-        // BANK 2 (08..15): KONAMI VRC6 & FDS FM SYNTH PERCUSSION KIT
+        // BANK 2 (08..15): VRC6 & FDS FM SYNTH PERCUSSION KIT
         // =====================================================================
         // 08 (09). VRC6 Overdriven Synth Kick
         {
@@ -719,7 +719,7 @@ private:
         }
 
         // =====================================================================
-        // BANK 3 (16..23): SUNSOFT & KONAMI 1-BIT SAMPLE ROM HITS & BASSES
+        // BANK 3 (16..23): VINTAGE 1-BIT SAMPLE ROM HITS & BASSES
         // =====================================================================
         // 16 (17). 1-Bit Slap Bass (Pop)
         {
@@ -770,7 +770,7 @@ private:
             addBuiltin("19. Orchestra Hit (Major)", pcm);
         }
 
-        // 19 (20). Orchestra Hit (Minor Castlevania Stab)
+        // 19 (20). Orchestra Hit (Minor Gothic Stab)
         {
             std::vector<float> pcm(4200);
             float ph1 = 0.0f, ph2 = 0.0f, ph3 = 0.0f;
@@ -787,7 +787,7 @@ private:
             addBuiltin("20. Orchestra Hit (Minor)", pcm);
         }
 
-        // 20 (21). Konami 1-Bit Timpani Strike
+        // 20 (21). Dramatic 1-Bit Timpani Strike
         {
             std::vector<float> pcm(4800);
             float ph = 0.0f;
@@ -802,7 +802,7 @@ private:
                 float kettle = (std::sin(ph * kTwoPi) + 0.35f * std::sin(ph * 1.51f * kTwoPi)) * std::exp(-t * 2.2f);
                 pcm[i] = std::clamp(kettle * 0.85f + mallet * 0.4f, -1.0f, 1.0f);
             }
-            addBuiltin("21. Konami 1-Bit Timpani", pcm);
+            addBuiltin("21. Dramatic 1-Bit Timpani", pcm);
         }
 
         // 21 (22). 2A03 Deep Sub-Boom Kick

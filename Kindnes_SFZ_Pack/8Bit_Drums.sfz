@@ -1,0 +1,252 @@
+// ============================================================================
+// Kindnes Comprehensive 8-Bit Vintage 1-Bit Drum & SFX Sound Library (96kHz 24-bit)
+// 61 Chromatic Voices: Notes 24 to 84 (C1 to C6)
+// ============================================================================
+<global>
+amp_veltrack=95
+loop_mode=one_shot
+
+// Note 24 (C1): Sub 808 2A03 Triangle Boom
+<group> key=24
+<region> sample=samples/drums/01_Sub_808_Triangle_Boom.wav
+
+// Note 25 (C#1): Dn-Tracker Deep Sub Kick
+<group> key=25
+<region> sample=samples/drums/02_Dn_Tracker_Deep_Sub_Kick.wav
+
+// Note 26 (D1): VRC6 Overdrive Heavy Kick
+<group> key=26
+<region> sample=samples/drums/03_VRC6_Overdrive_Heavy_Kick.wav
+
+// Note 27 (D#1): FDS 2C33 FM Modulated Kick
+<group> key=27
+<region> sample=samples/drums/04_FDS_FM_Punch_Kick.wav
+
+// Note 28 (E1): Fast Laser-Dive Electro Kick
+<group> key=28
+<region> sample=samples/drums/05_Laser_Dive_Kick.wav
+
+// Note 29 (F1): Sunsoft Punch Kick (Tight Punch)
+<group> key=29
+<region> sample=samples/drums/06_Sunsoft_Punch_Kick_Tight.wav
+
+// Note 30 (F#1): Sunsoft Punch Kick (Long Decay)
+<group> key=30
+<region> sample=samples/drums/07_Sunsoft_Punch_Kick_Long.wav
+
+// Note 31 (G1): 1-Bit Slope Overload Fuzz Kick
+<group> key=31
+<region> sample=samples/drums/08_Slope_Overload_Fuzz_Kick.wav
+
+// Note 32 (G#1): Lo-Fi 4kHz DPCM Crunch Kick
+<group> key=32
+<region> sample=samples/drums/09_LoFi_LowRate_Crunch_Kick.wav
+
+// Note 33 (A1): Double Pitch Drop Kick (Bite)
+<group> key=33
+<region> sample=samples/drums/10_Double_Pitch_Drop_Kick.wav
+
+// Note 34 (A#1): Acoustic Style 8-Bit Kick
+<group> key=34
+<region> sample=samples/drums/11_Acoustic_8Bit_Kick.wav
+
+// Note 35 (B1): General MIDI Sub Bass Drum
+<group> key=35
+<region> sample=samples/drums/12_Standard_Sub_Bass_Drum.wav
+
+// Note 36 (C2): Main Arcade Electric Punch Kick
+<group> key=36
+<region> sample=samples/drums/13_Main_Arcade_Electric_Kick.wav
+
+// Note 37 (C#2): Chiptune Side Stick / Rimshot
+<group> key=37
+<region> sample=samples/drums/14_Chiptune_Side_Stick_Rimshot.wav
+
+// Note 38 (D2): Mega Crisp Snare (Short Pop)
+<group> key=38
+<region> sample=samples/drums/15_Mega_Crisp_Snare_Short.wav
+
+// Note 39 (D#2): 8-Bit Hand Clap (Multi-Flam 3-Burst)
+<group> key=39
+<region> sample=samples/drums/16_8Bit_Hand_Clap_MultiFlam.wav
+
+// Note 40 (E2): 8-Bit Delta Snappy Snare
+<group> key=40
+<region> sample=samples/drums/17_Delta_Snappy_Snare.wav
+
+// Note 41 (F2): Gated Boss Battle Snare (Gated Plateau)
+<group> key=41
+<region> sample=samples/drums/18_Gated_Boss_Snare_Plateau.wav
+
+// Note 42 (F#2): 2A03 Mode 1 93-Step Metallic Snare
+<group> key=42
+<region> sample=samples/drums/19_Metallic_93Step_Snare.wav
+
+// Note 43 (G2): 1-Bit Slope Overload Fuzz Snare
+<group> key=43
+<region> sample=samples/drums/20_Slope_Overload_Fuzz_Snare.wav
+
+// Note 44 (G#2): Glitch Stutter Frame Snare
+<group> key=44
+<region> sample=samples/drums/21_Glitch_Stutter_Snare.wav
+
+// Note 45 (A2): Closed Hi-Hat (Tight 25ms Choke)
+<group> key=45 group=1 off_by=1
+<region> sample=samples/drums/22_Closed_HiHat_Tight.wav
+
+// Note 46 (A#2): Closed Hi-Hat (Crisp 55ms)
+<group> key=46 group=1 off_by=1
+<region> sample=samples/drums/23_Closed_HiHat_Crisp.wav
+
+// Note 47 (B2): Pedal Hi-Hat (Choked Tone)
+<group> key=47 group=1 off_by=1
+<region> sample=samples/drums/24_Pedal_HiHat.wav
+
+// Note 48 (C3): Open Hi-Hat (Medium 260ms)
+<group> key=48 group=1 off_by=1
+<region> sample=samples/drums/25_Open_HiHat_Medium.wav
+
+// Note 49 (C#3): Open Hi-Hat (Sizzle Long 480ms)
+<group> key=49 group=1 off_by=1
+<region> sample=samples/drums/26_Open_HiHat_Sizzle_Long.wav
+
+// Note 50 (D3): Arcade Crash Cymbal (Long 850ms)
+<group> key=50
+<region> sample=samples/drums/27_Arcade_Crash_Cymbal_Long.wav
+
+// Note 51 (D#3): Low Floor Tom (Deep Pitch Drop)
+<group> key=51
+<region> sample=samples/drums/28_Floor_Tom_Deep_Drop.wav
+
+// Note 52 (E3): Low Tom (Fast Dive Punch)
+<group> key=52
+<region> sample=samples/drums/29_Low_Tom_Fast_Dive.wav
+
+// Note 53 (F3): Mid Tom (Gothic Quest)
+<group> key=53
+<region> sample=samples/drums/30_Mid_Tom_Gothic_Quest.wav
+
+// Note 54 (F#3): High Rack Tom (Quick Pitch Fall)
+<group> key=54
+<region> sample=samples/drums/31_High_Rack_Tom.wav
+
+// Note 55 (G3): FDS 2C33 FM Space Simmons Tom
+<group> key=55
+<region> sample=samples/drums/32_FDS_FM_Simmons_Tom_Space.wav
+
+// Note 56 (G#3): VRC6 Sawtooth Synth Tom
+<group> key=56
+<region> sample=samples/drums/33_VRC6_Saw_Synth_Tom.wav
+
+// Note 57 (A3): Dramatic 1-Bit Timpani (Gothic Castle)
+<group> key=57
+<region> sample=samples/drums/34_Dramatic_1Bit_Timpani.wav
+
+// Note 58 (A#3): Comic Spring Tom (Pitch Scoop Rise)
+<group> key=58
+<region> sample=samples/drums/35_Comic_Spring_Tom_Rise.wav
+
+// Note 59 (B3): 8-Bit Arcade Cowbell (Dual Pulse)
+<group> key=59
+<region> sample=samples/drums/36_8Bit_Arcade_Cowbell.wav
+
+// Note 60 (C4): FDS Metallic Ride Bell
+<group> key=60
+<region> sample=samples/drums/37_FDS_Metallic_Ride_Bell.wav
+
+// Note 61 (C#4): Explosion: Micro Hit / Grenade Pop (Short 120ms)
+<group> key=61
+<region> sample=samples/drums/38_Explosion_Micro_Pop.wav
+
+// Note 62 (D4): Explosion: Tank Cannon Punch (Medium 280ms)
+<group> key=62
+<region> sample=samples/drums/39_Explosion_Cannon_Punch.wav
+
+// Note 63 (D#4): Explosion: Arcade Bomb Burst (Medium 450ms)
+<group> key=63
+<region> sample=samples/drums/40_Explosion_Arcade_Bomb_Medium.wav
+
+// Note 64 (E4): Explosion: Large Sub Rumble (Long 950ms)
+<group> key=64
+<region> sample=samples/drums/41_Explosion_Large_Sub_Rumble.wav
+
+// Note 65 (F4): Explosion: Boss Defeat Dramatic (2.2s Extended)
+<group> key=65
+<region> sample=samples/drums/42_Explosion_Boss_Defeat_Dramatic_2s.wav
+
+// Note 66 (F#4): Explosion: Boss Super Cataclysm (3.2s Ultra Long)
+<group> key=66
+<region> sample=samples/drums/43_Explosion_Boss_Super_Cataclysm_3s.wav
+
+// Note 67 (G4): Impact Attack: Physical Melee Punch
+<group> key=67
+<region> sample=samples/drums/44_Hit_Attack_Impact_Punch.wav
+
+// Note 68 (G#4): Impact Attack: Ninja Sword Slash
+<group> key=68
+<region> sample=samples/drums/45_Hit_Sword_Slash_Flesh.wav
+
+// Note 69 (A4): Laser: Fast Pistol Zapper (Short 80ms)
+<group> key=69
+<region> sample=samples/drums/46_Laser_Fast_Zapper_Short.wav
+
+// Note 70 (A#4): Laser: Arcade Blaster Pew (Medium 160ms)
+<group> key=70
+<region> sample=samples/drums/47_Laser_Arcade_Pew_Medium.wav
+
+// Note 71 (B4): Laser: Heavy Plasma Cannon (Long 320ms)
+<group> key=71
+<region> sample=samples/drums/48_Laser_Heavy_Plasma_Cannon.wav
+
+// Note 72 (C5): Sci-Fi: UFO Warp Siren (Modulated Chirp)
+<group> key=72
+<region> sample=samples/drums/49_SciFi_UFO_Warp_Siren.wav
+
+// Note 73 (C#5): Sci-Fi: Forcefield Shield Deflect
+<group> key=73
+<region> sample=samples/drums/50_SciFi_Forcefield_Shield_Hit.wav
+
+// Note 74 (D5): Reward: Coin 1-Up Chime (B5 to E6)
+<group> key=74
+<region> sample=samples/drums/51_Coin_Chime_B5_E6.wav
+
+// Note 75 (D#5): Movement: Jump Spring Boing (Rising Pitch)
+<group> key=75
+<region> sample=samples/drums/52_Jump_Spring_Boing.wav
+
+// Note 76 (E5): Status: Power-Down Glitch Fall
+<group> key=76
+<region> sample=samples/drums/53_PowerDown_Glitch_Fall.wav
+
+// Note 77 (F5): Vintage 1-Bit Slap Bass Pop
+<group> key=77
+<region> sample=samples/drums/54_Vintage_1Bit_Slap_Bass_Pop.wav
+
+// Note 78 (F#5): Vintage 1-Bit Slap Bass Thumb
+<group> key=78
+<region> sample=samples/drums/55_Vintage_1Bit_Slap_Bass_Thumb.wav
+
+// Note 79 (G5): Orchestra Hit Major (Arcade Tutti Blast)
+<group> key=79
+<region> sample=samples/drums/56_Orchestra_Hit_Major_Blast.wav
+
+// Note 80 (G#5): Orchestra Hit Minor (Gothic Castle Stab)
+<group> key=80
+<region> sample=samples/drums/57_Orchestra_Hit_Minor_Gothic.wav
+
+// Note 81 (A5): 1-Bit Turntable Vinyl Scratch Chirp
+<group> key=81
+<region> sample=samples/drums/58_1Bit_Vinyl_Scratch_Chirp.wav
+
+// Note 82 (A#5): Chiptune Maraca Shaker (Short Swell)
+<group> key=82
+<region> sample=samples/drums/59_Chiptune_Maraca_Shaker.wav
+
+// Note 83 (B5): Speech: 'KINDNES' (Robot Vocal)
+<group> key=83
+<region> sample=samples/drums/60_Speech_1Bit_KINDNES.wav
+
+// Note 84 (C6): Speech: 'POWER UP' (Robot Vocal)
+<group> key=84
+<region> sample=samples/drums/61_Speech_1Bit_POWER_UP.wav
+

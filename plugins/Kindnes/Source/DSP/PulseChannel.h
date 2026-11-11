@@ -240,6 +240,9 @@ public:
 private:
     int computeSweepTarget() const noexcept
     {
+        if (sweepShift_ == 0)
+            return timerPeriod_;
+
         int delta = timerPeriod_ >> sweepShift_;
         if (sweepNegate_)
         {
@@ -254,6 +257,11 @@ private:
         if (timerPeriod_ < 8)
         {
             muted_ = true;
+            return;
+        }
+        if (sweepShift_ == 0)
+        {
+            muted_ = false;
             return;
         }
         int target = computeSweepTarget();

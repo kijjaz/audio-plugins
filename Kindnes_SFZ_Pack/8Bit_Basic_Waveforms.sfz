@@ -1,0 +1,373 @@
+// ============================================================================
+// 8-Bit Classic 2A03 + VRC6 Basic Waveforms (96 kHz, 24-bit)
+// Master Keyswitch Selector: C-1 to A#-1 (MIDI 12..22)
+// ============================================================================
+<global>
+sw_default=14
+sw_lokey=12
+sw_hikey=22
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+// ----------------------------------------------------------------------------
+// Keyswitch 12 (C0): 2A03 Pulse 12.5% (Duty 0)
+// ----------------------------------------------------------------------------
+<group>
+sw_last=12
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/pulse12_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39233 loop_end=124364
+<region> sample=samples/waveforms/pulse12_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39631 loop_end=126025
+<region> sample=samples/waveforms/pulse12_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=38789 loop_end=123891
+<region> sample=samples/waveforms/pulse12_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=38836 loop_end=124362
+<region> sample=samples/waveforms/pulse12_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39231 loop_end=124359
+<region> sample=samples/waveforms/pulse12_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=39632 loop_end=124794
+<region> sample=samples/waveforms/pulse12_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38790 loop_end=124932
+<region> sample=samples/waveforms/pulse12_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38836 loop_end=125235
+<region> sample=samples/waveforms/pulse12_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38498 loop_end=125096
+<region> sample=samples/waveforms/pulse12_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=39014 loop_end=124792
+<region> sample=samples/waveforms/pulse12_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38789 loop_end=124931
+<region> sample=samples/waveforms/pulse12_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38836 loop_end=124799
+<region> sample=samples/waveforms/pulse12_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38498 loop_end=124729
+<region> sample=samples/waveforms/pulse12_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38706 loop_end=124793
+<region> sample=samples/waveforms/pulse12_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38530 loop_end=124672
+<region> sample=samples/waveforms/pulse12_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38618 loop_end=124799
+<region> sample=samples/waveforms/pulse12_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38498 loop_end=124728
+<region> sample=samples/waveforms/pulse12_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38552 loop_end=124793
+<region> sample=samples/waveforms/pulse12_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38400 loop_end=124802
+<region> sample=samples/waveforms/pulse12_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/pulse12_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/pulse12_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38474 loop_end=124793
+<region> sample=samples/waveforms/pulse12_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/pulse12_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/pulse12_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/pulse12_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38436 loop_end=124793
+<region> sample=samples/waveforms/pulse12_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/pulse12_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38427 loop_end=124799
+<region> sample=samples/waveforms/pulse12_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38406 loop_end=124797
+
+// ----------------------------------------------------------------------------
+// Keyswitch 13 (C#0): 2A03 Pulse 25.0% (Duty 1)
+// ----------------------------------------------------------------------------
+<group>
+sw_last=13
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/pulse25_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39233 loop_end=124364
+<region> sample=samples/waveforms/pulse25_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39631 loop_end=126025
+<region> sample=samples/waveforms/pulse25_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=38789 loop_end=123891
+<region> sample=samples/waveforms/pulse25_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=38836 loop_end=124362
+<region> sample=samples/waveforms/pulse25_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39231 loop_end=124359
+<region> sample=samples/waveforms/pulse25_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=39632 loop_end=124794
+<region> sample=samples/waveforms/pulse25_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38790 loop_end=124932
+<region> sample=samples/waveforms/pulse25_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38836 loop_end=125235
+<region> sample=samples/waveforms/pulse25_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38498 loop_end=125096
+<region> sample=samples/waveforms/pulse25_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=39014 loop_end=124792
+<region> sample=samples/waveforms/pulse25_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38789 loop_end=124931
+<region> sample=samples/waveforms/pulse25_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38836 loop_end=124799
+<region> sample=samples/waveforms/pulse25_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38498 loop_end=124729
+<region> sample=samples/waveforms/pulse25_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38706 loop_end=124793
+<region> sample=samples/waveforms/pulse25_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38530 loop_end=124672
+<region> sample=samples/waveforms/pulse25_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38618 loop_end=124799
+<region> sample=samples/waveforms/pulse25_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38498 loop_end=124728
+<region> sample=samples/waveforms/pulse25_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38552 loop_end=124793
+<region> sample=samples/waveforms/pulse25_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38400 loop_end=124802
+<region> sample=samples/waveforms/pulse25_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/pulse25_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/pulse25_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38474 loop_end=124793
+<region> sample=samples/waveforms/pulse25_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/pulse25_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/pulse25_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/pulse25_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38436 loop_end=124793
+<region> sample=samples/waveforms/pulse25_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/pulse25_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38427 loop_end=124799
+<region> sample=samples/waveforms/pulse25_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38406 loop_end=124797
+
+// ----------------------------------------------------------------------------
+// Keyswitch 14 (D0): 2A03 Pulse 50.0% (Duty 2)
+// ----------------------------------------------------------------------------
+<group>
+sw_last=14
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/pulse50_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39233 loop_end=124364
+<region> sample=samples/waveforms/pulse50_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39631 loop_end=126025
+<region> sample=samples/waveforms/pulse50_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=38789 loop_end=123891
+<region> sample=samples/waveforms/pulse50_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=38836 loop_end=124362
+<region> sample=samples/waveforms/pulse50_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39231 loop_end=124359
+<region> sample=samples/waveforms/pulse50_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=39632 loop_end=124794
+<region> sample=samples/waveforms/pulse50_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38790 loop_end=124932
+<region> sample=samples/waveforms/pulse50_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38836 loop_end=125235
+<region> sample=samples/waveforms/pulse50_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38498 loop_end=125096
+<region> sample=samples/waveforms/pulse50_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=39014 loop_end=124792
+<region> sample=samples/waveforms/pulse50_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38789 loop_end=124931
+<region> sample=samples/waveforms/pulse50_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38836 loop_end=124799
+<region> sample=samples/waveforms/pulse50_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38498 loop_end=124729
+<region> sample=samples/waveforms/pulse50_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38706 loop_end=124793
+<region> sample=samples/waveforms/pulse50_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38530 loop_end=124672
+<region> sample=samples/waveforms/pulse50_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38618 loop_end=124799
+<region> sample=samples/waveforms/pulse50_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38498 loop_end=124728
+<region> sample=samples/waveforms/pulse50_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38552 loop_end=124793
+<region> sample=samples/waveforms/pulse50_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38400 loop_end=124802
+<region> sample=samples/waveforms/pulse50_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/pulse50_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/pulse50_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38474 loop_end=124793
+<region> sample=samples/waveforms/pulse50_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/pulse50_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/pulse50_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/pulse50_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38436 loop_end=124793
+<region> sample=samples/waveforms/pulse50_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/pulse50_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38427 loop_end=124799
+<region> sample=samples/waveforms/pulse50_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38406 loop_end=124797
+
+// ----------------------------------------------------------------------------
+// Keyswitch 15 (D#0): 2A03 Pulse 75.0% (Duty 3 / 180 deg)
+// ----------------------------------------------------------------------------
+<group>
+sw_last=15
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/pulse75_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39967 loop_end=125097
+<region> sample=samples/waveforms/pulse75_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=40248 loop_end=124173
+<region> sample=samples/waveforms/pulse75_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=39307 loop_end=124410
+<region> sample=samples/waveforms/pulse75_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=39272 loop_end=124799
+<region> sample=samples/waveforms/pulse75_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39598 loop_end=124726
+<region> sample=samples/waveforms/pulse75_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38706 loop_end=125103
+<region> sample=samples/waveforms/pulse75_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=39049 loop_end=125192
+<region> sample=samples/waveforms/pulse75_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=39054 loop_end=124581
+<region> sample=samples/waveforms/pulse75_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38682 loop_end=124545
+<region> sample=samples/waveforms/pulse75_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38551 loop_end=124947
+<region> sample=samples/waveforms/pulse75_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38400 loop_end=124541
+<region> sample=samples/waveforms/pulse75_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38508 loop_end=124908
+<region> sample=samples/waveforms/pulse75_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38590 loop_end=124820
+<region> sample=samples/waveforms/pulse75_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38475 loop_end=124870
+<region> sample=samples/waveforms/pulse75_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38595 loop_end=124737
+<region> sample=samples/waveforms/pulse75_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38454 loop_end=124854
+<region> sample=samples/waveforms/pulse75_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38544 loop_end=124774
+<region> sample=samples/waveforms/pulse75_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38436 loop_end=124831
+<region> sample=samples/waveforms/pulse75_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38433 loop_end=124834
+<region> sample=samples/waveforms/pulse75_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38427 loop_end=124827
+<region> sample=samples/waveforms/pulse75_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38429 loop_end=124843
+<region> sample=samples/waveforms/pulse75_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38417 loop_end=124812
+<region> sample=samples/waveforms/pulse75_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38416 loop_end=124818
+<region> sample=samples/waveforms/pulse75_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38413 loop_end=124813
+<region> sample=samples/waveforms/pulse75_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38418 loop_end=124785
+<region> sample=samples/waveforms/pulse75_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38407 loop_end=124803
+<region> sample=samples/waveforms/pulse75_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38408 loop_end=124810
+<region> sample=samples/waveforms/pulse75_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38406 loop_end=124806
+<region> sample=samples/waveforms/pulse75_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38412 loop_end=124803
+
+// ----------------------------------------------------------------------------
+// Keyswitch 16 (E0): 2A03 32-Step Staircase Triangle (DAC Pop)
+// ----------------------------------------------------------------------------
+<group>
+sw_last=16
+loop_mode=loop_continuous
+amp_veltrack=0 // Authentic 2A03 Triangle has no volume steps
+<region> sample=samples/waveforms/tri32_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=38498 loop_end=123629
+<region> sample=samples/waveforms/tri32_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39013 loop_end=125407
+<region> sample=samples/waveforms/tri32_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=40344 loop_end=125447
+<region> sample=samples/waveforms/tri32_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=40144 loop_end=125671
+<region> sample=samples/waveforms/tri32_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=38863 loop_end=125459
+<region> sample=samples/waveforms/tri32_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=39322 loop_end=124485
+<region> sample=samples/waveforms/tri32_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38529 loop_end=124672
+<region> sample=samples/waveforms/tri32_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38616 loop_end=125016
+<region> sample=samples/waveforms/tri32_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=39048 loop_end=124911
+<region> sample=samples/waveforms/tri32_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38859 loop_end=124637
+<region> sample=samples/waveforms/tri32_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38658 loop_end=124800
+<region> sample=samples/waveforms/tri32_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38726 loop_end=124689
+<region> sample=samples/waveforms/tri32_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38405 loop_end=124636
+<region> sample=samples/waveforms/tri32_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38628 loop_end=124715
+<region> sample=samples/waveforms/tri32_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38464 loop_end=124866
+<region> sample=samples/waveforms/tri32_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38562 loop_end=124744
+<region> sample=samples/waveforms/tri32_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38451 loop_end=124864
+<region> sample=samples/waveforms/tri32_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38512 loop_end=124753
+<region> sample=samples/waveforms/tri32_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38497 loop_end=124768
+<region> sample=samples/waveforms/tri32_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38480 loop_end=124771
+<region> sample=samples/waveforms/tri32_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38474 loop_end=124796
+<region> sample=samples/waveforms/tri32_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38454 loop_end=124772
+<region> sample=samples/waveforms/tri32_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38448 loop_end=124784
+<region> sample=samples/waveforms/tri32_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38439 loop_end=124785
+<region> sample=samples/waveforms/tri32_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38440 loop_end=124807
+<region> sample=samples/waveforms/tri32_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38425 loop_end=124782
+<region> sample=samples/waveforms/tri32_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38423 loop_end=124792
+<region> sample=samples/waveforms/tri32_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38419 loop_end=124792
+<region> sample=samples/waveforms/tri32_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38400 loop_end=124790
+
+// ----------------------------------------------------------------------------
+// Keyswitch 19 (G0): VRC6 14-Step Clean Sawtooth
+// ----------------------------------------------------------------------------
+<group>
+sw_last=19
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/vrc6_saw_clean_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=40491 loop_end=125621
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=40688 loop_end=124614
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=39678 loop_end=124780
+<region> sample=samples/waveforms/vrc6_saw_clean_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=39583 loop_end=125110
+<region> sample=samples/waveforms/vrc6_saw_clean_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39860 loop_end=124988
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38926 loop_end=125323
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=39234 loop_end=124339
+<region> sample=samples/waveforms/vrc6_saw_clean_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=39209 loop_end=124736
+<region> sample=samples/waveforms/vrc6_saw_clean_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38813 loop_end=124676
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38661 loop_end=125057
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38492 loop_end=124634
+<region> sample=samples/waveforms/vrc6_saw_clean_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38586 loop_end=124986
+<region> sample=samples/waveforms/vrc6_saw_clean_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38655 loop_end=124886
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38529 loop_end=124925
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38641 loop_end=124783
+<region> sample=samples/waveforms/vrc6_saw_clean_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38493 loop_end=124892
+<region> sample=samples/waveforms/vrc6_saw_clean_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38576 loop_end=124806
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38463 loop_end=124859
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38456 loop_end=124857
+<region> sample=samples/waveforms/vrc6_saw_clean_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38446 loop_end=124846
+<region> sample=samples/waveforms/vrc6_saw_clean_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38445 loop_end=124767
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38430 loop_end=124826
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38428 loop_end=124829
+<region> sample=samples/waveforms/vrc6_saw_clean_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38423 loop_end=124823
+<region> sample=samples/waveforms/vrc6_saw_clean_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38426 loop_end=124793
+<region> sample=samples/waveforms/vrc6_saw_clean_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38414 loop_end=124809
+<region> sample=samples/waveforms/vrc6_saw_clean_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38414 loop_end=124815
+<region> sample=samples/waveforms/vrc6_saw_clean_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38411 loop_end=124811
+<region> sample=samples/waveforms/vrc6_saw_clean_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38416 loop_end=124807
+
+// ----------------------------------------------------------------------------
+// Keyswitch 20 (G#0): VRC6 8-Bit Overdrive Wrap Saw
+// ----------------------------------------------------------------------------
+<group>
+sw_last=20
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=40490 loop_end=125620
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=40687 loop_end=124613
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=39677 loop_end=124779
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=39582 loop_end=125109
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39859 loop_end=124987
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38925 loop_end=125322
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=39233 loop_end=124338
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=39208 loop_end=124735
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38812 loop_end=124675
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38660 loop_end=125056
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38491 loop_end=124633
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38585 loop_end=124985
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38654 loop_end=124885
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38528 loop_end=124924
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38640 loop_end=124782
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38492 loop_end=124891
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38575 loop_end=124805
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38462 loop_end=124858
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38455 loop_end=124856
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38445 loop_end=124845
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38444 loop_end=124766
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38429 loop_end=124825
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38427 loop_end=124828
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38422 loop_end=124822
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38425 loop_end=124792
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38413 loop_end=124808
+<region> sample=samples/waveforms/vrc6_saw_overdrive_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38413 loop_end=124814
+<region> sample=samples/waveforms/vrc6_saw_overdrive_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38410 loop_end=124810
+<region> sample=samples/waveforms/vrc6_saw_overdrive_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38415 loop_end=124806
+
+// ----------------------------------------------------------------------------
+// Keyswitch 21 (A0): VRC6 1/16 Thin Needle Pulse (6.25%)
+// ----------------------------------------------------------------------------
+<group>
+sw_last=21
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/vrc6_pulse_thin_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39233 loop_end=124364
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39631 loop_end=126025
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=38789 loop_end=123891
+<region> sample=samples/waveforms/vrc6_pulse_thin_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=38836 loop_end=124362
+<region> sample=samples/waveforms/vrc6_pulse_thin_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39231 loop_end=124359
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=39632 loop_end=124794
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38790 loop_end=124932
+<region> sample=samples/waveforms/vrc6_pulse_thin_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38836 loop_end=125235
+<region> sample=samples/waveforms/vrc6_pulse_thin_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38498 loop_end=125096
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=39014 loop_end=124792
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38789 loop_end=124931
+<region> sample=samples/waveforms/vrc6_pulse_thin_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38836 loop_end=124799
+<region> sample=samples/waveforms/vrc6_pulse_thin_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38498 loop_end=124729
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38706 loop_end=124793
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38530 loop_end=124672
+<region> sample=samples/waveforms/vrc6_pulse_thin_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38618 loop_end=124799
+<region> sample=samples/waveforms/vrc6_pulse_thin_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38498 loop_end=124728
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38552 loop_end=124793
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38400 loop_end=124802
+<region> sample=samples/waveforms/vrc6_pulse_thin_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/vrc6_pulse_thin_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38474 loop_end=124793
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/vrc6_pulse_thin_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38400 loop_end=124800
+<region> sample=samples/waveforms/vrc6_pulse_thin_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38406 loop_end=124820
+<region> sample=samples/waveforms/vrc6_pulse_thin_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38436 loop_end=124793
+<region> sample=samples/waveforms/vrc6_pulse_thin_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38400 loop_end=124801
+<region> sample=samples/waveforms/vrc6_pulse_thin_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38427 loop_end=124799
+<region> sample=samples/waveforms/vrc6_pulse_thin_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38406 loop_end=124797
+
+// ----------------------------------------------------------------------------
+// Keyswitch 22 (A#0): FDS 2C33 Hardware FM Lead
+// ----------------------------------------------------------------------------
+<group>
+sw_last=22
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/fds_fm_lead_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39278 loop_end=124409
+<region> sample=samples/waveforms/fds_fm_lead_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39669 loop_end=123595
+<region> sample=samples/waveforms/fds_fm_lead_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=38821 loop_end=123923
+<region> sample=samples/waveforms/fds_fm_lead_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=38863 loop_end=124390
+<region> sample=samples/waveforms/fds_fm_lead_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39254 loop_end=124382
+<region> sample=samples/waveforms/fds_fm_lead_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38417 loop_end=124814
+<region> sample=samples/waveforms/fds_fm_lead_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38806 loop_end=124948
+<region> sample=samples/waveforms/fds_fm_lead_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38850 loop_end=124377
+<region> sample=samples/waveforms/fds_fm_lead_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38511 loop_end=125108
+<region> sample=samples/waveforms/fds_fm_lead_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38408 loop_end=124803
+<region> sample=samples/waveforms/fds_fm_lead_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38799 loop_end=124940
+<region> sample=samples/waveforms/fds_fm_lead_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38408 loop_end=124808
+<region> sample=samples/waveforms/fds_fm_lead_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38507 loop_end=124737
+<region> sample=samples/waveforms/fds_fm_lead_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38406 loop_end=124802
+<region> sample=samples/waveforms/fds_fm_lead_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38538 loop_end=124680
+<region> sample=samples/waveforms/fds_fm_lead_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38406 loop_end=124806
+<region> sample=samples/waveforms/fds_fm_lead_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38505 loop_end=124735
+<region> sample=samples/waveforms/fds_fm_lead_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38404 loop_end=124799
+<region> sample=samples/waveforms/fds_fm_lead_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38406 loop_end=124808
+<region> sample=samples/waveforms/fds_fm_lead_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38405 loop_end=124805
+<region> sample=samples/waveforms/fds_fm_lead_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38412 loop_end=124825
+<region> sample=samples/waveforms/fds_fm_lead_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38403 loop_end=124798
+<region> sample=samples/waveforms/fds_fm_lead_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38405 loop_end=124806
+<region> sample=samples/waveforms/fds_fm_lead_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38404 loop_end=124804
+<region> sample=samples/waveforms/fds_fm_lead_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38411 loop_end=124778
+<region> sample=samples/waveforms/fds_fm_lead_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38401 loop_end=124797
+<region> sample=samples/waveforms/fds_fm_lead_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38404 loop_end=124805
+<region> sample=samples/waveforms/fds_fm_lead_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38403 loop_end=124802
+<region> sample=samples/waveforms/fds_fm_lead_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38409 loop_end=124800
+
+// ----------------------------------------------------------------------------
+// Keyswitch 17 (F-1): 2A03 Mode 1 (93-Step Metallic Tonal Noise)
+// ----------------------------------------------------------------------------
+<group> sw_last=17 loop_mode=loop_continuous amp_veltrack=100
+<region> sample=samples/waveforms/noise_mode1_period_0.wav key=48 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_1.wav key=49 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_2.wav key=50 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_3.wav key=51 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_4.wav key=52 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_5.wav key=53 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_6.wav key=54 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_7.wav key=55 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_8.wav key=56 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_9.wav key=57 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_10.wav key=58 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_11.wav key=59 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_12.wav key=60 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_13.wav key=61 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_14.wav key=62 loop_start=24000 loop_end=90000
+<region> sample=samples/waveforms/noise_mode1_period_15.wav key=63 loop_start=24000 loop_end=90000
+
+// ----------------------------------------------------------------------------
+// Keyswitch 18 (F#-1): 2A03 Mode 0 (15-Bit Galois LFSR White Noise)
+// ----------------------------------------------------------------------------
+<group> sw_last=18 loop_mode=loop_continuous amp_veltrack=100
+<region> sample=samples/waveforms/noise_mode0_white.wav lokey=24 hikey=127 pitch_keycenter=60 loop_start=48000 loop_end=180000
+

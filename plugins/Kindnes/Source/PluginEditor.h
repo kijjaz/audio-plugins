@@ -34,6 +34,26 @@ private:
 
     KindnesUI::APUVisualizer visualizer_;
 
+    // Tabbed Deck Navigation
+    enum class DeckTab
+    {
+        ApuSynth = 0,
+        DrumMachine,
+        DrumDesigner,
+        TrackerFx,
+        MasterDeck
+    };
+    DeckTab activeTab_ = DeckTab::ApuSynth;
+
+    juce::TextButton tabSynthBtn_{ "1. APU & VRC6" };
+    juce::TextButton tabDrumsBtn_{ "2. DRUM ROM (32)" };
+    juce::TextButton tabDesignerBtn_{ "3. DRUM DESIGNER" };
+    juce::TextButton tabTrackerBtn_{ "4. TRACKER FX" };
+    juce::TextButton tabMasterBtn_{ "5. MASTER & SVF" };
+
+    void selectDeckTab(DeckTab tab);
+    void updateDeckVisibility();
+
     // Presets Bar
     juce::ComboBox presetBox_;
     juce::TextButton prevPresetBtn_{ "<" };
@@ -98,6 +118,8 @@ private:
     // --- Bay 3: Supercharged 1-Bit DPCM Sampler & Drum Pads ---
     juce::ComboBox dpcmSampleBox_;
     juce::Label dpcmSampleLabel_;
+    juce::ComboBox drumBankBox_;
+    juce::Label drumBankLabel_;
     juce::ToggleButton dpcmChromaticToggle_{ "Pitched Sample (Keys)" };
     juce::ToggleButton dpcmDrumPadsToggle_{ "MIDI Drum Kit (C-G)" };
     juce::ToggleButton throughDpcmToggle_{ "Live Input Crusher" };
@@ -156,6 +178,75 @@ private:
     juce::Label spreadLabel_;
     juce::Slider masterTrimSlider_;
     juce::Label masterTrimLabel_;
+
+    // --- Tab 3: Advanced Drum Sound Designer ---
+    juce::ComboBox drumDesignModeBox_;
+    juce::Label drumDesignModeLabel_;
+    juce::ComboBox drumTemplateBox_;
+    juce::Label drumTemplateLabel_;
+    juce::ComboBox drumMidiModeBox_;
+    juce::Label drumMidiModeLabel_;
+    juce::TextButton testDrumBtn_{ "▶ TEST DRUM SOUND (AUDITION)" };
+
+    // Easy Mode Macros
+    juce::Slider drumPunchSlider_;
+    juce::Label drumPunchLabel_;
+    juce::Slider drumBodyMacroSlider_;
+    juce::Label drumBodyMacroLabel_;
+    juce::Slider drumSnappySlider_;
+    juce::Label drumSnappyLabel_;
+    juce::Slider drumGritSlider_;
+    juce::Label drumGritLabel_;
+
+    // Flexible / Deep Controls: Tonal Body & Pitch Engine
+    juce::ComboBox drumPitchCurveBox_;
+    juce::Label drumPitchCurveLabel_;
+    juce::Slider drumPitchTimeSlider_;
+    juce::Label drumPitchTimeLabel_;
+    juce::Slider drumBodyStartPitchSlider_;
+    juce::Label drumBodyStartPitchLabel_;
+    juce::Slider drumBodyEndPitchSlider_;
+    juce::Label drumBodyEndPitchLabel_;
+    juce::Slider drumBodyDecaySlider_;
+    juce::Label drumBodyDecayLabel_;
+    juce::ComboBox drumBodyWaveBox_;
+    juce::Label drumBodyWaveLabel_;
+    juce::Slider drumBodyLevelSlider_;
+    juce::Label drumBodyLevelLabel_;
+
+    // Flexible / Deep Controls: Transient Click Layer
+    juce::ComboBox drumClickTypeBox_;
+    juce::Label drumClickTypeLabel_;
+    juce::Slider drumClickLevelSlider_;
+    juce::Label drumClickLevelLabel_;
+
+    // Flexible / Deep Controls: LFSR Noise Layer
+    juce::ComboBox drumNoiseModeBox_;
+    juce::Label drumNoiseModeLabel_;
+    juce::Slider drumNoisePeriodSlider_;
+    juce::Label drumNoisePeriodLabel_;
+    juce::Slider drumNoiseDecaySlider_;
+    juce::Label drumNoiseDecayLabel_;
+    juce::ComboBox drumNoisePatternBox_;
+    juce::Label drumNoisePatternLabel_;
+    juce::Slider drumNoiseLevelSlider_;
+    juce::Label drumNoiseLevelLabel_;
+
+    // Flexible / Deep Controls: DPCM 1-Bit Crusher & FM
+    juce::Slider drumDpcmDeltaSlider_;
+    juce::Label drumDpcmDeltaLabel_;
+    juce::Slider drumDpcmRateSlider_;
+    juce::Label drumDpcmRateLabel_;
+    juce::Slider drumDpcmGritSlider_;
+    juce::Label drumDpcmGritLabel_;
+    juce::Slider drumDpcmBlendSlider_;
+    juce::Label drumDpcmBlendLabel_;
+    juce::ComboBox drumDpcmVoiceBox_;
+    juce::Label drumDpcmVoiceLabel_;
+    juce::Slider drumFmRateSlider_;
+    juce::Label drumFmRateLabel_;
+    juce::Slider drumFmDepthSlider_;
+    juce::Label drumFmDepthLabel_;
 
     // APVTS Attachments
     using ComboBoxAttachment = juce::AudioProcessorValueTreeState::ComboBoxAttachment;

@@ -1,0 +1,11 @@
+// ============================================================================
+// 2A03 Mode 0 15-Bit Galois LFSR White Noise
+// ============================================================================
+<global>
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+<group> loop_mode=loop_continuous amp_veltrack=100
+<region> sample=samples/waveforms/noise_mode0_white.wav lokey=24 hikey=127 pitch_keycenter=60 loop_start=48000 loop_end=180000

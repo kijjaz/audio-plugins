@@ -41,6 +41,18 @@ KindnesAudioProcessorEditor::KindnesAudioProcessorEditor(KindnesAudioProcessor& 
             presetBox_.setSelectedId(idx + 1, juce::sendNotificationSync);
     };
 
+    // 3. Tabbed Deck Navigation
+    auto setupTabButton = [this](juce::TextButton& btn, DeckTab tab) {
+        btn.setClickingTogglesState(false);
+        btn.onClick = [this, tab]() { selectDeckTab(tab); };
+        addAndMakeVisible(btn);
+    };
+    setupTabButton(tabSynthBtn_, DeckTab::ApuSynth);
+    setupTabButton(tabDrumsBtn_, DeckTab::DrumMachine);
+    setupTabButton(tabDesignerBtn_, DeckTab::DrumDesigner);
+    setupTabButton(tabTrackerBtn_, DeckTab::TrackerFx);
+    setupTabButton(tabMasterBtn_, DeckTab::MasterDeck);
+
     // --- Bay 1: Core APU & Play Mode ---
     setupComboBox(playModeBox_, playModeLabel_, "PLAY MODE", { "Classic APU", "Polyphonic", "Unison Stereo" });
     comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "playMode", playModeBox_));
@@ -81,7 +93,7 @@ KindnesAudioProcessorEditor::KindnesAudioProcessorEditor(KindnesAudioProcessor& 
 
     setupComboBox(fdsWaveBox_, fdsWaveLabel_, "FDS WAVE", {
         "Sine", "Triangle", "Sawtooth", "25% Pulse",
-        "Organ", "Bell", "Formant Aah", "Zelda Title"
+        "Organ", "Bell", "Formant Aah", "Heroic Fantasy"
     });
     comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "fdsWave", fdsWaveBox_));
 
@@ -123,13 +135,29 @@ KindnesAudioProcessorEditor::KindnesAudioProcessorEditor(KindnesAudioProcessor& 
     sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "pseudoEchoVol", pseudoEchoVolSlider_));
 
     // --- Bay 3: Supercharged 1-Bit DPCM Sampler & 32-Sound Drum Machine (4 Banks x 8 Pads) ---
-    setupComboBox(dpcmSampleBox_, dpcmSampleLabel_, "DRUM BANK & SAMPLE ROM (32)", {
-        "01. Sunsoft Punch Kick [Bank 1]", "02. Mega Crisp Snare [Bank 1]", "03. Closed Hi-Hat [Bank 1]", "04. Open Hi-Hat [Bank 1]",
+    setupComboBox(drumBankBox_, drumBankLabel_, "ACTIVE DRUM BANK", {
+        "Bank 1: Classic 8-Bit Master Kit (01-08)",
+        "Bank 2: VRC6 & FDS Synth Drums (09-16)",
+        "Bank 3: Vintage 1-Bit Funk & Stabs (17-24)",
+        "Bank 4: Retro Arcade Vocal & SFX (25-32)"
+    });
+    drumBankBox_.setSelectedId(1, juce::dontSendNotification);
+    drumBankBox_.onChange = [this]() {
+        int bankIdx = drumBankBox_.getSelectedId() - 1;
+        if (bankIdx >= 0 && bankIdx < 4)
+        {
+            int firstSampleInBank = bankIdx * 8;
+            dpcmSampleBox_.setSelectedId(firstSampleInBank + 1, juce::sendNotificationSync);
+        }
+    };
+
+    setupComboBox(dpcmSampleBox_, dpcmSampleLabel_, "SAMPLE ROM VOICE (32)", {
+        "01. Punch Bass Drum [Bank 1]", "02. Mega Crisp Snare [Bank 1]", "03. Closed Hi-Hat [Bank 1]", "04. Open Hi-Hat [Bank 1]",
         "05. 8-Bit Hand Clap [Bank 1]", "06. High Rack Tom [Bank 1]", "07. Low Floor Tom [Bank 1]", "08. Arcade Crash Cymbal [Bank 1]",
         "09. VRC6 Overdriven Kick [Bank 2]", "10. 93-Step Metallic Snare [Bank 2]", "11. Chiptune Rimshot [Bank 2]", "12. 8-Bit Arcade Cowbell [Bank 2]",
         "13. FDS 2C33 FM Simmons Tom [Bank 2]", "14. Gated Boss Battle Snare [Bank 2]", "15. Chiptune Shaker [Bank 2]", "16. FDS Metallic Ride Bell [Bank 2]",
         "17. 1-Bit Slap Bass Pop [Bank 3]", "18. 1-Bit Slap Bass Thumb [Bank 3]", "19. Orchestra Hit Major [Bank 3]", "20. Orchestra Hit Minor [Bank 3]",
-        "21. Konami 1-Bit Timpani [Bank 3]", "22. 2A03 Deep Sub-Boom Kick [Bank 3]", "23. Slope-Overload Fuzz Snare [Bank 3]", "24. 1-Bit Vinyl Scratch [Bank 3]",
+        "21. Dramatic 1-Bit Timpani [Bank 3]", "22. 2A03 Deep Sub-Boom Kick [Bank 3]", "23. Slope-Overload Fuzz Snare [Bank 3]", "24. 1-Bit Vinyl Scratch [Bank 3]",
         "25. Speech: KINDNES [Bank 4]", "26. Speech: POWER UP [Bank 4]", "27. Retro Laser Zapper [Bank 4]", "28. Coin Chime B5-E6 [Bank 4]",
         "29. Jump Spring Boing [Bank 4]", "30. Boss Explosion Rumble [Bank 4]", "31. UFO Warp Siren [Bank 4]", "32. Power-Down Glitch [Bank 4]",
         "33. User Sample (Drag & Drop)"
@@ -291,7 +319,165 @@ KindnesAudioProcessorEditor::KindnesAudioProcessorEditor(KindnesAudioProcessor& 
     setupSlider(masterTrimSlider_, masterTrimLabel_, "MASTER TRIM");
     sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "masterTrim", masterTrimSlider_));
 
-    setSize(1040, 890);
+    // =========================================================================
+    // Tab 3: Advanced Drum Sound Designer Setup
+    // =========================================================================
+    setupComboBox(drumDesignModeBox_, drumDesignModeLabel_, "DESIGN MODE", { "Easy (Macro)", "Flexible (Deep)" });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumDesignMode", drumDesignModeBox_));
+    drumDesignModeBox_.onChange = [this]() {
+        updateDeckVisibility();
+    };
+
+    setupComboBox(drumTemplateBox_, drumTemplateLabel_, "DRUM TEMPLATE (17 PRESETS)", {
+        "Custom User Drum",
+        "01. Punch Kick", "02. Mega Snare", "03. Closed Hi-Hat", "04. Open Hi-Hat",
+        "05. 8-Bit Hand Clap", "06. High Rack Tom", "07. Low Floor Tom", "08. Arcade Crash Cymbal",
+        "09. VRC6 Overdriven Kick", "10. 93-Step Metallic Snare", "11. Chiptune Rimshot", "12. 8-Bit Arcade Cowbell",
+        "13. FDS FM Simmons Tom", "14. Gated Boss Battle Snare", "15. Laser Zapper FX",
+        "16. Boss Defeat Cataclysm", "17. Comic Spring Boing"
+    });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumTemplate", drumTemplateBox_));
+    drumTemplateBox_.onChange = [this]() {
+        int idx = drumTemplateBox_.getSelectedId() - 1; // 0=Custom, 1..17=Templates
+        if (idx > 0)
+        {
+            audioProcessor.getEngine().applyCustomDrumTemplate(idx);
+            // Sync APVTS to loaded template values so UI sliders update
+            const auto& p = audioProcessor.getEngine().getCustomDrumParams();
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumPitchCurve"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.pitchCurve)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumPitchTimeMs"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.pitchTimeMs));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumClickType"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.clickType)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumClickLevel"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.clickLevel));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumFmRateHz"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.fmRateHz));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumFmDepthHz"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.fmDepthHz));
+
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumBodyStartPitch"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.bodyStartPitchHz));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumBodyEndPitch"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.bodyEndPitchHz));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumBodyDecayMs"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.bodyDecayMs));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumBodyWave"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.bodyWaveform)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumBodyLevel"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.bodyLevel));
+
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumNoiseMode"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.noiseMode)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumNoisePeriod"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.noisePeriod)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumNoiseDecayMs"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.noiseDecayMs));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumNoisePattern"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.noisePattern)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumNoiseLevel"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.noiseLevel));
+
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumDpcmDelta"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.dpcmDeltaStep)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumDpcmRate"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.dpcmRateIndex)));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumDpcmGrit"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.dpcmGrit));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumDpcmBlend"))
+                param->setValueNotifyingHost(param->convertTo0to1(p.dpcmBlend));
+            if (auto* param = audioProcessor.getAPVTS().getParameter("drumDpcmVoice"))
+                param->setValueNotifyingHost(param->convertTo0to1(static_cast<float>(p.dpcmSampleVoice)));
+        }
+    };
+
+    setupComboBox(drumMidiModeBox_, drumMidiModeLabel_, "MIDI PLAY MODE", {
+        "Audition Only", "MIDI Note 36 (C1 Kick / D1 Snare)", "Tuned Chromatic Synth"
+    });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumMidiMode", drumMidiModeBox_));
+
+    // Audition Button
+    testDrumBtn_.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffC4323E));
+    testDrumBtn_.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffFFFFFF));
+    testDrumBtn_.onClick = [this]() {
+        audioProcessor.triggerCustomDrum(1.0f);
+    };
+    addAndMakeVisible(testDrumBtn_);
+
+    // Easy Mode Macros
+    setupSlider(drumPunchSlider_, drumPunchLabel_, "PUNCH (DROP)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumMacroPunch", drumPunchSlider_));
+    setupSlider(drumBodyMacroSlider_, drumBodyMacroLabel_, "BODY LENGTH");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumMacroBody", drumBodyMacroSlider_));
+    setupSlider(drumSnappySlider_, drumSnappyLabel_, "SNAPPY (NOISE)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumMacroSnappy", drumSnappySlider_));
+    setupSlider(drumGritSlider_, drumGritLabel_, "1-BIT GRIT");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumMacroGrit", drumGritSlider_));
+
+    // Flexible Mode Controls: Tonal Body & Pitch Engine
+    setupComboBox(drumPitchCurveBox_, drumPitchCurveLabel_, "PITCH CURVE", { "Exp Drop", "Dual Click Dive", "Laser Sweep", "Pitch Scoop", "FM Chirp" });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumPitchCurve", drumPitchCurveBox_));
+    setupSlider(drumPitchTimeSlider_, drumPitchTimeLabel_, "SWEEP TIME (ms)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumPitchTimeMs", drumPitchTimeSlider_));
+
+    setupSlider(drumBodyStartPitchSlider_, drumBodyStartPitchLabel_, "START FREQ (Hz)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumBodyStartPitch", drumBodyStartPitchSlider_));
+    setupSlider(drumBodyEndPitchSlider_, drumBodyEndPitchLabel_, "END FREQ (Hz)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumBodyEndPitch", drumBodyEndPitchSlider_));
+    setupSlider(drumBodyDecaySlider_, drumBodyDecayLabel_, "BODY DECAY (ms)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumBodyDecayMs", drumBodyDecaySlider_));
+    setupComboBox(drumBodyWaveBox_, drumBodyWaveLabel_, "BODY WAVE", { "4-Bit Triangle", "Saturated Sine", "VRC6 Saw Overdrive", "25% Pulse" });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumBodyWave", drumBodyWaveBox_));
+    setupSlider(drumBodyLevelSlider_, drumBodyLevelLabel_, "BODY LEVEL");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumBodyLevel", drumBodyLevelSlider_));
+
+    // Flexible Mode Controls: Transient Click Layer
+    setupComboBox(drumClickTypeBox_, drumClickTypeLabel_, "TRANSIENT CLICK", { "Off", "Impulse Spike", "Square Pop", "Noise Snap" });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumClickType", drumClickTypeBox_));
+    setupSlider(drumClickLevelSlider_, drumClickLevelLabel_, "CLICK LEVEL");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumClickLevel", drumClickLevelSlider_));
+
+    // Flexible Mode Controls: Noise
+    setupComboBox(drumNoiseModeBox_, drumNoiseModeLabel_, "LFSR MODE", { "Mode 0: White (32k)", "Mode 1: Metal (93)" });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumNoiseMode", drumNoiseModeBox_));
+    setupSlider(drumNoisePeriodSlider_, drumNoisePeriodLabel_, "NOISE RATE (0-15)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumNoisePeriod", drumNoisePeriodSlider_));
+    setupSlider(drumNoiseDecaySlider_, drumNoiseDecayLabel_, "NOISE DECAY (ms)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumNoiseDecayMs", drumNoiseDecaySlider_));
+    setupComboBox(drumNoisePatternBox_, drumNoisePatternLabel_, "NOISE PATTERN", { "Single Burst", "Multi-Flam Clap", "Gated Snare", "Low-Rumble Swell", "Glitch Stutter" });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumNoisePattern", drumNoisePatternBox_));
+    setupSlider(drumNoiseLevelSlider_, drumNoiseLevelLabel_, "NOISE LEVEL");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumNoiseLevel", drumNoiseLevelSlider_));
+
+    // Flexible Mode Controls: DPCM Crusher & FM
+    setupSlider(drumDpcmDeltaSlider_, drumDpcmDeltaLabel_, "DELTA SLEW (1-8)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumDpcmDelta", drumDpcmDeltaSlider_));
+    setupSlider(drumDpcmRateSlider_, drumDpcmRateLabel_, "RATE (0-15)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumDpcmRate", drumDpcmRateSlider_));
+    setupSlider(drumDpcmGritSlider_, drumDpcmGritLabel_, "SLOPE OVERLOAD");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumDpcmGrit", drumDpcmGritSlider_));
+    setupSlider(drumDpcmBlendSlider_, drumDpcmBlendLabel_, "SYNTH/DPCM BLEND");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumDpcmBlend", drumDpcmBlendSlider_));
+    setupSlider(drumFmRateSlider_, drumFmRateLabel_, "FM RATE (Hz)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumFmRateHz", drumFmRateSlider_));
+    setupSlider(drumFmDepthSlider_, drumFmDepthLabel_, "FM DEPTH (Hz)");
+    sliderAttachments_.push_back(std::make_unique<SliderAttachment>(audioProcessor.getAPVTS(), "drumFmDepthHz", drumFmDepthSlider_));
+
+    setupComboBox(drumDpcmVoiceBox_, drumDpcmVoiceLabel_, "ROM SAMPLE VOICE", {
+        "01. Punch Kick", "02. Crisp Snare", "03. Closed Hat", "04. Open Hat",
+        "05. Hand Clap", "06. High Tom", "07. Low Tom", "08. Crash Cymbal",
+        "09. Overdrive Kick", "10. Metal Snare", "11. Rimshot", "12. Cowbell",
+        "13. Simmons Tom", "14. Boss Snare", "15. Shaker", "16. Ride Bell",
+        "17. Bass Pop", "18. Bass Thumb", "19. Orch Hit Maj", "20. Orch Hit Min",
+        "21. Timpani", "22. Sub-Boom", "23. Fuzz Snare", "24. Vinyl Scratch",
+        "25. Voice KINDNES", "26. Voice POWER UP", "27. Laser Zapper", "28. Coin Chime",
+        "29. Jump Spring", "30. Boss Explosion", "31. UFO Siren", "32. Glitch"
+    });
+    comboAttachments_.push_back(std::make_unique<ComboBoxAttachment>(audioProcessor.getAPVTS(), "drumDpcmVoice", drumDpcmVoiceBox_));
+
+    selectDeckTab(DeckTab::ApuSynth);
+    setSize(1040, 640);
     updateDpcmPreviews();
     startTimerHz(30);
 }
@@ -317,6 +503,9 @@ void KindnesAudioProcessorEditor::timerCallback()
 
     const auto& dpcm = audioProcessor.getEngine().getDPCM();
     int bank = audioProcessor.getEngine().getActiveDrumBank();
+    if (drumBankBox_.getSelectedId() != bank + 1)
+        drumBankBox_.setSelectedId(bank + 1, juce::dontSendNotification);
+
     for (int i = 0; i < 8; ++i)
     {
         drumPads_[static_cast<size_t>(i)].setButtonText(kBankPadNames[bank][i]);
@@ -335,6 +524,233 @@ void KindnesAudioProcessorEditor::timerCallback()
 void KindnesAudioProcessorEditor::pushScopeSamples(const float* samples, int numSamples)
 {
     visualizer_.pushSamples(samples, numSamples);
+}
+
+void KindnesAudioProcessorEditor::selectDeckTab(DeckTab tab)
+{
+    activeTab_ = tab;
+
+    auto updateTabStyle = [this](juce::TextButton& btn, bool active) {
+        if (active)
+        {
+            btn.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffA62432));     // Famicom Crimson
+            btn.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffFFFFFF));
+        }
+        else
+        {
+            btn.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff1C1E23));     // Dark Slate
+            btn.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffA0A4B0));
+        }
+    };
+
+    updateTabStyle(tabSynthBtn_, activeTab_ == DeckTab::ApuSynth);
+    updateTabStyle(tabDrumsBtn_, activeTab_ == DeckTab::DrumMachine);
+    updateTabStyle(tabDesignerBtn_, activeTab_ == DeckTab::DrumDesigner);
+    updateTabStyle(tabTrackerBtn_, activeTab_ == DeckTab::TrackerFx);
+    updateTabStyle(tabMasterBtn_, activeTab_ == DeckTab::MasterDeck);
+
+    updateDeckVisibility();
+    repaint();
+}
+
+void KindnesAudioProcessorEditor::updateDeckVisibility()
+{
+    const bool isSynth = (activeTab_ == DeckTab::ApuSynth);
+    const bool isDrums = (activeTab_ == DeckTab::DrumMachine);
+    const bool isDesigner = (activeTab_ == DeckTab::DrumDesigner);
+    const bool isTracker = (activeTab_ == DeckTab::TrackerFx);
+    const bool isMaster = (activeTab_ == DeckTab::MasterDeck);
+
+    // In DrumDesigner tab: check if Easy or Flexible mode
+    const bool isDesignerEasy = isDesigner && (drumDesignModeBox_.getSelectedId() <= 1);
+    const bool isDesignerFlex = isDesigner && (drumDesignModeBox_.getSelectedId() == 2);
+
+    // --- Tab 1: APU Synth & Expansion (Pulse 1, Pulse 2, Tri, Noise, VRC6, FDS) ---
+    pulse1DutyBox_.setVisible(isSynth);
+    pulse1DutyLabel_.setVisible(isSynth);
+    pulse1VolSlider_.setVisible(isSynth);
+    pulse1VolLabel_.setVisible(isSynth);
+
+    pulse2DutyBox_.setVisible(isSynth);
+    pulse2DutyLabel_.setVisible(isSynth);
+    pulse2VolSlider_.setVisible(isSynth);
+    pulse2VolLabel_.setVisible(isSynth);
+
+    pwmDepthSlider_.setVisible(isSynth);
+    pwmDepthLabel_.setVisible(isSynth);
+
+    triVolSlider_.setVisible(isSynth);
+    triVolLabel_.setVisible(isSynth);
+
+    noiseModeBox_.setVisible(isSynth);
+    noiseModeLabel_.setVisible(isSynth);
+    noiseVolSlider_.setVisible(isSynth);
+    noiseVolLabel_.setVisible(isSynth);
+
+    vrc6Toggle_.setVisible(isSynth);
+    vrc6SawVolSlider_.setVisible(isSynth);
+    vrc6SawVolLabel_.setVisible(isSynth);
+
+    fdsToggle_.setVisible(isSynth);
+    fdsWaveBox_.setVisible(isSynth);
+    fdsWaveLabel_.setVisible(isSynth);
+    fdsVolSlider_.setVisible(isSynth);
+    fdsVolLabel_.setVisible(isSynth);
+    fdsModSpeedSlider_.setVisible(isSynth);
+    fdsModSpeedLabel_.setVisible(isSynth);
+    fdsModDepthSlider_.setVisible(isSynth);
+    fdsModDepthLabel_.setVisible(isSynth);
+    fdsModWaveBox_.setVisible(isSynth);
+    fdsModWaveLabel_.setVisible(isSynth);
+
+    // --- Tab 2: Drum Machine & DPCM (32 Voices, 4 Banks, 8 Large Pads) ---
+    drumBankLabel_.setVisible(isDrums);
+    drumBankBox_.setVisible(isDrums);
+    dpcmSampleLabel_.setVisible(isDrums);
+    dpcmSampleBox_.setVisible(isDrums);
+    dpcmChromaticToggle_.setVisible(isDrums);
+    dpcmDrumPadsToggle_.setVisible(isDrums);
+    demoBeatBtn_.setVisible(isDrums);
+    throughDpcmToggle_.setVisible(isDrums);
+    dpcmDeltaStepLabel_.setVisible(isDrums);
+    dpcmDeltaStepSlider_.setVisible(isDrums);
+    dpcmVelToSlewLabel_.setVisible(isDrums);
+    dpcmVelToSlewSlider_.setVisible(isDrums);
+    dpcmRateLabel_.setVisible(isDrums);
+    dpcmRateSlider_.setVisible(isDrums);
+    dpcmVolLabel_.setVisible(isDrums);
+    dpcmVolSlider_.setVisible(isDrums);
+    for (auto& pad : drumPads_)
+        pad.setVisible(isDrums);
+
+    // --- Tab 3: Drum Sound Designer ---
+    drumDesignModeLabel_.setVisible(isDesigner);
+    drumDesignModeBox_.setVisible(isDesigner);
+    drumTemplateLabel_.setVisible(isDesigner);
+    drumTemplateBox_.setVisible(isDesigner);
+    drumMidiModeLabel_.setVisible(isDesigner);
+    drumMidiModeBox_.setVisible(isDesigner);
+    testDrumBtn_.setVisible(isDesigner);
+
+    // Easy Macros
+    drumPunchLabel_.setVisible(isDesignerEasy);
+    drumPunchSlider_.setVisible(isDesignerEasy);
+    drumBodyMacroLabel_.setVisible(isDesignerEasy);
+    drumBodyMacroSlider_.setVisible(isDesignerEasy);
+    drumSnappyLabel_.setVisible(isDesignerEasy);
+    drumSnappySlider_.setVisible(isDesignerEasy);
+    drumGritLabel_.setVisible(isDesignerEasy);
+    drumGritSlider_.setVisible(isDesignerEasy);
+
+    // Flexible / Deep Controls: Body & Pitch Engine
+    drumPitchCurveLabel_.setVisible(isDesignerFlex);
+    drumPitchCurveBox_.setVisible(isDesignerFlex);
+    drumPitchTimeLabel_.setVisible(isDesignerFlex);
+    drumPitchTimeSlider_.setVisible(isDesignerFlex);
+    drumBodyStartPitchLabel_.setVisible(isDesignerFlex);
+    drumBodyStartPitchSlider_.setVisible(isDesignerFlex);
+    drumBodyEndPitchLabel_.setVisible(isDesignerFlex);
+    drumBodyEndPitchSlider_.setVisible(isDesignerFlex);
+    drumBodyDecayLabel_.setVisible(isDesignerFlex);
+    drumBodyDecaySlider_.setVisible(isDesignerFlex);
+    drumBodyWaveLabel_.setVisible(isDesignerFlex);
+    drumBodyWaveBox_.setVisible(isDesignerFlex);
+    drumBodyLevelLabel_.setVisible(isDesignerFlex);
+    drumBodyLevelSlider_.setVisible(isDesignerFlex);
+
+    // Flexible / Deep Controls: Noise & Transient Click
+    drumClickTypeLabel_.setVisible(isDesignerFlex);
+    drumClickTypeBox_.setVisible(isDesignerFlex);
+    drumClickLevelLabel_.setVisible(isDesignerFlex);
+    drumClickLevelSlider_.setVisible(isDesignerFlex);
+    drumNoiseModeLabel_.setVisible(isDesignerFlex);
+    drumNoiseModeBox_.setVisible(isDesignerFlex);
+    drumNoisePeriodLabel_.setVisible(isDesignerFlex);
+    drumNoisePeriodSlider_.setVisible(isDesignerFlex);
+    drumNoiseDecayLabel_.setVisible(isDesignerFlex);
+    drumNoiseDecaySlider_.setVisible(isDesignerFlex);
+    drumNoisePatternLabel_.setVisible(isDesignerFlex);
+    drumNoisePatternBox_.setVisible(isDesignerFlex);
+    drumNoiseLevelLabel_.setVisible(isDesignerFlex);
+    drumNoiseLevelSlider_.setVisible(isDesignerFlex);
+
+    // Flexible / Deep Controls: DPCM & FM
+    drumDpcmDeltaLabel_.setVisible(isDesignerFlex);
+    drumDpcmDeltaSlider_.setVisible(isDesignerFlex);
+    drumDpcmRateLabel_.setVisible(isDesignerFlex);
+    drumDpcmRateSlider_.setVisible(isDesignerFlex);
+    drumDpcmGritLabel_.setVisible(isDesignerFlex);
+    drumDpcmGritSlider_.setVisible(isDesignerFlex);
+    drumDpcmBlendLabel_.setVisible(isDesignerFlex);
+    drumDpcmBlendSlider_.setVisible(isDesignerFlex);
+    drumFmRateLabel_.setVisible(isDesignerFlex);
+    drumFmRateSlider_.setVisible(isDesignerFlex);
+    drumFmDepthLabel_.setVisible(isDesignerFlex);
+    drumFmDepthSlider_.setVisible(isDesignerFlex);
+    drumDpcmVoiceLabel_.setVisible(isDesignerFlex);
+    drumDpcmVoiceBox_.setVisible(isDesignerFlex);
+
+    // --- Tab 4: Tracker Arp & Chiptune Embellishments ---
+    arpToggle_.setVisible(isTracker);
+    arpRateLabel_.setVisible(isTracker);
+    arpRateBox_.setVisible(isTracker);
+    arpPatternLabel_.setVisible(isTracker);
+    arpPatternBox_.setVisible(isTracker);
+    arpEditorLabel_.setVisible(isTracker);
+    arpPatternEditor_.setVisible(isTracker);
+
+    scoopSemiLabel_.setVisible(isTracker);
+    scoopSemiSlider_.setVisible(isTracker);
+    scoopTimeLabel_.setVisible(isTracker);
+    scoopTimeSlider_.setVisible(isTracker);
+
+    delayedVibDelayLabel_.setVisible(isTracker);
+    delayedVibDelaySlider_.setVisible(isTracker);
+    delayedVibDepthLabel_.setVisible(isTracker);
+    delayedVibDepthSlider_.setVisible(isTracker);
+
+    dutyMorphToggle_.setVisible(isTracker);
+    pseudoEchoToggle_.setVisible(isTracker);
+    pseudoEchoDelayLabel_.setVisible(isTracker);
+    pseudoEchoDelaySlider_.setVisible(isTracker);
+    pseudoEchoVolLabel_.setVisible(isTracker);
+    pseudoEchoVolSlider_.setVisible(isTracker);
+
+    // --- Tab 4: Master, SVF Filter, ADSR & Output ---
+    playModeLabel_.setVisible(isMaster);
+    playModeBox_.setVisible(isMaster);
+    authenticDacToggle_.setVisible(isMaster);
+
+    filterModeLabel_.setVisible(isMaster);
+    filterModeBox_.setVisible(isMaster);
+    analogFilterToggle_.setVisible(isMaster);
+    cutoffLabel_.setVisible(isMaster);
+    cutoffSlider_.setVisible(isMaster);
+    resonanceLabel_.setVisible(isMaster);
+    resonanceSlider_.setVisible(isMaster);
+    toneLabel_.setVisible(isMaster);
+    toneSlider_.setVisible(isMaster);
+
+    adsrToggle_.setVisible(isMaster);
+    attackLabel_.setVisible(isMaster);
+    attackSlider_.setVisible(isMaster);
+    decayLabel_.setVisible(isMaster);
+    decaySlider_.setVisible(isMaster);
+    sustainLabel_.setVisible(isMaster);
+    sustainSlider_.setVisible(isMaster);
+    releaseLabel_.setVisible(isMaster);
+    releaseSlider_.setVisible(isMaster);
+
+    glideLabel_.setVisible(isMaster);
+    glideSlider_.setVisible(isMaster);
+    vibratoLabel_.setVisible(isMaster);
+    vibratoSlider_.setVisible(isMaster);
+    detuneLabel_.setVisible(isMaster);
+    detuneSlider_.setVisible(isMaster);
+    spreadLabel_.setVisible(isMaster);
+    spreadSlider_.setVisible(isMaster);
+    masterTrimLabel_.setVisible(isMaster);
+    masterTrimSlider_.setVisible(isMaster);
 }
 
 void KindnesAudioProcessorEditor::updateDpcmPreviews()
@@ -426,7 +842,7 @@ void KindnesAudioProcessorEditor::paint(juce::Graphics& g)
 
     g.setFont(juce::Font(10.5f, juce::Font::bold));
     g.setColour(juce::Colour(0xffE5B869));
-    g.drawText("v0.0.2 • RICOH 2A03 APU, FDS 2C33 FM & VRC6 SYNTHESIZER", 125, 14, 480, 18, juce::Justification::left, false);
+    g.drawText("v0.0.4 • 2A03 APU, 2C33 FM & VRC6 EXPANSION SYNTHESIZER", 125, 14, 480, 18, juce::Justification::left, false);
 
     g.setFont(juce::Font(9.5f, juce::Font::plain));
     g.setColour(juce::Colour(0x90FFFFFF));
@@ -450,12 +866,43 @@ void KindnesAudioProcessorEditor::paint(juce::Graphics& g)
         g.drawText(title, titleArea.reduced(8.0f, 0.0f), juce::Justification::centredLeft, false);
     };
 
-    // Draw the 5 main rack cards
-    drawCard(juce::Rectangle<float>(12, 196, 1016, 134), "BAY 1: RICOH 2A03 APU OSCILLATOR CHANNELS & VRC6 EXPANSION");
-    drawCard(juce::Rectangle<float>(12, 336, 498, 140), "BAY 2A: FAMICOM DISK SYSTEM (FDS 2C33 FM)");
-    drawCard(juce::Rectangle<float>(518, 336, 510, 140), "BAY 2B: CHIPTUNE EMBELLISHMENTS & FX");
-    drawCard(juce::Rectangle<float>(12, 482, 1016, 178), "BAY 3: 8-PAD NES DRUM MACHINE & 1-BIT DPCM SAMPLER (CLICK PADS, AUTO BEAT, OR PLAY C-G)");
-    drawCard(juce::Rectangle<float>(12, 666, 1016, 198), "BAY 4: SVF ANALOG FILTER, ADSR, ARPEGGIATOR & MASTER");
+    // Draw active deck cards based on selected tab
+    if (activeTab_ == DeckTab::ApuSynth)
+    {
+        drawCard(juce::Rectangle<float>(14, 230, 600, 380), "2A03 APU CHANNELS (PULSE 1, PULSE 2, TRIANGLE, NOISE)");
+        drawCard(juce::Rectangle<float>(624, 230, 402, 380), "CARTRIDGE EXPANSIONS (VRC6 SAWTOOTH & 2C33 FM)");
+    }
+    else if (activeTab_ == DeckTab::DrumMachine)
+    {
+        drawCard(juce::Rectangle<float>(14, 230, 1012, 114), "1-BIT DPCM HARDWARE SAMPLER & BANK SELECT (32 BUILT-IN VOICES)");
+        drawCard(juce::Rectangle<float>(14, 354, 1012, 256), "8-PAD HYBRID CHIPTUNE DRUM MACHINE (PUNCH DIVE + NOISE TRANSIENT + 1-BIT DPCM)");
+    }
+    else if (activeTab_ == DeckTab::DrumDesigner)
+    {
+        const bool isEasy = (drumDesignModeBox_.getSelectedId() <= 1);
+        if (isEasy)
+        {
+            drawCard(juce::Rectangle<float>(14, 230, 1012, 110), "ADVANCED DRUM ARCHITECTURE & INSTANT TEMPLATES");
+            drawCard(juce::Rectangle<float>(14, 350, 1012, 260), "EASY MACRO SCULPTING (PUNCH, BODY, SNAPPY, 1-BIT GRIT)");
+        }
+        else
+        {
+            drawCard(juce::Rectangle<float>(14, 230, 1012, 70), "SURGICAL PARAMETERS & LIVE REAL-TIME AUDITION");
+            drawCard(juce::Rectangle<float>(14, 308, 324, 302), "1. TONAL BODY & MULTI-CURVE PITCH ENGINE");
+            drawCard(juce::Rectangle<float>(348, 308, 324, 302), "2. LFSR NOISE & TRANSIENT CLICK");
+            drawCard(juce::Rectangle<float>(682, 308, 344, 302), "3. 1-BIT DPCM DELTA CRUSHER & FM");
+        }
+    }
+    else if (activeTab_ == DeckTab::TrackerFx)
+    {
+        drawCard(juce::Rectangle<float>(14, 230, 498, 380), "60Hz / 50Hz FRAME SEQUENCER ARPEGGIATOR");
+        drawCard(juce::Rectangle<float>(522, 230, 504, 380), "TRACKER CHIPTUNE EMBELLISHMENTS & PSEUDO-ECHO");
+    }
+    else if (activeTab_ == DeckTab::MasterDeck)
+    {
+        drawCard(juce::Rectangle<float>(14, 230, 498, 380), "SVF RESONANT FILTER & ANALOG MOTHERBOARD STAGE");
+        drawCard(juce::Rectangle<float>(522, 230, 504, 380), "ADSR ENVELOPE, STEREO UNISON & OUTPUT STAGE");
+    }
 
     // Drag & Drop Hint at the bottom
     g.setFont(juce::Font(9.5f, juce::Font::italic));
@@ -466,175 +913,297 @@ void KindnesAudioProcessorEditor::paint(juce::Graphics& g)
 
 void KindnesAudioProcessorEditor::resized()
 {
-    // Preset selector bar
-    prevPresetBtn_.setBounds(16, 48, 28, 26);
-    presetBox_.setBounds(48, 48, 944, 26);
-    nextPresetBtn_.setBounds(996, 48, 28, 26);
+    // 1. Preset Selector Bar
+    prevPresetBtn_.setBounds(14, 48, 28, 24);
+    presetBox_.setBounds(46, 48, 948, 24);
+    nextPresetBtn_.setBounds(998, 48, 28, 24);
 
-    // Dual Visualizer (Oscilloscope + 1-Bit DPCM Staircase)
-    visualizer_.setBounds(14, 78, 1012, 112);
+    // 2. Dual Oscilloscope & 1-Bit DPCM Staircase Visualizer
+    visualizer_.setBounds(14, 76, 1012, 108);
 
-    // =========================================================================
-    // --- BAY 1: RICOH 2A03 APU CHANNELS & VRC6 (y = 196, h = 134) ---
-    // =========================================================================
-    // Strip 0: Pulse 1
-    pulse1DutyLabel_.setBounds(20, 218, 125, 13);
-    pulse1DutyBox_.setBounds(24, 233, 117, 20);
-    pulse1VolLabel_.setBounds(20, 258, 125, 13);
-    pulse1VolSlider_.setBounds(20, 271, 125, 52);
-
-    // Strip 1: Pulse 2
-    pulse2DutyLabel_.setBounds(155, 218, 125, 13);
-    pulse2DutyBox_.setBounds(159, 233, 117, 20);
-    pulse2VolLabel_.setBounds(155, 258, 125, 13);
-    pulse2VolSlider_.setBounds(155, 271, 125, 52);
-
-    // Strip 2: Auto-PWM & Triangle
-    pwmDepthLabel_.setBounds(290, 218, 65, 13);
-    pwmDepthSlider_.setBounds(290, 233, 65, 90);
-    triVolLabel_.setBounds(360, 218, 65, 13);
-    triVolSlider_.setBounds(360, 233, 65, 90);
-
-    // Strip 3: Noise LFSR
-    noiseModeLabel_.setBounds(435, 218, 125, 13);
-    noiseModeBox_.setBounds(439, 233, 117, 20);
-    noiseVolLabel_.setBounds(435, 258, 125, 13);
-    noiseVolSlider_.setBounds(435, 271, 125, 52);
-
-    // Strip 4: VRC6 Saw Expansion
-    vrc6Toggle_.setBounds(575, 231, 120, 22);
-    vrc6SawVolLabel_.setBounds(575, 258, 120, 13);
-    vrc6SawVolSlider_.setBounds(575, 271, 120, 52);
-
-    // Strip 5: Glide & Stereo Spread
-    glideLabel_.setBounds(710, 218, 68, 13);
-    glideSlider_.setBounds(710, 233, 68, 90);
-    spreadLabel_.setBounds(784, 218, 68, 13);
-    spreadSlider_.setBounds(784, 233, 68, 90);
-
-    // Strip 6: Play Mode & Non-Linear DAC
-    playModeLabel_.setBounds(862, 218, 155, 13);
-    playModeBox_.setBounds(866, 233, 147, 20);
-    authenticDacToggle_.setBounds(866, 268, 147, 24);
+    // 3. Tabbed Deck Navigation Bar (y = 190, h = 32)
+    const int tabY = 190;
+    const int tabH = 32;
+    const int tabGap = 8;
+    const int tabW = (1012 - (4 * tabGap)) / 5; // ~196px each
+    tabSynthBtn_.setBounds(14 + 0 * (tabW + tabGap), tabY, tabW, tabH);
+    tabDrumsBtn_.setBounds(14 + 1 * (tabW + tabGap), tabY, tabW, tabH);
+    tabDesignerBtn_.setBounds(14 + 2 * (tabW + tabGap), tabY, tabW, tabH);
+    tabTrackerBtn_.setBounds(14 + 3 * (tabW + tabGap), tabY, tabW, tabH);
+    tabMasterBtn_.setBounds(14 + 4 * (tabW + tabGap), tabY, tabW, tabH);
 
     // =========================================================================
-    // --- BAY 2A: FDS 2C33 WAVETABLE & FM (y = 336, h = 140) ---
+    // --- TAB 1: APU SYNTH & EXPANSIONS (y = 230, h = 380) ---
     // =========================================================================
-    fdsToggle_.setBounds(20, 358, 120, 22);
-    fdsWaveLabel_.setBounds(150, 356, 160, 13);
-    fdsWaveBox_.setBounds(150, 370, 160, 20);
-    fdsModWaveLabel_.setBounds(320, 356, 175, 13);
-    fdsModWaveBox_.setBounds(320, 370, 175, 20);
+    // Left Card (x = 14..614): 2A03 APU Channels
+    // Row 1: Pulse 1 & Pulse 2
+    pulse1DutyLabel_.setBounds(24, 256, 130, 13);
+    pulse1DutyBox_.setBounds(24, 271, 130, 22);
+    pulse1VolLabel_.setBounds(24, 298, 130, 13);
+    pulse1VolSlider_.setBounds(24, 312, 130, 78);
 
-    fdsVolLabel_.setBounds(30, 396, 140, 13);
-    fdsVolSlider_.setBounds(30, 410, 140, 60);
+    pulse2DutyLabel_.setBounds(168, 256, 130, 13);
+    pulse2DutyBox_.setBounds(168, 271, 130, 22);
+    pulse2VolLabel_.setBounds(168, 298, 130, 13);
+    pulse2VolSlider_.setBounds(168, 312, 130, 78);
 
-    fdsModSpeedLabel_.setBounds(185, 396, 140, 13);
-    fdsModSpeedSlider_.setBounds(185, 410, 140, 60);
+    pwmDepthLabel_.setBounds(312, 298, 120, 13);
+    pwmDepthSlider_.setBounds(312, 312, 120, 78);
 
-    fdsModDepthLabel_.setBounds(340, 396, 140, 13);
-    fdsModDepthSlider_.setBounds(340, 410, 140, 60);
+    // Row 2: Triangle, Noise LFSR
+    triVolLabel_.setBounds(24, 410, 130, 13);
+    triVolSlider_.setBounds(24, 426, 130, 80);
+
+    noiseModeLabel_.setBounds(168, 410, 130, 13);
+    noiseModeBox_.setBounds(168, 426, 130, 22);
+    noiseVolLabel_.setBounds(168, 454, 130, 13);
+    noiseVolSlider_.setBounds(168, 468, 130, 80);
+
+    // Right Card (x = 624..1026): VRC6 Saw & FDS 2C33 FM
+    vrc6Toggle_.setBounds(636, 258, 160, 22);
+    vrc6SawVolLabel_.setBounds(636, 298, 160, 13);
+    vrc6SawVolSlider_.setBounds(636, 312, 160, 80);
+
+    fdsToggle_.setBounds(636, 404, 160, 22);
+    fdsWaveLabel_.setBounds(636, 430, 175, 13);
+    fdsWaveBox_.setBounds(636, 444, 175, 22);
+    fdsModWaveLabel_.setBounds(826, 430, 185, 13);
+    fdsModWaveBox_.setBounds(826, 444, 185, 22);
+
+    fdsVolLabel_.setBounds(636, 474, 115, 13);
+    fdsVolSlider_.setBounds(636, 488, 115, 78);
+    fdsModSpeedLabel_.setBounds(766, 474, 115, 13);
+    fdsModSpeedSlider_.setBounds(766, 488, 115, 78);
+    fdsModDepthLabel_.setBounds(896, 474, 115, 13);
+    fdsModDepthSlider_.setBounds(896, 488, 115, 78);
 
     // =========================================================================
-    // --- BAY 2B: CHIPTUNE EMBELLISHMENTS & FX (y = 336, h = 140) ---
+    // --- TAB 2: DRUM MACHINE & DPCM (y = 230, h = 380) ---
     // =========================================================================
-    scoopSemiLabel_.setBounds(526, 358, 68, 13);
-    scoopSemiSlider_.setBounds(526, 372, 68, 66);
-    scoopTimeLabel_.setBounds(600, 358, 68, 13);
-    scoopTimeSlider_.setBounds(600, 372, 68, 66);
+    // Top Card (y = 230, h = 114): Bank Selector & DPCM Controls
+    drumBankLabel_.setBounds(24, 256, 250, 13);
+    drumBankBox_.setBounds(24, 271, 250, 24);
 
-    delayedVibDelayLabel_.setBounds(678, 358, 70, 13);
-    delayedVibDelaySlider_.setBounds(678, 372, 70, 66);
-    delayedVibDepthLabel_.setBounds(754, 358, 70, 13);
-    delayedVibDepthSlider_.setBounds(754, 372, 70, 66);
+    dpcmSampleLabel_.setBounds(290, 256, 230, 13);
+    dpcmSampleBox_.setBounds(290, 271, 230, 24);
 
-    dutyMorphToggle_.setBounds(834, 358, 185, 20);
-    pseudoEchoToggle_.setBounds(834, 380, 185, 20);
+    dpcmChromaticToggle_.setBounds(535, 256, 170, 20);
+    dpcmDrumPadsToggle_.setBounds(535, 278, 170, 20);
 
-    pseudoEchoDelayLabel_.setBounds(834, 404, 88, 13);
-    pseudoEchoDelaySlider_.setBounds(834, 418, 88, 52);
-    pseudoEchoVolLabel_.setBounds(928, 404, 88, 13);
-    pseudoEchoVolSlider_.setBounds(928, 418, 88, 52);
+    demoBeatBtn_.setBounds(715, 256, 150, 24);
+    throughDpcmToggle_.setBounds(715, 282, 150, 20);
 
-    // =========================================================================
-    // --- BAY 3: 1-BIT DPCM SAMPLER & DRUM MACHINE (y = 482, h = 178) ---
-    // =========================================================================
-    dpcmSampleLabel_.setBounds(20, 504, 210, 13);
-    dpcmSampleBox_.setBounds(20, 518, 210, 22);
+    dpcmDeltaStepLabel_.setBounds(24, 304, 115, 13);
+    dpcmDeltaStepSlider_.setBounds(24, 318, 115, 24); // slider with text
 
-    dpcmChromaticToggle_.setBounds(240, 504, 155, 20);
-    dpcmDrumPadsToggle_.setBounds(240, 526, 155, 20);
+    dpcmVelToSlewLabel_.setBounds(155, 304, 115, 13);
+    dpcmVelToSlewSlider_.setBounds(155, 318, 115, 24);
 
-    demoBeatBtn_.setBounds(402, 504, 180, 22);
-    throughDpcmToggle_.setBounds(402, 528, 180, 20);
+    dpcmRateLabel_.setBounds(286, 304, 115, 13);
+    dpcmRateSlider_.setBounds(286, 318, 115, 24);
 
-    dpcmDeltaStepLabel_.setBounds(600, 504, 95, 13);
-    dpcmDeltaStepSlider_.setBounds(600, 518, 95, 58);
+    dpcmVolLabel_.setBounds(417, 304, 100, 13);
+    dpcmVolSlider_.setBounds(417, 318, 100, 24);
 
-    dpcmVelToSlewLabel_.setBounds(705, 504, 95, 13);
-    dpcmVelToSlewSlider_.setBounds(705, 518, 95, 58);
+    // Bottom Card (y = 354, h = 256): 8 Large Tactile Drum Pads (2 rows x 4 cols)
+    const int gridStartX = 26;
+    const int gridStartY = 384;
+    const int padWidth = 234;
+    const int padHeight = 98;
+    const int padSpacingX = 14;
+    const int padSpacingY = 14;
 
-    dpcmRateLabel_.setBounds(810, 504, 95, 13);
-    dpcmRateSlider_.setBounds(810, 518, 95, 58);
-
-    dpcmVolLabel_.setBounds(915, 504, 95, 13);
-    dpcmVolSlider_.setBounds(915, 518, 95, 58);
-
-    // 8 Tactile Drum Machine Pads
-    const int padStartX = 20;
-    const int padY = 590;
-    const int padW = 120;
-    const int padH = 40;
-    const int padGap = 6;
     for (int i = 0; i < 8; ++i)
     {
-        drumPads_[i].setBounds(padStartX + i * (padW + padGap), padY, padW, padH);
+        int col = i % 4;
+        int row = i / 4;
+        drumPads_[static_cast<size_t>(i)].setBounds(
+            gridStartX + col * (padWidth + padSpacingX),
+            gridStartY + row * (padHeight + padSpacingY),
+            padWidth,
+            padHeight);
     }
 
     // =========================================================================
-    // --- BAY 4: FILTER, ADSR, ARPEGGIATOR & MASTER (y = 666, h = 198) ---
+    // --- TAB 3: ADVANCED DRUM SOUND DESIGNER (y = 230, h = 380) ---
     // =========================================================================
-    // 1. Resonant SVF & Tone Tilt
-    filterModeLabel_.setBounds(20, 688, 105, 13);
-    filterModeBox_.setBounds(20, 702, 105, 20);
-    analogFilterToggle_.setBounds(135, 700, 135, 24);
+    const bool isDesignerEasyMode = (drumDesignModeBox_.getSelectedId() <= 1);
+    if (isDesignerEasyMode)
+    {
+        // Top Card: Architecture selector, MIDI Mode & Audition Pad
+        drumDesignModeLabel_.setBounds(24, 254, 150, 13);
+        drumDesignModeBox_.setBounds(24, 269, 150, 24);
 
-    cutoffLabel_.setBounds(20, 734, 75, 13);
-    cutoffSlider_.setBounds(20, 748, 75, 76);
-    resonanceLabel_.setBounds(102, 734, 75, 13);
-    resonanceSlider_.setBounds(102, 748, 75, 76);
-    toneLabel_.setBounds(184, 734, 75, 13);
-    toneSlider_.setBounds(184, 748, 75, 76);
+        drumTemplateLabel_.setBounds(184, 254, 220, 13);
+        drumTemplateBox_.setBounds(184, 269, 220, 24);
 
-    // 2. ADSR Envelope
-    adsrToggle_.setBounds(275, 700, 140, 24);
-    attackLabel_.setBounds(275, 734, 62, 13);
-    attackSlider_.setBounds(275, 748, 62, 76);
-    decayLabel_.setBounds(342, 734, 62, 13);
-    decaySlider_.setBounds(342, 748, 62, 76);
-    sustainLabel_.setBounds(409, 734, 62, 13);
-    sustainSlider_.setBounds(409, 748, 62, 76);
-    releaseLabel_.setBounds(476, 734, 62, 13);
-    releaseSlider_.setBounds(476, 748, 62, 76);
+        drumMidiModeLabel_.setBounds(414, 254, 220, 13);
+        drumMidiModeBox_.setBounds(414, 269, 220, 24);
 
-    // 3. Arpeggiator & Modulation
-    arpToggle_.setBounds(552, 690, 110, 20);
-    arpRateLabel_.setBounds(668, 688, 115, 13);
-    arpRateBox_.setBounds(668, 702, 115, 20);
+        testDrumBtn_.setBounds(648, 256, 362, 44);
 
-    arpPatternLabel_.setBounds(552, 714, 110, 13);
-    arpPatternBox_.setBounds(552, 728, 110, 20);
+        // Bottom Card: 4 Large Intuitive Macros
+        const int mY = 380;
+        const int mW = 210;
+        drumPunchLabel_.setBounds(36, mY, mW, 15);
+        drumPunchSlider_.setBounds(36, mY + 18, mW, 170);
 
-    arpEditorLabel_.setBounds(552, 752, 110, 13);
-    arpPatternEditor_.setBounds(552, 768, 110, 24);
+        drumBodyMacroLabel_.setBounds(284, mY, mW, 15);
+        drumBodyMacroSlider_.setBounds(284, mY + 18, mW, 170);
 
-    vibratoLabel_.setBounds(668, 734, 60, 13);
-    vibratoSlider_.setBounds(668, 748, 60, 76);
-    detuneLabel_.setBounds(732, 734, 60, 13);
-    detuneSlider_.setBounds(732, 748, 60, 76);
+        drumSnappyLabel_.setBounds(532, mY, mW, 15);
+        drumSnappySlider_.setBounds(532, mY + 18, mW, 170);
 
-    // 4. Master Output Trim
-    masterTrimLabel_.setBounds(840, 700, 160, 14);
-    masterTrimSlider_.setBounds(840, 718, 160, 100);
+        drumGritLabel_.setBounds(780, mY, mW, 15);
+        drumGritSlider_.setBounds(780, mY + 18, mW, 170);
+    }
+    else
+    {
+        // Flexible Mode
+        // Top Header
+        drumDesignModeLabel_.setBounds(24, 244, 150, 13);
+        drumDesignModeBox_.setBounds(24, 258, 150, 24);
+
+        drumTemplateLabel_.setBounds(184, 244, 220, 13);
+        drumTemplateBox_.setBounds(184, 258, 220, 24);
+
+        drumMidiModeLabel_.setBounds(414, 244, 220, 13);
+        drumMidiModeBox_.setBounds(414, 258, 220, 24);
+
+        testDrumBtn_.setBounds(648, 246, 362, 38);
+
+        // Card 1: Tonal Body & Multi-Curve Pitch Engine (x = 14, w = 324)
+        drumPitchCurveLabel_.setBounds(24, 326, 140, 13);
+        drumPitchCurveBox_.setBounds(24, 340, 140, 22);
+        drumPitchTimeLabel_.setBounds(178, 326, 140, 13);
+        drumPitchTimeSlider_.setBounds(178, 340, 140, 22);
+
+        drumBodyStartPitchLabel_.setBounds(24, 370, 140, 13);
+        drumBodyStartPitchSlider_.setBounds(24, 384, 140, 68);
+        drumBodyEndPitchLabel_.setBounds(178, 370, 140, 13);
+        drumBodyEndPitchSlider_.setBounds(178, 384, 140, 68);
+
+        drumBodyDecayLabel_.setBounds(24, 458, 140, 13);
+        drumBodyDecaySlider_.setBounds(24, 472, 140, 68);
+        drumBodyLevelLabel_.setBounds(178, 458, 140, 13);
+        drumBodyLevelSlider_.setBounds(178, 472, 140, 68);
+
+        drumBodyWaveLabel_.setBounds(24, 546, 294, 13);
+        drumBodyWaveBox_.setBounds(24, 560, 294, 24);
+
+        // Card 2: LFSR Noise & Transient Click (x = 348, w = 324)
+        drumClickTypeLabel_.setBounds(358, 326, 140, 13);
+        drumClickTypeBox_.setBounds(358, 340, 140, 22);
+        drumClickLevelLabel_.setBounds(512, 326, 140, 13);
+        drumClickLevelSlider_.setBounds(512, 340, 140, 22);
+
+        drumNoiseModeLabel_.setBounds(358, 370, 140, 13);
+        drumNoiseModeBox_.setBounds(358, 384, 140, 24);
+        drumNoisePeriodLabel_.setBounds(512, 370, 140, 13);
+        drumNoisePeriodSlider_.setBounds(512, 384, 140, 68);
+
+        drumNoiseDecayLabel_.setBounds(358, 458, 140, 13);
+        drumNoiseDecaySlider_.setBounds(358, 472, 140, 68);
+        drumNoiseLevelLabel_.setBounds(512, 458, 140, 13);
+        drumNoiseLevelSlider_.setBounds(512, 472, 140, 68);
+
+        drumNoisePatternLabel_.setBounds(358, 546, 294, 13);
+        drumNoisePatternBox_.setBounds(358, 560, 294, 24);
+
+        // Card 3: 1-Bit DPCM Delta Crusher & FM (x = 682, w = 344)
+        drumFmRateLabel_.setBounds(692, 326, 150, 13);
+        drumFmRateSlider_.setBounds(692, 340, 150, 22);
+        drumFmDepthLabel_.setBounds(856, 326, 150, 13);
+        drumFmDepthSlider_.setBounds(856, 340, 150, 22);
+
+        drumDpcmDeltaLabel_.setBounds(692, 370, 150, 13);
+        drumDpcmDeltaSlider_.setBounds(692, 384, 150, 68);
+        drumDpcmRateLabel_.setBounds(856, 370, 150, 13);
+        drumDpcmRateSlider_.setBounds(856, 384, 150, 68);
+
+        drumDpcmGritLabel_.setBounds(692, 458, 150, 13);
+        drumDpcmGritSlider_.setBounds(692, 472, 150, 68);
+        drumDpcmBlendLabel_.setBounds(856, 458, 150, 13);
+        drumDpcmBlendSlider_.setBounds(856, 472, 150, 68);
+
+        drumDpcmVoiceLabel_.setBounds(692, 546, 314, 13);
+        drumDpcmVoiceBox_.setBounds(692, 560, 314, 24);
+    }
+
+    // =========================================================================
+    // --- TAB 4: TRACKER ARP & CHIPTUNE EMBELLISHMENTS (y = 230, h = 380) ---
+    // =========================================================================
+    // Left Card (y = 230, w = 498): 60Hz/50Hz Frame Sequencer Arp
+    arpToggle_.setBounds(24, 256, 140, 22);
+    arpRateLabel_.setBounds(180, 256, 140, 13);
+    arpRateBox_.setBounds(180, 271, 140, 22);
+
+    arpPatternLabel_.setBounds(24, 300, 140, 13);
+    arpPatternBox_.setBounds(24, 315, 140, 22);
+
+    arpEditorLabel_.setBounds(24, 350, 460, 13);
+    arpPatternEditor_.setBounds(24, 368, 460, 36);
+
+    // Right Card (y = 230, w = 504): Pitch Scoop, Delayed Vibrato, Echo
+    scoopSemiLabel_.setBounds(536, 256, 105, 13);
+    scoopSemiSlider_.setBounds(536, 271, 105, 78);
+    scoopTimeLabel_.setBounds(656, 256, 105, 13);
+    scoopTimeSlider_.setBounds(656, 271, 105, 78);
+
+    delayedVibDelayLabel_.setBounds(776, 256, 105, 13);
+    delayedVibDelaySlider_.setBounds(776, 271, 105, 78);
+    delayedVibDepthLabel_.setBounds(896, 256, 105, 13);
+    delayedVibDepthSlider_.setBounds(896, 271, 105, 78);
+
+    dutyMorphToggle_.setBounds(536, 370, 200, 22);
+    pseudoEchoToggle_.setBounds(750, 370, 200, 22);
+
+    pseudoEchoDelayLabel_.setBounds(536, 404, 150, 13);
+    pseudoEchoDelaySlider_.setBounds(536, 418, 150, 78);
+    pseudoEchoVolLabel_.setBounds(710, 404, 150, 13);
+    pseudoEchoVolSlider_.setBounds(710, 418, 150, 78);
+
+    // =========================================================================
+    // --- TAB 4: MASTER, SVF FILTER, ADSR & OUTPUT (y = 230, h = 380) ---
+    // =========================================================================
+    // Left Card (y = 230, w = 498): SVF Filter & Motherboard
+    filterModeLabel_.setBounds(24, 256, 140, 13);
+    filterModeBox_.setBounds(24, 271, 140, 22);
+    analogFilterToggle_.setBounds(180, 270, 160, 24);
+
+    cutoffLabel_.setBounds(24, 308, 100, 13);
+    cutoffSlider_.setBounds(24, 322, 100, 80);
+    resonanceLabel_.setBounds(138, 308, 100, 13);
+    resonanceSlider_.setBounds(138, 322, 100, 80);
+    toneLabel_.setBounds(252, 308, 100, 13);
+    toneSlider_.setBounds(252, 322, 100, 80);
+
+    playModeLabel_.setBounds(24, 420, 140, 13);
+    playModeBox_.setBounds(24, 435, 140, 22);
+    authenticDacToggle_.setBounds(180, 434, 160, 24);
+
+    glideLabel_.setBounds(24, 478, 100, 13);
+    glideSlider_.setBounds(24, 492, 100, 80);
+    vibratoLabel_.setBounds(138, 478, 100, 13);
+    vibratoSlider_.setBounds(138, 492, 100, 80);
+
+    // Right Card (y = 230, w = 504): ADSR & Master Output
+    adsrToggle_.setBounds(536, 256, 160, 22);
+    attackLabel_.setBounds(536, 290, 75, 13);
+    attackSlider_.setBounds(536, 304, 75, 80);
+    decayLabel_.setBounds(622, 290, 75, 13);
+    decaySlider_.setBounds(622, 304, 75, 80);
+    sustainLabel_.setBounds(708, 290, 75, 13);
+    sustainSlider_.setBounds(708, 304, 75, 80);
+    releaseLabel_.setBounds(794, 290, 75, 13);
+    releaseSlider_.setBounds(794, 304, 75, 80);
+
+    detuneLabel_.setBounds(536, 400, 110, 13);
+    detuneSlider_.setBounds(536, 414, 110, 80);
+    spreadLabel_.setBounds(660, 400, 110, 13);
+    spreadSlider_.setBounds(660, 414, 110, 80);
+
+    masterTrimLabel_.setBounds(810, 396, 175, 14);
+    masterTrimSlider_.setBounds(810, 414, 175, 100);
 }
 

@@ -101,6 +101,11 @@ public:
         drumTriPhase_ = 0.0f;
         drumTriFreq_ = 120.0f;
         keyHeldDrumBeat_ = false;
+
+        customDrumBodyEnv_ = 0.0f;
+        customDrumNoiseEnv_ = 0.0f;
+        customDrumTriPhase_ = 0.0f;
+        customDrumNoiseTimer_ = 0;
     }
 
     void setSampleRate(double sampleRate) noexcept
@@ -162,7 +167,7 @@ public:
     }
 
     /**
-     * Triggers one of the 32 NES Drum & Percussion voices combining 1-Bit DPCM sample
+     * Triggers one of the 32 Drum & Percussion voices combining 1-Bit DPCM sample
      * playback with authentic 2A03 Triangle pitch-dive & LFSR Noise hardware transients.
      */
     void triggerHybridDrumPad(int padIndex, float velocity = 1.0f) noexcept
@@ -179,7 +184,7 @@ public:
         // Layer authentic 2A03 hardware drum transients (Dn-FamiTracker style) across all 32 voices
         switch (padIndex)
         {
-            case 0: // 01. Sunsoft Punch Kick
+            case 0: // 01. Punch Bass Drum
                 drumTriFreq_ = 215.0f; drumTriTargetFreq_ = 47.0f; drumTriEnv_ = velocity;
                 drumNoiseEnv_ = 0.45f * velocity; drumNoiseDecay_ = 0.9965f;
                 noise_.setMode(0); noise_.setPeriodIndex(3);
@@ -247,7 +252,7 @@ public:
                 drumNoiseEnv_ = 0.70f * velocity; drumNoiseDecay_ = 0.9992f;
                 noise_.setMode(1); noise_.setPeriodIndex(0);
                 break;
-            case 20: // 21. Konami 1-Bit Timpani
+            case 20: // 21. Dramatic 1-Bit Timpani
                 drumTriFreq_ = 148.0f; drumTriTargetFreq_ = 98.0f; drumTriEnv_ = 0.95f * velocity;
                 break;
             case 21: // 22. 2A03 Deep Sub-Boom Kick
@@ -269,6 +274,340 @@ public:
         }
     }
 
+    struct CustomDrumParams
+    {
+        int designMode{ 0 }; // 0 = Easy, 1 = Flexible
+        int templateId{ 1 };
+
+        // Easy Macros
+        float macroPunch{ 0.7f };
+        float macroBody{ 0.5f };
+        float macroSnappy{ 0.4f };
+        float macroGrit{ 0.2f };
+
+        // Flexible / Deep Controls: Tonal Body & Pitch Modulation
+        int pitchCurve{ 0 }; // 0=ExponentialDrop, 1=DualStageDrop, 2=LaserLinearSweep, 3=PitchScoopRise, 4=FMChirpModulation
+        float pitchTimeMs{ 60.0f };
+        float fmRateHz{ 120.0f };
+        float fmDepthHz{ 150.0f };
+
+        float bodyStartPitchHz{ 215.0f };
+        float bodyEndPitchHz{ 47.0f };
+        float bodyDecayMs{ 120.0f };
+        int bodyWaveform{ 0 }; // 0=2A03 Triangle, 1=Pure Sine, 2=VRC6 Saw Overdrive, 3=Pulse 25%
+        float bodyLevel{ 0.95f };
+
+        // Transient Click Layer
+        int clickType{ 0 }; // 0=Off, 1=2A03 Impulse Spike, 2=Square Pop, 3=Noise Snap
+        float clickLevel{ 0.4f };
+
+        // Noise Layer
+        int noiseMode{ 0 };    // 0=Mode 0 White, 1=Mode 1 Metallic 93-Step
+        int noisePeriod{ 3 };  // 0..15 Tone rate
+        float noiseDecayMs{ 80.0f };
+        int noisePattern{ 0 }; // 0=Single Burst, 1=Multi-Flam Clap, 2=Gated Snare, 3=Low-Rumble Swell, 4=Glitch Stutter
+        float noiseLevel{ 0.5f };
+
+        // 1-Bit DPCM Hardware Crusher & Blend
+        int dpcmDeltaStep{ 2 };
+        int dpcmRateIndex{ 15 };
+        float dpcmGrit{ 0.2f };
+        float dpcmBlend{ 0.5f };
+        int dpcmSampleVoice{ 0 };
+
+        // MIDI DAW Integration
+        int midiMode{ 1 }; // 0=Audition Button Only, 1=Trigger on MIDI Note 36 (C1 Kick) & 38 (D1 Snare), 2=Tuned Chromatic Synth
+    };
+
+    void setCustomDrumParams(const CustomDrumParams& p) noexcept { customDrum_ = p; }
+    [[nodiscard]] const CustomDrumParams& getCustomDrumParams() const noexcept { return customDrum_; }
+
+    void applyCustomDrumTemplate(int templateIdx)
+    {
+        customDrum_.templateId = templateIdx;
+        switch (templateIdx)
+        {
+            case 1: // 01. Punch Kick (Dual-Stage Click Dive)
+                customDrum_.pitchCurve = 1; // DualStageDrop
+                customDrum_.pitchTimeMs = 45.0f;
+                customDrum_.clickType = 1; // Impulse Spike
+                customDrum_.clickLevel = 0.5f;
+                customDrum_.bodyStartPitchHz = 240.0f; customDrum_.bodyEndPitchHz = 46.0f; customDrum_.bodyDecayMs = 130.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.98f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 3; customDrum_.noiseDecayMs = 35.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.40f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.25f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 0;
+                break;
+            case 2: // 02. Mega Snare
+                customDrum_.pitchCurve = 0; // ExponentialDrop
+                customDrum_.pitchTimeMs = 30.0f;
+                customDrum_.clickType = 2; // Square Pop
+                customDrum_.clickLevel = 0.4f;
+                customDrum_.bodyStartPitchHz = 190.0f; customDrum_.bodyEndPitchHz = 95.0f; customDrum_.bodyDecayMs = 90.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.75f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 2; customDrum_.noiseDecayMs = 180.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.85f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.15f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 1;
+                break;
+            case 3: // 03. Closed Hi-Hat
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 10.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 40.0f; customDrum_.bodyEndPitchHz = 40.0f; customDrum_.bodyDecayMs = 10.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.0f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 0; customDrum_.noiseDecayMs = 35.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.85f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.6f; customDrum_.dpcmSampleVoice = 2;
+                break;
+            case 4: // 04. Open Hi-Hat
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 10.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 40.0f; customDrum_.bodyEndPitchHz = 40.0f; customDrum_.bodyDecayMs = 10.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.0f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 1; customDrum_.noiseDecayMs = 280.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.90f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.6f; customDrum_.dpcmSampleVoice = 3;
+                break;
+            case 5: // 05. 8-Bit Hand Clap
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 20.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 120.0f; customDrum_.bodyEndPitchHz = 60.0f; customDrum_.bodyDecayMs = 30.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.2f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 3; customDrum_.noiseDecayMs = 160.0f;
+                customDrum_.noisePattern = 1; customDrum_.noiseLevel = 0.95f; // 3-Burst Multi-Flam
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.2f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 4;
+                break;
+            case 6: // 06. High Rack Tom
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 50.0f;
+                customDrum_.clickType = 1;
+                customDrum_.clickLevel = 0.3f;
+                customDrum_.bodyStartPitchHz = 330.0f; customDrum_.bodyEndPitchHz = 92.0f; customDrum_.bodyDecayMs = 150.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.95f;
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 4; customDrum_.noiseDecayMs = 25.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.25f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.4f; customDrum_.dpcmSampleVoice = 5;
+                break;
+            case 7: // 07. Low Floor Tom
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 70.0f;
+                customDrum_.clickType = 1;
+                customDrum_.clickLevel = 0.35f;
+                customDrum_.bodyStartPitchHz = 210.0f; customDrum_.bodyEndPitchHz = 55.0f; customDrum_.bodyDecayMs = 220.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.98f;
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 4; customDrum_.noiseDecayMs = 30.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.25f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.4f; customDrum_.dpcmSampleVoice = 6;
+                break;
+            case 8: // 08. Arcade Crash Cymbal
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 10.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 50.0f; customDrum_.bodyEndPitchHz = 50.0f; customDrum_.bodyDecayMs = 10.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.0f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 2; customDrum_.noiseDecayMs = 650.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.95f;
+                customDrum_.dpcmDeltaStep = 3; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.3f;
+                customDrum_.dpcmBlend = 0.7f; customDrum_.dpcmSampleVoice = 7;
+                break;
+            case 9: // 09. VRC6 Overdrive Kick
+                customDrum_.pitchCurve = 1; // DualStage
+                customDrum_.pitchTimeMs = 45.0f;
+                customDrum_.clickType = 2; // Square Pop
+                customDrum_.clickLevel = 0.5f;
+                customDrum_.bodyStartPitchHz = 320.0f; customDrum_.bodyEndPitchHz = 42.0f; customDrum_.bodyDecayMs = 160.0f;
+                customDrum_.bodyWaveform = 2; customDrum_.bodyLevel = 0.98f; // VRC6 Saw Overdrive
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 2; customDrum_.noiseDecayMs = 40.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.55f;
+                customDrum_.dpcmDeltaStep = 3; customDrum_.dpcmRateIndex = 14; customDrum_.dpcmGrit = 0.4f;
+                customDrum_.dpcmBlend = 0.6f; customDrum_.dpcmSampleVoice = 8;
+                break;
+            case 10: // 10. Metallic Robo-Snare
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 30.0f;
+                customDrum_.clickType = 3; // Noise Snap
+                customDrum_.clickLevel = 0.4f;
+                customDrum_.bodyStartPitchHz = 200.0f; customDrum_.bodyEndPitchHz = 88.0f; customDrum_.bodyDecayMs = 100.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.75f;
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 4; customDrum_.noiseDecayMs = 170.0f; // 93-step metallic
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.95f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.25f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 9;
+                break;
+            case 11: // 11. Chiptune Rimshot
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 15.0f;
+                customDrum_.clickType = 1;
+                customDrum_.clickLevel = 0.6f;
+                customDrum_.bodyStartPitchHz = 520.0f; customDrum_.bodyEndPitchHz = 240.0f; customDrum_.bodyDecayMs = 35.0f;
+                customDrum_.bodyWaveform = 1; customDrum_.bodyLevel = 0.85f; // Saturated Sine click
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 1; customDrum_.noiseDecayMs = 25.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.60f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.15f;
+                customDrum_.dpcmBlend = 0.4f; customDrum_.dpcmSampleVoice = 10;
+                break;
+            case 12: // 12. Arcade Cowbell
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 10.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 540.0f; customDrum_.bodyEndPitchHz = 540.0f; customDrum_.bodyDecayMs = 110.0f;
+                customDrum_.bodyWaveform = 3; customDrum_.bodyLevel = 0.75f; // Dual tone / Pulse
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 3; customDrum_.noiseDecayMs = 30.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.35f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 11;
+                break;
+            case 13: // 13. FDS FM Simmons Tom
+                customDrum_.pitchCurve = 4; // FM Chirp Modulation
+                customDrum_.pitchTimeMs = 70.0f;
+                customDrum_.fmRateHz = 180.0f;
+                customDrum_.fmDepthHz = 110.0f;
+                customDrum_.clickType = 1;
+                customDrum_.clickLevel = 0.3f;
+                customDrum_.bodyStartPitchHz = 270.0f; customDrum_.bodyEndPitchHz = 78.0f; customDrum_.bodyDecayMs = 220.0f;
+                customDrum_.bodyWaveform = 1; customDrum_.bodyLevel = 0.92f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 4; customDrum_.noiseDecayMs = 30.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.20f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 12;
+                break;
+            case 14: // 14. Gated Boss Battle Snare
+                customDrum_.pitchCurve = 0;
+                customDrum_.pitchTimeMs = 35.0f;
+                customDrum_.clickType = 2;
+                customDrum_.clickLevel = 0.45f;
+                customDrum_.bodyStartPitchHz = 210.0f; customDrum_.bodyEndPitchHz = 95.0f; customDrum_.bodyDecayMs = 110.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.80f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 3; customDrum_.noiseDecayMs = 260.0f;
+                customDrum_.noisePattern = 2; customDrum_.noiseLevel = 0.95f; // Gated Plateau
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.2f;
+                customDrum_.dpcmBlend = 0.5f; customDrum_.dpcmSampleVoice = 13;
+                break;
+            case 15: // 15. Laser Zapper FX
+                customDrum_.pitchCurve = 2; // LaserLinearSweep
+                customDrum_.pitchTimeMs = 80.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 1800.0f; customDrum_.bodyEndPitchHz = 75.0f; customDrum_.bodyDecayMs = 95.0f;
+                customDrum_.bodyWaveform = 3; customDrum_.bodyLevel = 0.95f; // 25% Pulse
+                customDrum_.noiseMode = 1; customDrum_.noisePeriod = 0; customDrum_.noiseDecayMs = 20.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.35f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.2f;
+                customDrum_.dpcmBlend = 0.3f; customDrum_.dpcmSampleVoice = 26;
+                break;
+            case 16: // 16. Boss Defeat Cataclysm (2.6s Extended Low Rumble)
+                customDrum_.pitchCurve = 1; // DualStage
+                customDrum_.pitchTimeMs = 180.0f;
+                customDrum_.clickType = 3; // Noise Snap
+                customDrum_.clickLevel = 0.6f;
+                customDrum_.bodyStartPitchHz = 110.0f; customDrum_.bodyEndPitchHz = 24.0f; customDrum_.bodyDecayMs = 1600.0f;
+                customDrum_.bodyWaveform = 0; customDrum_.bodyLevel = 0.98f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 13; customDrum_.noiseDecayMs = 2400.0f;
+                customDrum_.noisePattern = 3; customDrum_.noiseLevel = 0.98f; // LowRumbleSwell
+                customDrum_.dpcmDeltaStep = 4; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.6f;
+                customDrum_.dpcmBlend = 0.7f; customDrum_.dpcmSampleVoice = 21;
+                break;
+            case 17: // 17. Comic Spring Boing (Rising Pitch Scoop)
+                customDrum_.pitchCurve = 3; // PitchScoopRise
+                customDrum_.pitchTimeMs = 160.0f;
+                customDrum_.clickType = 0;
+                customDrum_.clickLevel = 0.0f;
+                customDrum_.bodyStartPitchHz = 90.0f; customDrum_.bodyEndPitchHz = 460.0f; customDrum_.bodyDecayMs = 280.0f;
+                customDrum_.bodyWaveform = 3; customDrum_.bodyLevel = 0.92f;
+                customDrum_.noiseMode = 0; customDrum_.noisePeriod = 2; customDrum_.noiseDecayMs = 15.0f;
+                customDrum_.noisePattern = 0; customDrum_.noiseLevel = 0.20f;
+                customDrum_.dpcmDeltaStep = 2; customDrum_.dpcmRateIndex = 15; customDrum_.dpcmGrit = 0.1f;
+                customDrum_.dpcmBlend = 0.3f; customDrum_.dpcmSampleVoice = 28;
+                break;
+            default:
+                break;
+        }
+    }
+
+    void triggerCustomDrum(float velocity = 1.0f, float noteFreqMult = 1.0f) noexcept
+    {
+        velocity = std::clamp(velocity, 0.05f, 1.0f);
+        noteFreqMult = std::clamp(noteFreqMult, 0.1f, 10.0f);
+
+        // Apply Easy Macros if in Easy Mode
+        float startPitch = customDrum_.bodyStartPitchHz;
+        float endPitch = customDrum_.bodyEndPitchHz;
+        float bodyDecay = customDrum_.bodyDecayMs;
+        float bodyLevel = customDrum_.bodyLevel;
+        float noiseLvl = customDrum_.noiseLevel;
+        float noiseDecay = customDrum_.noiseDecayMs;
+        int deltaStep = customDrum_.dpcmDeltaStep;
+        float dpcmGrit = customDrum_.dpcmGrit;
+
+        if (customDrum_.designMode == 0) // Easy Mode
+        {
+            startPitch = 60.0f + customDrum_.macroPunch * 500.0f;
+            endPitch = 30.0f + (1.0f - customDrum_.macroPunch) * 70.0f;
+            bodyDecay = 40.0f + customDrum_.macroBody * 360.0f;
+            bodyLevel = 0.95f;
+            noiseLvl = customDrum_.macroSnappy;
+            noiseDecay = 20.0f + customDrum_.macroSnappy * 280.0f;
+            deltaStep = 1 + static_cast<int>(customDrum_.macroGrit * 5.0f);
+            dpcmGrit = customDrum_.macroGrit;
+        }
+
+        // Tonal Body & Pitch State
+        customDrumStartPitchFinal_ = startPitch * noteFreqMult;
+        customDrumEndPitchFinal_ = endPitch * noteFreqMult;
+        customDrumTriFreq_ = customDrumStartPitchFinal_;
+        customDrumTriTargetFreq_ = customDrumEndPitchFinal_;
+
+        float bDecaySec = std::max(0.005f, bodyDecay * 0.001f);
+        customDrumBodyDecayCoeff_ = std::exp(-1.0f / (bDecaySec * static_cast<float>(sampleRate_)));
+        customDrumBodyEnv_ = bodyLevel * velocity;
+        customDrumTriPhase_ = 0.0f;
+
+        // Transient Click Initialization
+        customDrumClickCountdown_ = 0;
+        customDrumClickVal_ = 0.0f;
+        if (customDrum_.clickType > 0 && customDrum_.clickLevel > 0.005f)
+        {
+            if (customDrum_.clickType == 1) // 2A03 Impulse Spike (2 samples)
+                customDrumClickCountdown_ = 2;
+            else if (customDrum_.clickType == 2) // Square Pop (32 samples)
+                customDrumClickCountdown_ = static_cast<int>(0.0005 * sampleRate_);
+            else if (customDrum_.clickType == 3) // Noise Snap (48 samples)
+                customDrumClickCountdown_ = static_cast<int>(0.0008 * sampleRate_);
+        }
+
+        // Noise
+        noise_.setMode(customDrum_.noiseMode);
+        noise_.setPeriodIndex(customDrum_.noisePeriod);
+        float nDecaySec = std::max(0.005f, noiseDecay * 0.001f);
+        customDrumNoiseDecayCoeff_ = std::exp(-1.0f / (nDecaySec * static_cast<float>(sampleRate_)));
+        customDrumNoiseEnv_ = noiseLvl * velocity;
+        customDrumNoiseTimer_ = 0;
+        customDrumTimerSamples_ = 0;
+
+        // 1-Bit DPCM Layer
+        if (customDrum_.dpcmBlend > 0.01f)
+        {
+            dpcm_.setDeltaStep(deltaStep);
+            dpcm_.setRateIndex(customDrum_.dpcmRateIndex);
+            dpcm_.setVelToSlew(dpcmGrit);
+            dpcm_.triggerPad(customDrum_.dpcmSampleVoice, velocity * customDrum_.dpcmBlend);
+        }
+    }
+
     void noteOn(int noteNumber, float velocity) noexcept
     {
         velocity = std::clamp(velocity, 0.0f, 1.0f);
@@ -278,7 +617,24 @@ public:
             return;
         }
 
-        // 1A. Pure Drum Kit Mode: EVERY octave on the keyboard (C..B) plays the 8 NES Drum Pads!
+        // 0. Custom Drum Designer Direct MIDI Integration
+        if (customDrum_.midiMode == 1) // Note 36 (C1 Kick) & Note 38 (D1 Snare)
+        {
+            if (noteNumber == 36 || noteNumber == 38)
+            {
+                triggerCustomDrum(velocity, 1.0f);
+                return;
+            }
+        }
+        else if (customDrum_.midiMode == 2) // Tuned Chromatic Synth across keyboard
+        {
+            // Note 60 (C4) is unity tuning (1.0x). Note 36 (C1) = 0.25x for fat 808 sub bass!
+            float noteRatio = std::pow(2.0f, static_cast<float>(noteNumber - 60) / 12.0f);
+            triggerCustomDrum(velocity, noteRatio);
+            return;
+        }
+
+        // 1A. Pure Drum Kit Mode: EVERY octave on the keyboard (C..B) plays the 8 Drum Pads!
         if (isPureDrumKitMode())
         {
             int pad = mapMidiNoteToDrumPad(noteNumber);
@@ -288,7 +644,7 @@ public:
             if (it == heldNotes_.end())
                 heldNotes_.push_back(noteNumber);
 
-            // When Arpeggiator is enabled on a Drum Kit preset, holding a key runs the 16th-note NES Beat!
+            // When Arpeggiator is enabled on a Drum Kit preset, holding a key runs the 16th-note 8-Bit Beat!
             if (arp_.isEnabled())
             {
                 if (!keyHeldDrumBeat_)
@@ -884,7 +1240,7 @@ public:
             sumP2_R *= polyScaleSmooth_;
             sumTri *= polyScaleSmooth_;
 
-            // Built-in 16th-Note Hybrid NES Drum Beat Sequencer (when Demo Beat or Key-Held Drum Beat is active)
+            // Built-in 16th-Note Hybrid 8-Bit Drum Beat Sequencer (when Demo Beat or Key-Held Drum Beat is active)
             if (dpcm_.isDemoBeatEnabled() || keyHeldDrumBeat_)
             {
                 float stepsPerSec = static_cast<float>(std::max(60.0, hostBpm_) * (4.0 / 60.0)); // 16th notes
@@ -893,7 +1249,7 @@ public:
                 {
                     drumBeatPhase_ -= 1.0f;
                     int bankBase = getActiveDrumBank() * 8;
-                    // Classic 16-step NES Arcade Drum Groove (Kick, Closed Hat, Open Hat, Snare, Clap, High/Low Tom, Crash):
+                    // Classic 16-step Arcade Drum Groove (Kick, Closed Hat, Open Hat, Snare, Clap, High/Low Tom, Crash):
                     static constexpr int kPrimaryPadOffset[16] = {
                         0, 2, 2, 3,  1, 2, 0, 2,  0, 2, 0, 3,  1, 5, 6, 4
                     };
@@ -924,8 +1280,50 @@ public:
                 }
             }
 
+            // Custom Algorithmic Drum Noise Layer
+            if (customDrumNoiseEnv_ > 0.001f)
+            {
+                float patternGain = 1.0f;
+                customDrumNoiseTimer_++;
+                if (customDrum_.noisePattern == 1) // Multi-Flam Clap (3 micro bursts)
+                {
+                    float tMs = (static_cast<float>(customDrumNoiseTimer_) / static_cast<float>(sampleRate_)) * 1000.0f;
+                    if (tMs < 14.0f) patternGain = 1.0f - (tMs / 14.0f) * 0.7f;
+                    else if (tMs < 28.0f) patternGain = 1.0f - ((tMs - 14.0f) / 14.0f) * 0.7f;
+                    else if (tMs < 42.0f) patternGain = 1.0f - ((tMs - 28.0f) / 14.0f) * 0.5f;
+                }
+                else if (customDrum_.noisePattern == 2) // Gated Snare Plateau
+                {
+                    float tMs = (static_cast<float>(customDrumNoiseTimer_) / static_cast<float>(sampleRate_)) * 1000.0f;
+                    if (tMs < 45.0f) patternGain = 1.0f;
+                    else patternGain = std::exp(-(tMs - 45.0f) * 0.15f);
+                }
+                else if (customDrum_.noisePattern == 3) // Low-Rumble Swell (Sub-bass rumble for dramatic explosions)
+                {
+                    float t = static_cast<float>(customDrumNoiseTimer_) / static_cast<float>(sampleRate_);
+                    float swell = std::sin(std::min(1.0f, t / 0.15f) * 1.570796f);
+                    patternGain = swell * 1.1f;
+                }
+                else if (customDrum_.noisePattern == 4) // Glitch Frame Stutter
+                {
+                    float tMs = (static_cast<float>(customDrumNoiseTimer_) / static_cast<float>(sampleRate_)) * 1000.0f;
+                    int frame = static_cast<int>(tMs / 18.0f);
+                    patternGain = ((frame % 2) == 0) ? 1.0f : 0.18f;
+                }
+                noise_.gate(true);
+                noise_.setVolume(15);
+                drumNoiseBoost += noise_.processSample() * (customDrumNoiseEnv_ * patternGain);
+                customDrumNoiseEnv_ *= customDrumNoiseDecayCoeff_;
+                if (customDrumNoiseEnv_ <= 0.001f)
+                {
+                    customDrumNoiseEnv_ = 0.0f;
+                    if (activeKeyCount_ == 0 && drumNoiseEnv_ <= 0.001f)
+                        noise_.gate(false);
+                }
+            }
+
             float noiseSample = drumNoiseBoost;
-            if (noiseVol_ > 0 && activeVoiceCount > 0 && drumNoiseEnv_ <= 0.001f)
+            if (noiseVol_ > 0 && activeVoiceCount > 0 && drumNoiseEnv_ <= 0.001f && customDrumNoiseEnv_ <= 0.001f)
             {
                 noise_.gate(true);
                 noise_.setVolume(noiseVol_);
@@ -945,6 +1343,124 @@ public:
                 drumTriEnv_ *= std::pow(0.9988f, rateRatio_);
                 if (drumTriEnv_ <= 0.001f)
                     drumTriEnv_ = 0.0f;
+            }
+
+            // Custom Algorithmic Drum Tonal Body (Multi-Curve Pitch Modulation Engine)
+            if (customDrumBodyEnv_ > 0.001f)
+            {
+                customDrumTimerSamples_++;
+                float tMs = (static_cast<float>(customDrumTimerSamples_) / static_cast<float>(sampleRate_)) * 1000.0f;
+
+                switch (customDrum_.pitchCurve)
+                {
+                    case 0: // Exponential Drop (classic punch)
+                    {
+                        float factor = std::exp(-tMs / std::max(1.0f, customDrum_.pitchTimeMs));
+                        customDrumTriFreq_ = customDrumEndPitchFinal_ + (customDrumStartPitchFinal_ - customDrumEndPitchFinal_) * factor;
+                        break;
+                    }
+                    case 1: // Dual-Stage Drop (steep 12ms click dive, followed by body decay)
+                    {
+                        if (tMs < 12.0f)
+                        {
+                            float factor = std::exp(-tMs / 3.5f);
+                            customDrumTriFreq_ = (customDrumStartPitchFinal_ * 0.5f) + (customDrumStartPitchFinal_ * 0.5f) * factor;
+                        }
+                        else
+                        {
+                            float factor = std::exp(-(tMs - 12.0f) / std::max(1.0f, customDrum_.pitchTimeMs));
+                            customDrumTriFreq_ = customDrumEndPitchFinal_ + ((customDrumStartPitchFinal_ * 0.5f) - customDrumEndPitchFinal_) * factor;
+                        }
+                        break;
+                    }
+                    case 2: // Laser Linear Sweep (constant frequency glide)
+                    {
+                        float sweepDur = std::max(5.0f, customDrum_.pitchTimeMs);
+                        if (tMs < sweepDur)
+                        {
+                            float alpha = tMs / sweepDur;
+                            float sF = std::max(10.0f, customDrumStartPitchFinal_);
+                            float eF = std::max(10.0f, customDrumEndPitchFinal_);
+                            customDrumTriFreq_ = sF * std::pow(eF / sF, alpha);
+                        }
+                        else
+                        {
+                            customDrumTriFreq_ = customDrumEndPitchFinal_;
+                        }
+                        break;
+                    }
+                    case 3: // Pitch Scoop Rise (rising pitch bend for boings / comic springs)
+                    {
+                        float riseDur = std::max(10.0f, customDrum_.pitchTimeMs);
+                        if (tMs < riseDur)
+                        {
+                            float alpha = tMs / riseDur;
+                            customDrumTriFreq_ = customDrumStartPitchFinal_ + (customDrumEndPitchFinal_ - customDrumStartPitchFinal_) * (1.0f - std::exp(-alpha * 3.5f));
+                        }
+                        else
+                        {
+                            customDrumTriFreq_ = customDrumEndPitchFinal_;
+                        }
+                        break;
+                    }
+                    case 4: // FM Chirp Modulation (vibrato/chirp for Simmons toms & UFO sirens)
+                    {
+                        float baseFactor = std::exp(-tMs / std::max(1.0f, customDrum_.pitchTimeMs));
+                        float mod = std::sin((tMs * 0.001f) * customDrum_.fmRateHz * 6.2831853f) * customDrum_.fmDepthHz * baseFactor;
+                        customDrumTriFreq_ = std::max(20.0f, customDrumEndPitchFinal_ + (customDrumStartPitchFinal_ - customDrumEndPitchFinal_) * baseFactor + mod);
+                        break;
+                    }
+                    default:
+                        customDrumTriFreq_ = customDrumEndPitchFinal_;
+                        break;
+                }
+
+                customDrumTriPhase_ += customDrumTriFreq_ / static_cast<float>(sampleRate_);
+                if (customDrumTriPhase_ >= 1.0f)
+                    customDrumTriPhase_ -= std::floor(customDrumTriPhase_);
+
+                float waveOut = 0.0f;
+                switch (customDrum_.bodyWaveform)
+                {
+                    case 0: // 2A03 32-step Triangle
+                    {
+                        int stepIdx = static_cast<int>(customDrumTriPhase_ * 32.0f) & 31;
+                        waveOut = static_cast<float>(TriangleChannel::kTriangleTable[stepIdx]);
+                        break;
+                    }
+                    case 1: // Saturated Sine
+                        waveOut = (std::tanh(std::sin(customDrumTriPhase_ * 6.2831853f) * 2.2f) * 0.5f + 0.5f) * 15.0f;
+                        break;
+                    case 2: // VRC6 Saw Overdrive
+                    {
+                        int step7 = static_cast<int>(customDrumTriPhase_ * 7.0f) % 7;
+                        waveOut = static_cast<float>(((step7 * 50) & 0xFF) >> 3);
+                        break;
+                    }
+                    case 3: // 2A03 25% Pulse
+                        waveOut = (customDrumTriPhase_ < 0.25f) ? 15.0f : 0.0f;
+                        break;
+                }
+
+                // Transient Click Layer Injection
+                float clickSample = 0.0f;
+                if (customDrumClickCountdown_ > 0)
+                {
+                    customDrumClickCountdown_--;
+                    if (customDrum_.clickType == 1) // 2A03 Impulse Spike
+                        clickSample = 15.0f;
+                    else if (customDrum_.clickType == 2) // Square Pop
+                        clickSample = ((customDrumClickCountdown_ % 4) < 2) ? 15.0f : -15.0f;
+                    else if (customDrum_.clickType == 3) // Noise Snap
+                        clickSample = noise_.processSample() * 15.0f;
+                    clickSample *= customDrum_.clickLevel;
+                }
+
+                float totalBody = std::clamp(waveOut * customDrumBodyEnv_ + clickSample, -15.0f, 15.0f);
+                sumTri = std::max(sumTri, totalBody);
+                customDrumBodyEnv_ *= customDrumBodyDecayCoeff_;
+                if (customDrumBodyEnv_ <= 0.001f)
+                    customDrumBodyEnv_ = 0.0f;
             }
 
             // DPCM sampler
@@ -1140,6 +1656,24 @@ private:
     float drumBeatPhase_{ 0.0f };
     int drumBeatStep_{ 0 };
     int lastTriggeredDrumPad_{ -1 };
+
+    // Advanced Drum Sound Design Engine
+    CustomDrumParams customDrum_;
+    float customDrumTriFreq_{ 215.0f };
+    float customDrumTriTargetFreq_{ 47.0f };
+    float customDrumStartPitchFinal_{ 215.0f };
+    float customDrumEndPitchFinal_{ 47.0f };
+    float customDrumTriPhase_{ 0.0f };
+    float customDrumBodyEnv_{ 0.0f };
+    float customDrumBodyDecayCoeff_{ 0.998f };
+    int customDrumBodyWave_{ 0 };
+    float customDrumNoiseEnv_{ 0.0f };
+    float customDrumNoiseDecayCoeff_{ 0.998f };
+    int customDrumNoiseTimer_{ 0 };
+    int customDrumNoisePattern_{ 0 };
+    int customDrumTimerSamples_{ 0 };
+    int customDrumClickCountdown_{ 0 };
+    float customDrumClickVal_{ 0.0f };
 };
 
 } // namespace KindnesDSP

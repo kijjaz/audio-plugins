@@ -1,0 +1,41 @@
+// ============================================================================
+// FDS 2C33 Hardware FM Lead (96 kHz, 24-bit)
+// ============================================================================
+<global>
+ampeg_attack=0.001
+ampeg_decay=0.0
+ampeg_sustain=100
+ampeg_release=0.040
+
+<group>
+loop_mode=loop_continuous
+amp_veltrack=100
+<region> sample=samples/waveforms/fds_fm_lead_C1.wav lokey=24 hikey=25 pitch_keycenter=24 loop_start=39278 loop_end=124409
+<region> sample=samples/waveforms/fds_fm_lead_Ds1.wav lokey=26 hikey=28 pitch_keycenter=27 loop_start=39669 loop_end=123595
+<region> sample=samples/waveforms/fds_fm_lead_Fs1.wav lokey=29 hikey=31 pitch_keycenter=30 loop_start=38821 loop_end=123923
+<region> sample=samples/waveforms/fds_fm_lead_A1.wav lokey=32 hikey=34 pitch_keycenter=33 loop_start=38863 loop_end=124390
+<region> sample=samples/waveforms/fds_fm_lead_C2.wav lokey=35 hikey=37 pitch_keycenter=36 loop_start=39254 loop_end=124382
+<region> sample=samples/waveforms/fds_fm_lead_Ds2.wav lokey=38 hikey=40 pitch_keycenter=39 loop_start=38417 loop_end=124814
+<region> sample=samples/waveforms/fds_fm_lead_Fs2.wav lokey=41 hikey=43 pitch_keycenter=42 loop_start=38806 loop_end=124948
+<region> sample=samples/waveforms/fds_fm_lead_A2.wav lokey=44 hikey=46 pitch_keycenter=45 loop_start=38850 loop_end=124377
+<region> sample=samples/waveforms/fds_fm_lead_C3.wav lokey=47 hikey=49 pitch_keycenter=48 loop_start=38511 loop_end=125108
+<region> sample=samples/waveforms/fds_fm_lead_Ds3.wav lokey=50 hikey=52 pitch_keycenter=51 loop_start=38408 loop_end=124803
+<region> sample=samples/waveforms/fds_fm_lead_Fs3.wav lokey=53 hikey=55 pitch_keycenter=54 loop_start=38799 loop_end=124940
+<region> sample=samples/waveforms/fds_fm_lead_A3.wav lokey=56 hikey=58 pitch_keycenter=57 loop_start=38408 loop_end=124808
+<region> sample=samples/waveforms/fds_fm_lead_C4.wav lokey=59 hikey=61 pitch_keycenter=60 loop_start=38507 loop_end=124737
+<region> sample=samples/waveforms/fds_fm_lead_Ds4.wav lokey=62 hikey=64 pitch_keycenter=63 loop_start=38406 loop_end=124802
+<region> sample=samples/waveforms/fds_fm_lead_Fs4.wav lokey=65 hikey=67 pitch_keycenter=66 loop_start=38538 loop_end=124680
+<region> sample=samples/waveforms/fds_fm_lead_A4.wav lokey=68 hikey=70 pitch_keycenter=69 loop_start=38406 loop_end=124806
+<region> sample=samples/waveforms/fds_fm_lead_C5.wav lokey=71 hikey=73 pitch_keycenter=72 loop_start=38505 loop_end=124735
+<region> sample=samples/waveforms/fds_fm_lead_Ds5.wav lokey=74 hikey=76 pitch_keycenter=75 loop_start=38404 loop_end=124799
+<region> sample=samples/waveforms/fds_fm_lead_Fs5.wav lokey=77 hikey=79 pitch_keycenter=78 loop_start=38406 loop_end=124808
+<region> sample=samples/waveforms/fds_fm_lead_A5.wav lokey=80 hikey=82 pitch_keycenter=81 loop_start=38405 loop_end=124805
+<region> sample=samples/waveforms/fds_fm_lead_C6.wav lokey=83 hikey=85 pitch_keycenter=84 loop_start=38412 loop_end=124825
+<region> sample=samples/waveforms/fds_fm_lead_Ds6.wav lokey=86 hikey=88 pitch_keycenter=87 loop_start=38403 loop_end=124798
+<region> sample=samples/waveforms/fds_fm_lead_Fs6.wav lokey=89 hikey=91 pitch_keycenter=90 loop_start=38405 loop_end=124806
+<region> sample=samples/waveforms/fds_fm_lead_A6.wav lokey=92 hikey=94 pitch_keycenter=93 loop_start=38404 loop_end=124804
+<region> sample=samples/waveforms/fds_fm_lead_C7.wav lokey=95 hikey=97 pitch_keycenter=96 loop_start=38411 loop_end=124778
+<region> sample=samples/waveforms/fds_fm_lead_Ds7.wav lokey=98 hikey=100 pitch_keycenter=99 loop_start=38401 loop_end=124797
+<region> sample=samples/waveforms/fds_fm_lead_Fs7.wav lokey=101 hikey=103 pitch_keycenter=102 loop_start=38404 loop_end=124805
+<region> sample=samples/waveforms/fds_fm_lead_A7.wav lokey=104 hikey=106 pitch_keycenter=105 loop_start=38403 loop_end=124802
+<region> sample=samples/waveforms/fds_fm_lead_C8.wav lokey=107 hikey=127 pitch_keycenter=108 loop_start=38409 loop_end=124800
